@@ -8,6 +8,8 @@ import ElementPlus from 'element-plus'
 import './router/permission'
 // 全局样式
 import '@/assets/css/reset.css'
+// 系统样式
+import './style.css'
 // element-plus样式
 import 'element-plus/dist/index.css'
 

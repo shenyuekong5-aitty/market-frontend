@@ -20,9 +20,6 @@ import Main from './Main/index.vue'
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-
-  --topbar-height: 160px;
-  --aside-width: 220px;
 }
 
 .right-container {

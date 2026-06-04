@@ -1,6 +1,6 @@
 :root {
   /* 顶部栏高度 */
-  --topbar-height: 160px;
+  --topbar-height: 60px;
   /* 侧边栏宽度 */
   --aside-width: 220px;
 
@@ -162,12 +162,10 @@ code {
 }
 
 #app {
-  width: 1126px;
+  width: 100%;
   max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
+  margin: 0;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
