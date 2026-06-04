@@ -2,14 +2,14 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
-  const token = ref('okoko')
+  const token = ref('okossko')
   const userInfo = ref({
     id: 1,
     phone: '13800000001',
     username: 'admin',
     nickname: '管理员小明',
     avatar: 'https://s.snappable.media/cf94acf070e3d9677f108f741cb424d7.png',
-    role: 'admin',   // 'admin' | 'vendor' | 'user'
+    role: 'vendor',   // 'admin' | 'vendor' | 'user'
     status: 1        // 1正常 0注销
   })
   const dynamicAdded = ref(false)
