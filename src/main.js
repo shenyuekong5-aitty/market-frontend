@@ -13,7 +13,15 @@ import './style.css'
 // element-plus样式
 import 'element-plus/dist/index.css'
 
+// 全局注册图标
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+
 const app = createApp(App)
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
+}
+
+
 app.use(pinia)
 app.use(router)
 app.use(ElementPlus)
