@@ -18,12 +18,13 @@ const constantRoutes = [
     component: () => import('@/views/common/Register.vue'),
     meta: { title: '注册', icon: 'EditPen' }
   },
-  {
-    path: '/profile',
-    name: 'Profile',
-    component: () => import('@/views/common/Profile.vue'),
-    meta: { title: '个人信息', icon: 'User', requiresAuth: true }
-  },
+  // 追加为所有角色的子路由
+  // {
+  //   path: '/profile',
+  //   name: 'Profile',
+  //   component: () => import('@/views/common/Profile.vue'),
+  //   meta: { title: '个人信息', icon: 'User', requiresAuth: true }
+  // },
   {
     path: '/403',
     name: 'Forbidden',

@@ -1,5 +1,5 @@
 <template>
-  <div>页pkppssk面名称</div>
+  <div>login</div>
 </template>
 
 <script>

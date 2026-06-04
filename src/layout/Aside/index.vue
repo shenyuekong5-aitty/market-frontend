@@ -32,7 +32,16 @@ const appStore = useAppStore()
 
 const menuRoutes = computed(() => {
   const role = userStore.userInfo.role
-  return getRoleChildrenRoutes(role)
+  const roleRoutes = getRoleChildrenRoutes(role)
+
+  // 追加所有角色共有的 Profile 路由
+  const profileRoute = {
+    path: 'profile',
+    name: 'Profile',
+    meta: { title: '个人信息', icon: 'User' }
+  }
+
+  return [...roleRoutes, profileRoute]
 })
 
 const activeMenu = computed(() => route.path)

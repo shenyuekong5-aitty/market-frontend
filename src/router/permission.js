@@ -6,7 +6,14 @@ import { getRoleChildrenRoutes } from "./asyncRoutes";
 const whiteList = ["Login", "Register", "NotFound", "Forbidden"];
 
 // 静态路由名称集合（包括 Layout 父路由、Profile 等），这些路由不会被移除
-const staticRouteNames = ["Login", "Register", "Profile", "Forbidden", "Layout", "NotFound"];
+const staticRouteNames = [
+  "Login",
+  "Register",
+  "Profile",
+  "Forbidden",
+  "Layout",
+  "NotFound",
+];
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
@@ -24,7 +31,7 @@ router.beforeEach(async (to, from, next) => {
       if (!userStore.dynamicAdded) {
         // 清理之前可能残留的动态路由
         const currentRoutes = router.getRoutes();
-        currentRoutes.forEach(route => {
+        currentRoutes.forEach((route) => {
           if (route.name && !staticRouteNames.includes(route.name)) {
             router.removeRoute(route.name);
           }
@@ -32,8 +39,20 @@ router.beforeEach(async (to, from, next) => {
 
         // 添加当前角色对应的子路由到 Layout 下
         const children = getRoleChildrenRoutes(userStore.userInfo.role);
-        children.forEach(child => {
+        children.forEach((child) => {
           router.addRoute("Layout", child);
+        });
+
+        // 添加所有角色共有的 Profile 子路由
+        router.addRoute("Layout", {
+          path: "profile",
+          name: "Profile",
+          component: () => import("@/views/common/Profile.vue"),
+          meta: {
+            title: "个人信息",
+            icon: "User",
+            roles: ["admin", "vendor", "user"],
+          },
         });
 
         userStore.dynamicAdded = true;
@@ -47,19 +66,25 @@ router.beforeEach(async (to, from, next) => {
           meta: { title: "页面不存在" },
         });
         next({ ...to, replace: true });
-      } else {      
+      } else {
         // 如果路由定义了 roles，并且当前角色的权限不符合，直接去 403
         if (to.meta.roles && !to.meta.roles.includes(userStore.userInfo.role)) {
           next({ name: "Forbidden" });
-        } 
-        // 避免用户在地址栏乱输入其它角色的路径导致不可预期的行为
-        else if (to.name === "NotFound" && to.fullPath.startsWith('/admin') && userStore.userInfo.role !== 'admin') {
-           next({ name: "Forbidden" });
-        } 
-        else if (to.name === "NotFound" && to.fullPath.startsWith('/vendor') && userStore.userInfo.role !== 'vendor') {
-           next({ name: "Forbidden" });
         }
-        else {
+        // 避免用户在地址栏乱输入其它角色的路径导致不可预期的行为
+        else if (
+          to.name === "NotFound" &&
+          to.fullPath.startsWith("/admin") &&
+          userStore.userInfo.role !== "admin"
+        ) {
+          next({ name: "Forbidden" });
+        } else if (
+          to.name === "NotFound" &&
+          to.fullPath.startsWith("/vendor") &&
+          userStore.userInfo.role !== "vendor"
+        ) {
+          next({ name: "Forbidden" });
+        } else {
           next();
         }
       }
