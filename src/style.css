@@ -3,6 +3,8 @@
   --topbar-height: 60px;
   /* 侧边栏宽度 */
   --aside-width: 220px;
+   /* 侧边栏折叠后宽度 */
+  --aside-collapsed-width: 64px;
 
   --text: #6b6375;
   --text-h: #08060d;

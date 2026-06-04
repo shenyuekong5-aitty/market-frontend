@@ -50,11 +50,11 @@ const activeMenu = computed(() => route.path)
 <style scoped>
 /* 原有样式基础上修改 */
 .aside {
-  width: var(--aside-width, 220px);
+  width: v-bind('appStore.sidebarCollapsed ? "64px" : "var(--aside-width, 220px)"');
   background-color: #2c3e50;
   color: white;
   flex-shrink: 0;
-  transition: width 0.3s ease;
+  transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   overflow: hidden;
   /* 移除原来的居中布局，改为让 el-menu 自然填充 */
   display: block;
@@ -64,6 +64,12 @@ const activeMenu = computed(() => route.path)
 .aside-menu {
   height: 100%;
   border-right: none;
+  /* 解决 el-menu 折叠动画时文字卡顿突变的问题 */
+  transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.aside-menu:not(.el-menu--collapse) {
+  width: var(--aside-width, 220px);
 }
 
 /* Element Plus 折叠后的宽度默认是 64px */

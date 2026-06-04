@@ -1,3 +1,3 @@
 <template>
-  <div>页面名称</div>
+  <div>follows</div>
 </template>
