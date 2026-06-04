@@ -3,5 +3,5 @@
 </template>
 
 <script>
-console.log('Dashboard.vue loaded')
+
 </script>

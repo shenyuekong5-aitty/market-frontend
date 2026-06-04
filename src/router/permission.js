@@ -24,7 +24,6 @@ router.beforeEach(async (to, from, next) => {
         children.forEach(child => {
           router.addRoute('Layout', child)
         })
-        console.log(router.getRoutes());
 
         userStore.dynamicAdded = true;
 
