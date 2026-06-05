@@ -1,62 +1,66 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { login as loginApi } from '@/api/auth'   // 导入登录 API
 
 export const useUserStore = defineStore('user', () => {
-  const token = ref('okossko')
-  const userInfo = ref({
-    id: 1,
-    phone: '13800000001',
-    username: 'admin',
-    nickname: '管理员小明',
-    avatar: 'https://s.snappable.media/cf94acf070e3d9677f108f741cb424d7.png',
-    role: 'vendor',   // 'admin' | 'vendor' | 'user'
-    status: 1        // 1正常 0注销
-  })
+  const token = ref(localStorage.getItem('token') || '')
+  const userInfo = ref(
+    JSON.parse(localStorage.getItem('userInfo') || '{"id":null,"phone":"","username":"","nickname":"","avatar":"","role":"","status":1}')
+  )
   const dynamicAdded = ref(false)
 
   const isLoggedIn = computed(() => !!token.value)
 
+  // 登录
+  async function login(username, password, role) {
+    const res = await loginApi(username, password, role)  // 调用 API 层
+    const data = res.data  // 后端返回 token 字符串
+    setLoginData({
+      token: data,
+      username,
+      role,
+      nickname: username,  // 暂时用账号作为昵称
+      avatar: '',
+      id: null
+    })
+  }
+
   function setLoginData(data) {
     token.value = data.token
     userInfo.value = {
-      id: data.id,
+      id: data.id || null,
       phone: data.phone || '',
       username: data.username || '',
-      nickname: data.nickname,
-      avatar: data.avatar,
-      role: data.role,
+      nickname: data.nickname || data.username || '',
+      avatar: data.avatar || '',
+      role: data.role || '',
       status: data.status !== undefined ? data.status : 1
     }
+    // 持久化
+    localStorage.setItem('token', token.value)
+    localStorage.setItem('userInfo', JSON.stringify(userInfo.value))
   }
 
   function logout() {
     token.value = ''
-    userInfo.value = {
-      id: null,
-      phone: '',
-      username: '',
-      nickname: '',
-      avatar: '',
-      role: '',
-      status: 1
-    }
+    userInfo.value = {}
     dynamicAdded.value = false
+    localStorage.removeItem('token')
+    localStorage.removeItem('userInfo')
+    window.location.href = '/login'
   }
 
-  // 更新资料
-  function updateProfile(data) {
-    Object.assign(userInfo.value, data)
-  }
+  // ... 其他方法 updateProfile、changePassword 暂时保留模拟 ...
 
-  // 修改密码（模拟接口）
-  async function changePassword({ oldPassword, newPassword }) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(`密码修改成功：旧密码=${oldPassword}, 新密码=${newPassword}`)
-        resolve({ success: true })
-      }, 300)
-    })
+  return {
+    token,
+    userInfo,
+    dynamicAdded,
+    isLoggedIn,
+    login,          // 暴露真实的登录方法
+    setLoginData,
+    logout,
+    // updateProfile,
+    // changePassword,
   }
-
-  return { token, userInfo, dynamicAdded, isLoggedIn, setLoginData, logout, updateProfile, changePassword }
 })
