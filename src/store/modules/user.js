@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { login as loginApi } from '@/api/auth'   // 导入登录 API
+import { login as loginApi, getCurrentUser  } from '@/api/auth'  
 
 export const useUserStore = defineStore('user', () => {
   const token = ref(localStorage.getItem('token') || '')
@@ -13,17 +13,40 @@ export const useUserStore = defineStore('user', () => {
 
   // 登录
   async function login(username, password, role) {
-    const res = await loginApi(username, password, role)  // 调用 API 层
-    const data = res.data  // 后端返回 token 字符串
+    const res = await loginApi(username, password, role)  
+    const data = res.data  
     setLoginData({
       token: data,
       username,
       role,
-      nickname: username,  // 暂时用账号作为昵称
+      nickname: username,  
       avatar: '',
       id: null
     })
+    //获取用户完整信息
+    await fetchCurrentUser()
   }
+
+  // 获取当前用户完整信息
+async function fetchCurrentUser() {
+  try {
+    const res = await getCurrentUser()
+    if (res.data) {
+      userInfo.value = {
+        id: res.data.id,
+        phone: res.data.phone || '',
+        username: res.data.username,
+        nickname: res.data.nickname || res.data.username,
+        avatar: res.data.avatar || '',
+        role: res.data.role,
+        status: res.data.status
+      }
+      localStorage.setItem('userInfo', JSON.stringify(userInfo.value))
+    }
+  } catch (error) {
+    console.error('获取用户信息失败', error)
+  }
+}
 
   function setLoginData(data) {
     token.value = data.token
@@ -57,7 +80,8 @@ export const useUserStore = defineStore('user', () => {
     userInfo,
     dynamicAdded,
     isLoggedIn,
-    login,          // 暴露真实的登录方法
+    login,          
+    fetchCurrentUser,
     setLoginData,
     logout,
     // updateProfile,

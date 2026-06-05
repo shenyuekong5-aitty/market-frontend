@@ -13,11 +13,7 @@
         <template v-if="breadcrumbList.length === 0">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
         </template>
-        <el-breadcrumb-item
-          v-for="item in breadcrumbList"
-          :key="item.path"
-          :to="{ path: item.path }"
-        >
+        <el-breadcrumb-item v-for="item in breadcrumbList" :key="item.path" :to="{ path: item.path }">
           {{ item.meta?.title || item.name }}
         </el-breadcrumb-item>
       </el-breadcrumb>
@@ -28,22 +24,23 @@
       <div class="setting">
         <el-button circle :icon="Refresh" size="small" @click="appStore.refresh" />
         <el-button circle size="small" @click="handleFullScreen">
-          <el-icon><FullScreen /></el-icon>
+          <el-icon>
+            <FullScreen />
+          </el-icon>
         </el-button>
         <el-button circle size="small" @click="appStore.toggleDarkMode">
-          <el-icon v-if="appStore.isDark"><Sunny /></el-icon>
-          <el-icon v-else><Moon /></el-icon>
+          <el-icon v-if="appStore.isDark">
+            <Sunny />
+          </el-icon>
+          <el-icon v-else>
+            <Moon />
+          </el-icon>
         </el-button>
       </div>
 
       <!-- 用户信息及下拉 -->
       <div class="userinfo">
-        <img
-          v-if="userStore.userInfo.avatar"
-          :src="userStore.userInfo.avatar"
-          class="avatar"
-          alt="头像"
-        />
+        <img v-if="userStore.userInfo.avatar" :src="userStore.userInfo.avatar" class="avatar" alt="头像" />
         <span v-else class="avatar-placeholder">
           {{ userStore.userInfo.nickname?.charAt(0) || 'U' }}
         </span>
@@ -52,14 +49,16 @@
         <el-dropdown>
           <span class="el-dropdown-link">
             更多
-            <el-icon><ArrowDown /></el-icon>
+            <el-icon>
+              <ArrowDown />
+            </el-icon>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item divided @click="handleLogout">账号检测</el-dropdown-item>
+              <el-dropdown-item @click="checkAccountRef?.open()">账号检测</el-dropdown-item>
               <el-dropdown-item @click="editProfileRef?.open()">修改资料</el-dropdown-item>
               <el-dropdown-item @click="updatePasswordRef?.open()">修改密码</el-dropdown-item>
-              <el-dropdown-item divided @click="handleLogout">退出登录</el-dropdown-item>
+              <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
               <el-dropdown-item divided @click="handleLogout">注销账号</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -67,6 +66,8 @@
       </div>
     </div>
 
+    <!-- 弹窗组件 -->
+    <CheckAccount ref="checkAccountRef" />
     <!-- 修改资料弹窗 -->
     <EditProfile ref="editProfileRef" />
     <!-- 修改密码弹窗 -->
@@ -92,6 +93,7 @@ import { useAppStore } from '@/store/modules/app'
 import { ElMessage } from 'element-plus'
 import EditProfile from './EditProfile.vue'
 import UpdatePassword from './UpdatePassword.vue'
+import CheckAccount from '@/components/CheckAccount.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -100,6 +102,7 @@ const appStore = useAppStore()
 
 const editProfileRef = ref(null)
 const updatePasswordRef = ref(null)
+const checkAccountRef = ref(null)
 
 // 面包屑（过滤掉没有 title 的项，排除根路径 /）
 const breadcrumbList = computed(() => {
@@ -148,6 +151,7 @@ const handleLogout = () => {
   flex-shrink: 0;
   transition: transform 0.3s;
 }
+
 .fold-icon:hover {
   transform: scale(1.1);
 }
@@ -157,10 +161,12 @@ const handleLogout = () => {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 :deep(.el-breadcrumb__inner) {
   color: rgba(255, 255, 255, 0.85);
   font-size: 16px;
 }
+
 :deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
   color: white;
   font-weight: 500;
@@ -221,6 +227,7 @@ const handleLogout = () => {
   cursor: pointer;
   outline: none;
 }
+
 .el-dropdown-link:focus {
   outline: none;
 }
