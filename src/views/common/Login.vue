@@ -23,8 +23,8 @@
         </el-form-item>
       </el-form>
       <div class="links">
-        <router-link to="/register">立即注册</router-link>
         <el-link type="primary" @click="showResetDialog = true">忘记密码？</el-link>
+        <router-link to="/register">立即注册</router-link>
       </div>
     </div>
 
