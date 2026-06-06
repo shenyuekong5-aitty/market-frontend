@@ -13,7 +13,11 @@
         <template v-if="breadcrumbList.length === 0">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
         </template>
-        <el-breadcrumb-item v-for="item in breadcrumbList" :key="item.path" :to="{ path: item.path }">
+        <el-breadcrumb-item
+          v-for="item in breadcrumbList"
+          :key="item.path"
+          :to="{ path: item.path }"
+        >
           {{ item.meta?.title || item.name }}
         </el-breadcrumb-item>
       </el-breadcrumb>
@@ -22,7 +26,12 @@
     <div class="right">
       <!-- 设置按钮区 -->
       <div class="setting">
-        <el-button circle :icon="Refresh" size="small" @click="appStore.refresh" />
+        <el-button
+          circle
+          :icon="Refresh"
+          size="small"
+          @click="appStore.refresh"
+        />
         <el-button circle size="small" @click="handleFullScreen">
           <el-icon>
             <FullScreen />
@@ -40,11 +49,18 @@
 
       <!-- 用户信息及下拉 -->
       <div class="userinfo">
-        <img v-if="userStore.avatarFullUrl" :src="userStore.avatarFullUrl" class="avatar" alt="头像" />
+        <img
+          v-if="userStore.avatarFullUrl"
+          :src="userStore.avatarFullUrl"
+          class="avatar"
+          alt="头像"
+        />
         <span v-else class="avatar-placeholder">
-          {{ userStore.userInfo.nickname?.charAt(0) || 'U' }}
+          {{ userStore.userInfo.nickname?.charAt(0) || "U" }}
         </span>
-        <span class="username">{{ userStore.userInfo.nickname || '用户' }}</span>
+        <span class="username">{{
+          userStore.userInfo.nickname || "用户"
+        }}</span>
 
         <el-dropdown>
           <span class="el-dropdown-link">
@@ -55,11 +71,21 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="checkAccountRef?.open()">账号检测</el-dropdown-item>
-              <el-dropdown-item @click="editProfileRef?.open()">修改资料</el-dropdown-item>
-              <el-dropdown-item @click="updatePasswordRef?.open()">修改密码</el-dropdown-item>
-              <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
-              <el-dropdown-item divided @click="handleLogout">注销账号</el-dropdown-item>
+              <el-dropdown-item @click="checkAccountRef?.open()"
+                >账号检测</el-dropdown-item
+              >
+              <el-dropdown-item @click="editProfileRef?.open()"
+                >修改资料</el-dropdown-item
+              >
+              <el-dropdown-item @click="updatePasswordRef?.open()"
+                >修改密码</el-dropdown-item
+              >
+              <el-dropdown-item @click="handleLogout"
+                >退出登录</el-dropdown-item
+              >
+              <el-dropdown-item divided @click="handleDeactivate"
+                >注销账号</el-dropdown-item
+              >
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -76,8 +102,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import {
   Fold,
   Expand,
@@ -86,43 +112,66 @@ import {
   Refresh,
   FullScreen,
   Moon,
-  Sunny
-} from '@element-plus/icons-vue'
-import { useUserStore } from '@/store/modules/user'
-import { useAppStore } from '@/store/modules/app'
-import { ElMessage } from 'element-plus'
-import EditProfile from './EditProfile.vue'
-import UpdatePassword from './UpdatePassword.vue'
-import CheckAccount from '@/components/CheckAccount.vue'
+  Sunny,
+} from "@element-plus/icons-vue";
+import { useUserStore } from "@/store/modules/user";
+import { useAppStore } from "@/store/modules/app";
+import { ElMessage, ElMessageBox } from "element-plus";
+import EditProfile from "./EditProfile.vue";
+import UpdatePassword from "./UpdatePassword.vue";
+import CheckAccount from "@/components/CheckAccount.vue";
 
-const route = useRoute()
-const router = useRouter()
-const userStore = useUserStore()
-const appStore = useAppStore()
+const route = useRoute();
+const router = useRouter();
+const userStore = useUserStore();
+const appStore = useAppStore();
 
-const editProfileRef = ref(null)
-const updatePasswordRef = ref(null)
-const checkAccountRef = ref(null)
+const editProfileRef = ref(null);
+const updatePasswordRef = ref(null);
+const checkAccountRef = ref(null);
 
 // 面包屑（过滤掉没有 title 的项，排除根路径 /）
 const breadcrumbList = computed(() => {
-  return route.matched.filter(item => item.meta?.title && item.path !== '/')
-})
+  return route.matched.filter((item) => item.meta?.title && item.path !== "/");
+});
 
 // 全屏切换
 const handleFullScreen = () => {
   if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen()
+    document.documentElement.requestFullscreen();
   } else {
-    document.exitFullscreen()
+    document.exitFullscreen();
   }
-}
+};
 
 const handleLogout = () => {
-  userStore.logout()
-  ElMessage.success('已退出登录')
-  router.push('/login')
-}
+  userStore.logout();
+  ElMessage.success("已退出登录");
+  router.push("/login");
+};
+
+// 注销账号处理函数
+const handleDeactivate = () => {
+  ElMessageBox.confirm(
+    "确定要注销账号吗？注销后可通过忘记密码重新激活。",
+    "确认注销",
+    {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    },
+  )
+    .then(async () => {
+      try {
+        await userStore.deactivateAccount();
+        ElMessage.success("账号已注销");
+        userStore.logout();
+      } catch (error) {
+        ElMessage.error(error.message || "注销失败");
+      }
+    })
+    .catch(() => {}); // 用户取消
+};
 </script>
 
 <style scoped>

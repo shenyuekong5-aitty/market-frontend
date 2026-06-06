@@ -1,15 +1,17 @@
 import router from "@/router";
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
+import { login as loginApi, getCurrentUser } from "@/api/auth";
 import {
-  login as loginApi,
-  getCurrentUser,
+  uploadAvatar,
+  updateProfile,
+  sendChangePhoneSms,
   sendResetPasswordSms,
   resetPassword,
   checkPhone,
-  changePassword as changePasswordApi
-} from "@/api/auth";
-import { uploadAvatar, updateProfile } from "@/api/user";
+  changePassword as changePasswordApi,
+  deactivateAccount as deactivateApi,
+} from "@/api/user";
 import { getRoleChildrenRoutes } from "@/router/asyncRoutes";
 
 export const useUserStore = defineStore(
@@ -212,6 +214,11 @@ export const useUserStore = defineStore(
       dynamicAdded.value = true;
     }
 
+    // 注销账号
+    async function deactivateAccount() {
+      await deactivateApi(); // 调用 API 层的注销接口
+    }
+
     return {
       token,
       userInfo,
@@ -228,6 +235,7 @@ export const useUserStore = defineStore(
       changePassword,
       isPhoneRegistered,
       addDynamicRoutes,
+      deactivateAccount,
     };
   },
   {

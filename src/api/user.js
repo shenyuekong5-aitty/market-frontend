@@ -1,31 +1,43 @@
-// src/api/user.js
 import request from '@/utils/request'
 
-/**
- * 上传头像文件
- * @param {FormData} formData - 包含 file 字段的 FormData
- * @returns {Promise} 返回 { code, data, message }，data 为上传后的文件路径
- */
+// 上传头像
 export function uploadAvatar(formData) {
   return request.post('/upload/avatar', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
 }
 
-/**
- * 修改用户资料（昵称、头像、性别、手机号等）
- * @param {Object} data - 更新数据
- * @returns {Promise}
- */
+// 修改用户资料
 export function updateProfile(data) {
   return request.put('/user/profile', data)
 }
 
-/**
- * 发送更换手机号的验证码（可选）
- * @param {String} phone
- * @returns {Promise}
- */
+// 发送修改手机号验证码
 export function sendChangePhoneSms(phone) {
   return request.post('/sms/send-change-phone', null, { params: { phone } })
+}
+
+// 发送忘记密码验证码
+export function sendResetPasswordSms(phone) {
+  return request.post('/sms/send-reset', null, { params: { phone } })
+}
+
+// 重置密码（忘记密码）
+export function resetPassword(phone, code, newPassword) {
+  return request.post('/auth/reset-password', null, { params: { phone, code, newPassword } })
+}
+
+// 检查手机号是否已注册
+export function checkPhone(phone) {
+  return request.get('/auth/check-phone', { params: { phone } })
+}
+
+// 修改密码（已登录）
+export function changePassword(oldPassword, newPassword) {
+  return request.put('/auth/change-password', null, { params: { oldPassword, newPassword } })
+}
+
+// 注销账号
+export function deactivateAccount() {
+  return request.post('/user/deactivate')
 }
