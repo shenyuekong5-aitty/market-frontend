@@ -6,8 +6,16 @@
         class="score-circle"
         :class="{ 'is-scanning': scanning }"
         :style="{
-          borderColor: scanning ? '#409eff' : realScore >= 90 ? '#67c23a' : realScore >= 70 ? '#e6a23c' : '#f56c6c',
-          boxShadow: scanning ? '0 0 18px rgba(64, 158, 255, 0.25)' : '0 6px 24px rgba(0, 0, 0, 0.08)'
+          borderColor: scanning
+            ? '#409eff'
+            : realScore >= 90
+              ? '#67c23a'
+              : realScore >= 70
+                ? '#e6a23c'
+                : '#f56c6c',
+          boxShadow: scanning
+            ? '0 0 18px rgba(64, 158, 255, 0.25)'
+            : '0 6px 24px rgba(0, 0, 0, 0.08)',
         }"
       >
         <!-- 分数数字：扫描中深灰，结束后动态变色 -->
@@ -18,26 +26,44 @@
       </div>
 
       <p class="tip-text">
-        {{ scanning ? '系统正在全面扫描安全漏洞...' : overallMessage }}
+        {{ scanning ? "系统正在全面扫描安全漏洞..." : overallMessage }}
+        <span
+          v-if="errorOccurred && !scanning"
+          style="color: #e6a23c; margin-left: 6px"
+          >（上次检测结果）</span
+        >
       </p>
 
       <div class="check-content">
-        <div v-for="item in checkItems" :key="item.id" class="item-row">
+        <div v-for="item in checkItems" :key="item.id" class="item-row" :title="item.id === 'info' ? '检测项包含：头像、昵称、手机号' : ''">
           <div class="left">
-            <el-icon :class="['status-icon', scanning ? 'is-loading' : item.status]">
-              <component :is="scanning ? 'Loading' : item.status === 'success' ? 'CircleCheck' : 'Warning'" />
+            <el-icon
+              :class="['status-icon', scanning ? 'is-loading' : item.status]"
+            >
+              <component
+                :is="
+                  scanning
+                    ? 'Loading'
+                    : item.status === 'success'
+                      ? 'CircleCheck'
+                      : 'Warning'
+                "
+              />
             </el-icon>
             <span class="label">{{ item.label }}</span>
           </div>
-          <div class="right-result" :style="{ color: scanning ? '#409eff' : '#606266' }">
-            {{ scanning ? '检测中...' : item.result }}
+          <div
+            class="right-result"
+            :style="{ color: scanning ? '#409eff' : '#606266' }"
+          >
+            {{ scanning ? "检测中..." : item.result }}
           </div>
         </div>
       </div>
 
       <div class="footer">
         <el-button type="primary" plain :loading="scanning" @click="startCheck">
-          {{ scanning ? '正在扫描' : '重新扫描' }}
+          {{ scanning ? "正在扫描" : "重新扫描" }}
         </el-button>
       </div>
     </div>
@@ -45,73 +71,81 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from 'vue'
-import { getSecurityCheck } from '@/api/account'
-import { ElMessage } from 'element-plus'
+import { ref, computed, onUnmounted } from "vue";
+import { getSecurityCheck } from "@/api/account";
+import { ElMessage } from "element-plus";
 
-const visible = ref(false)
-const scanning = ref(false)
-const randomScore = ref(0)
-const checkItems = ref([])
-const overallMessage = ref('')
-const realScore = ref(100)
+const visible = ref(false);
+const scanning = ref(false);
+const randomScore = ref(0);
+const checkItems = ref([]);
+const overallMessage = ref("");
+const realScore = ref(100);
+// 错误状态，用于控制错误提示显示
+const errorOccurred = ref(false);
 
 // 动态分数颜色（绿 / 橙 / 红）
 const scoreColor = computed(() => {
-  const s = realScore.value ?? 100
-  if (s >= 90) return '#67c23a'
-  if (s >= 70) return '#e6a23c'
-  return '#f56c6c'
-})
+  const s = realScore.value ?? 100;
+  if (s >= 90) return "#67c23a";
+  if (s >= 70) return "#e6a23c";
+  return "#f56c6c";
+});
 
-let timer = null
+let timer = null;
 
 const fetchData = async () => {
   try {
-    const res = await getSecurityCheck()
-    const data = res.data
-    overallMessage.value = data.message
-    checkItems.value = data.items
-    realScore.value = data.score ?? 100  // 防止空值
+    const res = await getSecurityCheck();
+    const data = res.data;
+    overallMessage.value = data.message;
+    checkItems.value = data.items;
+    realScore.value = data.score ?? 100;
+    errorOccurred.value = false; // 请求成功，清除错误状态
   } catch (error) {
-    ElMessage.error('获取安全检测失败')
-    throw error
+    // 如果之前有数据，保留；如果没有，给一个默认提示
+    if (checkItems.value.length === 0) {
+      overallMessage.value = "网络异常，无法获取安全检测结果";
+    }
+    errorOccurred.value = true;
+    ElMessage.error("获取安全检测失败，请稍后重试");
+    throw error;
   }
-}
+};
 
 const startCheck = async () => {
-  if (scanning.value) return
-  scanning.value = true
+  if (scanning.value) return;
+  scanning.value = true;
 
   timer = setInterval(() => {
-    randomScore.value = Math.floor(Math.random() * 60) + 40
-  }, 50)
+    randomScore.value = Math.floor(Math.random() * 60) + 40;
+  }, 50);
 
-  const startTime = Date.now()
+  const startTime = Date.now();
   try {
-    await fetchData()
-    const costTime = Date.now() - startTime
+    await fetchData();
+    const costTime = Date.now() - startTime;
     if (costTime < 1200) {
-      await new Promise(resolve => setTimeout(resolve, 1200 - costTime))
+      await new Promise((resolve) => setTimeout(resolve, 1200 - costTime));
     }
   } catch (e) {
     // 错误已提示
   } finally {
-    clearInterval(timer)
-    scanning.value = false
+    clearInterval(timer);
+    scanning.value = false;
   }
-}
+};
 
 const open = () => {
-  visible.value = true
-  startCheck()
-}
+  visible.value = true;
+  startCheck();
+};
 
 onUnmounted(() => {
-  clearInterval(timer)
-})
+  clearInterval(timer);
+});
 
-defineExpose({ open })
+defineExpose({ open });
 </script>
 
 <style scoped>
@@ -137,7 +171,9 @@ defineExpose({ open })
   align-items: center;
   margin-bottom: 22px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
-  transition: border-color 0.4s, box-shadow 0.4s;
+  transition:
+    border-color 0.4s,
+    box-shadow 0.4s;
 }
 
 .is-scanning {
@@ -147,7 +183,7 @@ defineExpose({ open })
 .num {
   font-size: 52px;
   font-weight: 800;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   line-height: 1;
   margin-bottom: 2px;
   /* 颜色已改为内联绑定，这里无需定义 */
@@ -239,13 +275,23 @@ defineExpose({ open })
 }
 
 @keyframes breath {
-  0% { transform: scale(0.96); }
-  50% { transform: scale(1.04); }
-  100% { transform: scale(0.96); }
+  0% {
+    transform: scale(0.96);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(0.96);
+  }
 }
 
 @keyframes rotating {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
