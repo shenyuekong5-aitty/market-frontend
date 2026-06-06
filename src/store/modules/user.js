@@ -7,6 +7,7 @@ import {
   sendResetPasswordSms,
   resetPassword,
   checkPhone,
+  changePassword as changePasswordApi
 } from "@/api/auth";
 import { uploadAvatar, updateProfile } from "@/api/user";
 import { getRoleChildrenRoutes } from "@/router/asyncRoutes";
@@ -154,34 +155,25 @@ export const useUserStore = defineStore(
      * 发送重置密码验证码
      */
     async function sendResetPasswordCode(phone) {
-      try {
-        await sendResetPasswordSms(phone);
-        return true;
-      } catch (error) {
-        throw new Error(error.message || "发送失败");
-      }
+      await sendResetPasswordSms(phone);
     }
 
     /**
      * 重置密码
      */
     async function resetPasswordByPhone(phone, code, newPassword) {
-      try {
-        await resetPassword(phone, code, newPassword);
-        return true;
-      } catch (error) {
-        throw new Error(error.message || "重置失败");
-      }
+      await resetPassword(phone, code, newPassword);
+    }
+
+    // 修改密码（登陆状态：根据旧密码）
+    async function changePassword(oldPassword, newPassword) {
+      await changePasswordApi(oldPassword, newPassword);
     }
 
     // 检查手机号是否已注册
     async function isPhoneRegistered(phone) {
-      try {
-        const res = await checkPhone(phone);
-        return res.data; // true/false
-      } catch (error) {
-        throw new Error(error.message || "检查失败");
-      }
+      const res = await checkPhone(phone);
+      return res.data;
     }
 
     /**
@@ -233,6 +225,7 @@ export const useUserStore = defineStore(
       updateUserProfile,
       sendResetPasswordCode,
       resetPasswordByPhone,
+      changePassword,
       isPhoneRegistered,
       addDynamicRoutes,
     };

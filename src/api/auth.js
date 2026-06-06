@@ -41,3 +41,10 @@ export function resetPassword(phone, code, newPassword) {
 export function checkPhone(phone) {
   return request.get('/auth/check-phone', { params: { phone } })
 }
+
+// 修改密码（已登录状态下）
+export function changePassword(oldPassword, newPassword) {
+  return request.put('/auth/change-password', null, {
+    params: { oldPassword, newPassword }
+  })
+}
