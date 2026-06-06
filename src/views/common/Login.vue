@@ -23,8 +23,8 @@
         </el-form-item>
       </el-form>
       <div class="links">
-        <el-link type="primary" @click="showResetDialog = true">忘记密码？</el-link>
         <router-link to="/register">立即注册</router-link>
+        <el-link type="primary" @click="showResetDialog = true">忘记密码？</el-link>
       </div>
     </div>
 
@@ -35,7 +35,7 @@
           <el-input v-model="resetForm.phone" placeholder="请输入注册手机号" @blur="checkPhoneRegistered" />
         </el-form-item>
         <el-form-item label="新密码" prop="newPassword">
-          <el-input v-model="resetForm.newPassword" type="password" placeholder="请输入新密码" show-password />
+          <el-input v-model="resetForm.newPassword" type="password" placeholder="请输入新密码（需含数字和字母）" show-password />
         </el-form-item>
         <el-form-item label="确认密码" prop="confirmPassword">
           <el-input v-model="resetForm.confirmPassword" type="password" placeholder="请再次输入新密码" show-password />
@@ -119,7 +119,7 @@ const resetSmsSending = ref(false);
 const resetCountdown = ref(60);
 const phoneExists = ref(false);
 const phoneChecking = ref(false);
-const codeSent = ref(false); // 是否已发送过验证码
+const codeSent = ref(false);
 
 const resetForm = reactive({
   phone: "",
@@ -128,20 +128,28 @@ const resetForm = reactive({
   code: "",
 });
 
-// 验证码按钮文本
 const resetButtonText = computed(() => {
-  if (resetSmsSending.value) {
-    return `${resetCountdown.value}秒`;
-  }
+  if (resetSmsSending.value) return `${resetCountdown.value}秒`;
   return codeSent.value ? "重新获取验证码" : "获取验证码";
 });
 
-// 自定义校验：确认密码
 const validateConfirmPassword = (rule, value, callback) => {
   if (value === "") {
     callback(new Error("请再次输入新密码"));
   } else if (value !== resetForm.newPassword) {
     callback(new Error("两次输入的密码不一致"));
+  } else {
+    callback();
+  }
+};
+
+const validatePasswordStrength = (rule, value, callback) => {
+  if (!value) {
+    callback(new Error("请输入新密码"));
+  } else if (value.length < 6 || value.length > 18) {
+    callback(new Error("密码长度为6-18个字符"));
+  } else if (!/^(?=.*[a-zA-Z])(?=.*\d).+$/.test(value)) {
+    callback(new Error("密码必须包含数字和字母"));
   } else {
     callback();
   }
@@ -154,7 +162,7 @@ const resetRules = {
   ],
   newPassword: [
     { required: true, message: "请输入新密码", trigger: "blur" },
-    { min: 6, max: 18, message: "密码长度为6-18个字符", trigger: "blur" },
+    { validator: validatePasswordStrength, trigger: "blur" }
   ],
   confirmPassword: [
     { required: true, message: "请再次输入新密码", trigger: "blur" },
@@ -163,7 +171,6 @@ const resetRules = {
   code: [{ required: true, message: "请输入验证码", trigger: "blur" }],
 };
 
-// 手机号失焦检查是否已注册
 const checkPhoneRegistered = async () => {
   if (!resetForm.phone || !/^1[3-9]\d{9}$/.test(resetForm.phone)) {
     phoneExists.value = false;
@@ -184,7 +191,6 @@ const checkPhoneRegistered = async () => {
   }
 };
 
-// 发送重置密码验证码
 const sendResetCode = async () => {
   if (!resetForm.phone || !/^1[3-9]\d{9}$/.test(resetForm.phone)) {
     ElMessage.warning("请输入正确的手机号");
@@ -195,7 +201,7 @@ const sendResetCode = async () => {
     return;
   }
   resetSmsSending.value = true;
-  codeSent.value = true; // 标记已经发送过
+  codeSent.value = true;
   let count = 60;
   resetCountdown.value = count;
   const timer = setInterval(() => {
@@ -213,11 +219,10 @@ const sendResetCode = async () => {
     ElMessage.error(error.message || "发送失败");
     clearInterval(timer);
     resetSmsSending.value = false;
-    codeSent.value = false; // 发送失败，重置状态
+    codeSent.value = false;
   }
 };
 
-// 提交重置密码
 const handleResetPassword = async () => {
   if (!resetFormRef.value) return;
   await resetFormRef.value.validate(async (valid) => {
@@ -227,13 +232,12 @@ const handleResetPassword = async () => {
       await userStore.resetPasswordByPhone(resetForm.phone, resetForm.code, resetForm.newPassword);
       ElMessage.success("密码重置成功，请使用新密码登录");
       showResetDialog.value = false;
-      // 清空表单
       resetForm.phone = "";
       resetForm.newPassword = "";
       resetForm.confirmPassword = "";
       resetForm.code = "";
       phoneExists.value = false;
-      codeSent.value = false; // 重置成功，恢复按钮为初始状态
+      codeSent.value = false;
     } catch (error) {
       ElMessage.error(error.message || "重置失败");
     } finally {
@@ -242,11 +246,8 @@ const handleResetPassword = async () => {
   });
 };
 
-// 弹窗关闭时，重置部分状态（确保下次打开时按钮文本正确）
 watch(showResetDialog, (val) => {
   if (!val) {
-    // 如果弹窗关闭（非重置成功关闭），保留 codeSent 状态可能会造成困惑
-    // 这里选择在关闭弹窗时也重置 codeSent，防止用户关闭后再次打开仍显示“重新获取”
     codeSent.value = false;
     phoneExists.value = false;
     resetForm.phone = "";
