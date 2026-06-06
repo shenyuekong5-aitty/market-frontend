@@ -1,7 +1,15 @@
+import router from "@/router";
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { login as loginApi, getCurrentUser } from "@/api/auth";
+import {
+  login as loginApi,
+  getCurrentUser,
+  sendResetPasswordSms,
+  resetPassword,
+  checkPhone,
+} from "@/api/auth";
 import { uploadAvatar, updateProfile } from "@/api/user";
+import { getRoleChildrenRoutes } from "@/router/asyncRoutes";
 
 export const useUserStore = defineStore(
   "user",
@@ -141,6 +149,77 @@ export const useUserStore = defineStore(
       return updatedUser;
     }
 
+    // 忘记密码相关
+    /**
+     * 发送重置密码验证码
+     */
+    async function sendResetPasswordCode(phone) {
+      try {
+        await sendResetPasswordSms(phone);
+        return true;
+      } catch (error) {
+        throw new Error(error.message || "发送失败");
+      }
+    }
+
+    /**
+     * 重置密码
+     */
+    async function resetPasswordByPhone(phone, code, newPassword) {
+      try {
+        await resetPassword(phone, code, newPassword);
+        return true;
+      } catch (error) {
+        throw new Error(error.message || "重置失败");
+      }
+    }
+
+    // 检查手机号是否已注册
+    async function isPhoneRegistered(phone) {
+      try {
+        const res = await checkPhone(phone);
+        return res.data; // true/false
+      } catch (error) {
+        throw new Error(error.message || "检查失败");
+      }
+    }
+
+    /**
+     * 根据角色动态添加路由到 Layout 父路由下
+     * @param {string} role 角色：'admin' | 'vendor' | 'user'
+     */
+    function addDynamicRoutes(role) {
+      if (dynamicAdded.value) return; // 已添加则跳过
+
+      const children = getRoleChildrenRoutes(role);
+      children.forEach((child) => {
+        router.addRoute("Layout", child); // 挂载到名为 Layout 的父路由下
+      });
+
+      // 添加所有角色共有的 Profile 路由
+      router.addRoute("Layout", {
+        path: "profile",
+        name: "Profile",
+        component: () => import("@/views/common/Profile.vue"),
+        meta: {
+          title: "个人信息",
+          icon: "User",
+          roles: ["admin", "vendor", "user"],
+        },
+      });
+
+      // 确保 404 路由始终在最后
+      router.removeRoute("NotFound");
+      router.addRoute({
+        path: "/:pathMatch(.*)*",
+        name: "NotFound",
+        component: () => import("@/views/common/NotFound.vue"),
+        meta: { title: "页面不存在" },
+      });
+
+      dynamicAdded.value = true;
+    }
+
     return {
       token,
       userInfo,
@@ -152,6 +231,10 @@ export const useUserStore = defineStore(
       setLoginData,
       logout,
       updateUserProfile,
+      sendResetPasswordCode,
+      resetPasswordByPhone,
+      isPhoneRegistered,
+      addDynamicRoutes,
     };
   },
   {

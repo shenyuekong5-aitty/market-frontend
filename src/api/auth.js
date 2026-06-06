@@ -22,3 +22,22 @@ export function login(username, password, role) {
 export function getCurrentUser() {
   return request.get('/auth/currentUser')
 }
+
+
+
+// 发送忘记密码验证码
+export function sendResetPasswordSms(phone) {
+  return request.post('/sms/send-reset', null, { params: { phone } })
+}
+
+// 重置密码
+export function resetPassword(phone, code, newPassword) {
+  return request.post('/auth/reset-password', null, {
+    params: { phone, code, newPassword }
+  })
+}
+
+// 检查手机号是否已注册
+export function checkPhone(phone) {
+  return request.get('/auth/check-phone', { params: { phone } })
+}

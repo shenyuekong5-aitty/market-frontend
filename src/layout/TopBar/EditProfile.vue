@@ -29,12 +29,21 @@
       <el-collapse v-model="activeCollapse" style="border: none">
         <el-collapse-item title="更换手机号" name="phone">
           <el-form-item label="新手机号" prop="newPhone">
-            <el-input v-model="form.newPhone" maxlength="11" placeholder="请输入新手机号" />
+            <el-input
+              v-model="form.newPhone"
+              maxlength="11"
+              placeholder="请输入新手机号"
+              @blur="checkPhoneRegistered"  
+            />
           </el-form-item>
           <el-form-item label="验证码">
             <div style="display: flex; gap: 8px;">
               <el-input v-model="form.phoneCode" placeholder="请输入验证码" style="flex:1" />
-              <el-button :disabled="smsSending || !form.newPhone" @click="sendPhoneCode" style="width: 120px;">
+              <el-button
+                :disabled="smsSending || !form.newPhone || phoneExists"  
+                @click="sendPhoneCode"
+                style="width: 120px;"
+              >
                 {{ smsSending ? smsCountdown + '秒' : '获取验证码' }}
               </el-button>
             </div>
@@ -58,7 +67,7 @@ import { ref, reactive, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { useUserStore } from '@/store/modules/user'
-import { sendChangePhoneSms } from '@/api/user'  // 仅验证码发送保留直接调用（不涉及状态）
+import { sendChangePhoneSms } from '@/api/user'
 
 const userStore = useUserStore()
 const visible = ref(false)
@@ -69,17 +78,19 @@ const activeCollapse = ref([])
 const smsSending = ref(false)
 const smsCountdown = ref(60)
 
-// 表单数据（注意 avatarPreview 仅用于展示，真正上传的文件存放在 pendingAvatarFile）
+// 新增：手机号校验相关状态
+const phoneExists = ref(false)      // 新手机号是否已被注册
+const phoneChecking = ref(false)    // 是否正在检查中
+
 const form = reactive({
   nickname: '',
-  avatarPreview: '',   // 预览用的 URL（本地 blob 或已有的完整 URL）
+  avatarPreview: '',
   gender: 1,
   newPhone: '',
   phoneCode: '',
   confirmPassword: ''
 })
 
-// 暂存用户新选择的头像文件对象
 const pendingAvatarFile = ref(null)
 
 const rules = {
@@ -87,7 +98,6 @@ const rules = {
   newPhone: [{ pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur' }]
 }
 
-// 打开弹窗时初始化
 watch(visible, (val) => {
   if (val) {
     const user = userStore.userInfo
@@ -97,9 +107,9 @@ watch(visible, (val) => {
     form.phoneCode = ''
     form.confirmPassword = ''
     pendingAvatarFile.value = null
-    // 头像预览：优先使用已有的完整 URL，否则空
     form.avatarPreview = userStore.avatarFullUrl || ''
     activeCollapse.value = []
+    phoneExists.value = false   // 重置状态
   }
 })
 
@@ -107,7 +117,6 @@ const triggerFileInput = () => {
   fileInputRef.value?.click()
 }
 
-// 头像文件选择处理（仅本地预览，不立即上传）
 const handleAvatarChange = (event) => {
   const input = event.target
   const file = input.files?.[0]
@@ -122,9 +131,7 @@ const handleAvatarChange = (event) => {
     input.value = ''
     return
   }
-  // 保存文件对象，稍后提交时上传
   pendingAvatarFile.value = file
-  // 生成本地预览
   const reader = new FileReader()
   reader.onload = (e) => {
     form.avatarPreview = e.target.result
@@ -133,10 +140,34 @@ const handleAvatarChange = (event) => {
   input.value = ''
 }
 
-// 发送手机验证码（仍可直接调 API，不涉及全局状态）
+// 新增：检查新手机号是否已被注册
+const checkPhoneRegistered = async () => {
+  if (!form.newPhone || !/^1[3-9]\d{9}$/.test(form.newPhone)) {
+    phoneExists.value = false
+    return
+  }
+  phoneChecking.value = true
+  try {
+    const exists = await userStore.isPhoneRegistered(form.newPhone)
+    phoneExists.value = exists
+    if (exists) {
+      ElMessage.warning('该手机号已被注册')
+    }
+  } catch (error) {
+    ElMessage.error('检查手机号失败')
+    phoneExists.value = false
+  } finally {
+    phoneChecking.value = false
+  }
+}
+
 const sendPhoneCode = async () => {
   if (!form.newPhone || !/^1[3-9]\d{9}$/.test(form.newPhone)) {
     ElMessage.warning('请输入正确的新手机号')
+    return
+  }
+  if (phoneExists.value) {
+    ElMessage.warning('该手机号已被注册')
     return
   }
   smsSending.value = true
@@ -160,12 +191,10 @@ const sendPhoneCode = async () => {
   }
 }
 
-// 提交修改
 const handleSubmit = async () => {
   if (!formRef.value) return
   await formRef.value.validate(async (valid) => {
     if (!valid) return
-    // 手机号必填校验
     if (activeCollapse.value.includes('phone')) {
       if (!form.newPhone) { ElMessage.warning('请输入新手机号'); return }
       if (!form.phoneCode) { ElMessage.warning('请输入验证码'); return }
@@ -174,11 +203,10 @@ const handleSubmit = async () => {
 
     loading.value = true
     try {
-      // 调用 Store 的 action，所有逻辑（上传头像、提交资料、更新本地状态）都在内部完成
       await userStore.updateUserProfile({
         nickname: form.nickname,
         gender: form.gender,
-        avatarFile: pendingAvatarFile.value,   // 如果有新头像传文件对象，否则 null
+        avatarFile: pendingAvatarFile.value,
         newPhone: activeCollapse.value.includes('phone') ? form.newPhone : null,
         phoneCode: activeCollapse.value.includes('phone') ? form.phoneCode : null,
         confirmPassword: activeCollapse.value.includes('phone') ? form.confirmPassword : null
