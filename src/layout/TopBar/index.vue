@@ -40,7 +40,7 @@
 
       <!-- 用户信息及下拉 -->
       <div class="userinfo">
-        <img v-if="userStore.userInfo.avatar" :src="userStore.userInfo.avatar" class="avatar" alt="头像" />
+        <img v-if="userStore.avatarFullUrl" :src="userStore.avatarFullUrl" class="avatar" alt="头像" />
         <span v-else class="avatar-placeholder">
           {{ userStore.userInfo.nickname?.charAt(0) || 'U' }}
         </span>
