@@ -28,7 +28,8 @@ router.beforeEach(async (to, from, next) => {
       else next({ name: "MarketList" });
     } else {
       // 首次登录时动态添加路由
-      if (!userStore.dynamicAdded) {
+      if (!userStore.dynamicAdded2) {
+        console.log("即将添加动态路由....")
         // 清理之前可能残留的动态路由
         const currentRoutes = router.getRoutes();
         currentRoutes.forEach((route) => {
@@ -43,7 +44,8 @@ router.beforeEach(async (to, from, next) => {
           router.addRoute("Layout", child);
         });
 
-        userStore.dynamicAdded = true;
+
+        userStore.dynamicAdded2 = true;
 
         // 确保 404 永远是最后一条路由
         router.removeRoute("NotFound");
@@ -53,7 +55,7 @@ router.beforeEach(async (to, from, next) => {
           component: () => import("@/views/common/NotFound.vue"),
           meta: { title: "页面不存在" },
         });
-        next({ ...to, replace: true });
+        next({ path: to.fullPath, replace: true })
       } else {
         // 如果路由定义了 roles，并且当前角色的权限不符合，直接去 403
         if (to.meta.roles && !to.meta.roles.includes(userStore.userInfo.role)) {

@@ -63,7 +63,6 @@ export const useUserStore = defineStore(
       try {
         const res = await getCurrentUser();
         if (res.data) {
-          console.log("用户信息获取成功:", res.data);
           userInfo.value = {
             id: res.data.id,
             phone: res.data.phone || "",
