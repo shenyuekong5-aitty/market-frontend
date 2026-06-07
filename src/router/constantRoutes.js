@@ -4,7 +4,18 @@ const constantRoutes = [
     path: "/",
     name: "Layout",
     component: () => import("@/layout/Layout.vue"),
-    children: [], // 初始为空，动态添加
+    children: [
+      {
+        path: "/profile",
+        name: "Profile",
+        component: () => import("@/views/common/Profile.vue"),
+        meta: {
+          title: "个人信息",
+          icon: "User",
+          roles: ["admin", "vendor", "user"],
+        },
+      },
+    ], // 初始为空，动态添加
   },
   {
     path: "/login",
@@ -17,16 +28,6 @@ const constantRoutes = [
     name: "Register",
     component: () => import("@/views/common/Register.vue"),
     meta: { title: "注册", icon: "EditPen" },
-  },
-  {
-    path: "/profile",
-    name: "Profile",
-    component: () => import("@/views/common/Profile.vue"),
-    meta: {
-      title: "个人信息",
-      icon: "User",
-      roles: ["admin", "vendor", "user"],
-    },
   },
   // 追加为所有角色的子路由
   // {
