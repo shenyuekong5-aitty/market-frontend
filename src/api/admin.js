@@ -15,3 +15,8 @@ export function approveApply(id) {
 export function rejectApply(id) {
   return request.put(`/admin/applies/${id}/reject`)
 }
+
+//日志
+export function getOperationLogs(start, end) {
+  return request.get('/admin/operation-logs', { params: { start, end } })
+}

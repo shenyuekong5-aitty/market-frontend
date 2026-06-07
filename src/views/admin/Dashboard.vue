@@ -31,7 +31,6 @@
       </el-col>
 
       <!-- 待审批申请卡片 -->
-      <!-- 待审批申请卡片 -->
       <el-col :span="8" class="dashboard-col">
         <el-card shadow="hover" class="dashboard-card">
           <template #header>
@@ -49,8 +48,9 @@
               :key="apply.id"
               class="apply-item"
             >
+              <p><strong>申请人：</strong>{{ apply.vendorName }}</p>
               <p><strong>类型：</strong>{{ apply.type }}</p>
-              <p><strong>小贩ID：</strong>{{ apply.vendorId }}</p>
+              <p><strong>目标摊位：</strong>{{ apply.targetBoothTitle }}</p>
               <p><strong>申请时间：</strong>{{ apply.applyTime }}</p>
               <div class="apply-actions">
                 <el-button
