@@ -6,26 +6,40 @@ import {
   approveApply,
   rejectApply,
   getOperationLogs,
+  createMarket,          
+  updateMarket,          
+  toggleMarketStatus     
 } from "@/api/admin";
 
 export const useAdminStore = defineStore("admin", () => {
-  //  集市
   const market = ref(null);
-  //  申请列表
   const applyList = ref([]);
-  //  操作日志
   const logList = ref([]);
   const logLoading = ref(false);
-
   const loading = ref(false);
 
-  // 集市相关
+  //  集市 
   async function fetchMarket() {
     const res = await getMyMarket();
     market.value = res.data;
   }
 
-  // 申请相关
+  async function handleCreateMarket(data) {
+    const res = await createMarket(data);
+    market.value = res.data;
+  }
+
+  async function handleUpdateMarket(id, data) {
+    const res = await updateMarket(id, data);
+    market.value = res.data;
+  }
+
+  async function handleToggleStatus(id) {
+    await toggleMarketStatus(id);
+    await fetchMarket();
+  }
+
+  //  申请 
   async function fetchApplies() {
     const res = await getPendingApplies();
     applyList.value = res.data;
@@ -41,7 +55,7 @@ export const useAdminStore = defineStore("admin", () => {
     await fetchApplies();
   }
 
-  //  操作日志相关
+  //  日志 
   async function fetchOperationLogs(start, end) {
     logLoading.value = true;
     try {
@@ -52,7 +66,7 @@ export const useAdminStore = defineStore("admin", () => {
     }
   }
 
-  // 全局刷新
+  //  全局刷新 
   async function refreshAll() {
     loading.value = true;
     try {
@@ -62,23 +76,6 @@ export const useAdminStore = defineStore("admin", () => {
     }
   }
 
-  // 市场
-  async function handleCreateMarket(data) {
-    const res = await createMarket(data);
-    market.value = res.data;
-  }
-
-  async function handleUpdateMarket(id, data) {
-    const res = await updateMarket(id, data);
-    market.value = res.data;
-  }
-
-  async function handleToggleStatus(id) {
-    await toggleMarketStatus(id);
-    // 刷新集市信息
-    await fetchMarket();
-  }
-
   return {
     market,
     applyList,
@@ -86,13 +83,13 @@ export const useAdminStore = defineStore("admin", () => {
     logLoading,
     loading,
     fetchMarket,
+    handleCreateMarket,
+    handleUpdateMarket,
+    handleToggleStatus,
     fetchApplies,
     handleApprove,
     handleReject,
     fetchOperationLogs,
     refreshAll,
-    handleCreateMarket,
-    handleUpdateMarket,
-    handleToggleStatus,
   };
 });
