@@ -90,14 +90,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useAdminStore } from "@/store/modules/admin";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 const route = useRoute();
 const adminStore = useAdminStore();
-const marketId = Number(route.params.id);
+const marketId = ref(null) 
 const dialogVisible = ref(false);
 const isEdit = ref(false);
 const submitLoading = ref(false);
@@ -106,8 +106,7 @@ const formRef = ref(null);
 const editingBoothId = ref(null);
 
 const form = reactive({
-  position: "",
-  marketId: marketId,
+  position: ""
 });
 
 const rules = {
@@ -118,7 +117,7 @@ const rules = {
 const loadData = async () => {
   boothLoading.value = true;
   try {
-    await adminStore.fetchBooths(marketId);
+    await adminStore.fetchBooths(marketId.value);
     if (!adminStore.market) {
       await adminStore.fetchMarket();
     }
@@ -159,7 +158,7 @@ const handleSubmit = async () => {
       if (isEdit.value) {
         await adminStore.handleUpdateBooth(editingBoothId.value, {
           ...form,
-          marketId: marketId,
+          marketId: marketId.value,
         });
         ElMessage.success("摊位信息已更新");
       } else {
@@ -168,7 +167,7 @@ const handleSubmit = async () => {
           position: form.position,
           description: form.description,
           openTime: form.openTime,
-          marketId: marketId,
+          marketId: marketId.value,
         });
         ElMessage.success("摊位创建成功");
       }
@@ -184,7 +183,7 @@ const handleSubmit = async () => {
 // 切换状态
 const handleToggleStatus = async (row) => {
   try {
-    await adminStore.handleToggleBoothStatus(row.id, marketId);
+    await adminStore.handleToggleBoothStatus(row.id, marketId.value);
     ElMessage.success("状态已更新");
   } catch (error) {
     ElMessage.error(error.message || "操作失败");
@@ -203,7 +202,7 @@ const handleDelete = (row) => {
     type: "warning",
   }).then(async () => {
     try {
-      await adminStore.handleDeleteBooth(row.id, marketId);
+      await adminStore.handleDeleteBooth(row.id, marketId.value);
       ElMessage.success("摊位已删除");
     } catch (error) {
       ElMessage.error(error.message || "删除失败");
@@ -217,8 +216,14 @@ const resetForm = () => {
 };
 
 onMounted(() => {
-  loadData();
-});
+  const id = Number(route.params.id)
+  if (isNaN(id)) {
+    ElMessage.error('无效的集市ID')
+    return
+  }
+  marketId.value = id
+  loadData()
+})
 </script>
 
 <style scoped>
