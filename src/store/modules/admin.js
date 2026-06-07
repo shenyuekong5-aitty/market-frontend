@@ -5,7 +5,7 @@ import {
   getPendingApplies,
   approveApply,
   rejectApply,
-  getOperationLogs, 
+  getOperationLogs,
 } from "@/api/admin";
 
 export const useAdminStore = defineStore("admin", () => {
@@ -62,6 +62,23 @@ export const useAdminStore = defineStore("admin", () => {
     }
   }
 
+  // 市场
+  async function handleCreateMarket(data) {
+    const res = await createMarket(data);
+    market.value = res.data;
+  }
+
+  async function handleUpdateMarket(id, data) {
+    const res = await updateMarket(id, data);
+    market.value = res.data;
+  }
+
+  async function handleToggleStatus(id) {
+    await toggleMarketStatus(id);
+    // 刷新集市信息
+    await fetchMarket();
+  }
+
   return {
     market,
     applyList,
@@ -74,5 +91,8 @@ export const useAdminStore = defineStore("admin", () => {
     handleReject,
     fetchOperationLogs,
     refreshAll,
+    handleCreateMarket,
+    handleUpdateMarket,
+    handleToggleStatus,
   };
 });

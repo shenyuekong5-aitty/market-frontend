@@ -12,13 +12,16 @@ import {
   changePassword as changePasswordApi,
   deactivateAccount as deactivateApi,
 } from "@/api/user";
+
+import { createMarket, updateMarket, toggleMarketStatus } from "@/api/admin";
+
 import { getRoleChildrenRoutes } from "@/router/asyncRoutes";
 
 export const useUserStore = defineStore("user", () => {
   // localStorage 恢复状态
   const savedToken = localStorage.getItem("token") || "";
   const savedUserInfo = localStorage.getItem("userInfo");
-  
+
   const token = ref(savedToken);
   const userInfo = ref(
     savedUserInfo
@@ -33,9 +36,9 @@ export const useUserStore = defineStore("user", () => {
           status: 1,
           gender: 1,
           createTime: "",
-        }
+        },
   );
-  const dynamicAdded = ref(false); 
+  const dynamicAdded = ref(false);
 
   // 计算属性
   const isLoggedIn = computed(() => !!token.value);
@@ -213,6 +216,22 @@ export const useUserStore = defineStore("user", () => {
     await deactivateApi();
   }
 
+  //市场模块
+  async function handleCreateMarket(data) {
+    const res = await createMarket(data);
+    market.value = res.data;
+  }
+
+  async function handleUpdateMarket(id, data) {
+    const res = await updateMarket(id, data);
+    market.value = res.data;
+  }
+
+  async function handleToggleStatus(id) {
+    await toggleMarketStatus(id);
+    // 刷新集市信息
+    await fetchMarket();
+  }
   return {
     token,
     userInfo,
@@ -230,5 +249,8 @@ export const useUserStore = defineStore("user", () => {
     isPhoneRegistered,
     addDynamicRoutes,
     deactivateAccount,
+    handleCreateMarket,
+    handleUpdateMarket,
+    handleToggleStatus,
   };
 });
