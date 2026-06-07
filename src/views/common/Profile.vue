@@ -48,7 +48,7 @@
       <template #header>
         <div class="card-header">
           <span class="card-title">账号与安全</span>
-          <el-link type="primary" :underline="false">安全评分</el-link>
+          <el-link type="primary" underline="never">安全评分</el-link>
         </div>
       </template>
 

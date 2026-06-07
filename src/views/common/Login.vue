@@ -23,7 +23,7 @@
         </el-form-item>
       </el-form>
       <div class="links">
-        <el-link type="primary" @click="showResetDialog = true">忘记密码？</el-link>
+        <el-link type="primary" underline="never" @click="showResetDialog = true">忘记密码？</el-link>
         <router-link to="/register">立即注册</router-link>
       </div>
     </div>
@@ -71,7 +71,7 @@ const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
 
-// ========== 登录表单 ==========
+//  登录表单 
 const formRef = ref(null);
 const loading = ref(false);
 
@@ -111,7 +111,7 @@ function getHomePath(role) {
   return map[role] || "/";
 }
 
-// ========== 忘记密码 ==========
+//  忘记密码 
 const showResetDialog = ref(false);
 const resetFormRef = ref(null);
 const resetLoading = ref(false);

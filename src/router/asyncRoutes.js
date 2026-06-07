@@ -98,7 +98,7 @@ const userRoutes = [
     path: 'market/:id',
     name: 'MarketDetail',
     component: () => import('@/views/user/MarketDetail.vue'),
-    meta: { title: '集市摊位', icon: 'House', roles: ['user'] }
+    meta: { title: '集市摊位', icon: 'House', roles: ['user'],hidden: true }
   },
   {
     path: 'booth/:id',
