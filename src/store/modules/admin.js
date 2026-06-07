@@ -6,9 +6,14 @@ import {
   approveApply,
   rejectApply,
   getOperationLogs,
-  createMarket,          
-  updateMarket,          
-  toggleMarketStatus     
+  createMarket,
+  updateMarket,
+  toggleMarketStatus,
+  getBoothsByMarketId,
+  createBooth,
+  updateBooth,
+  deleteBooth,
+  toggleBoothStatus,
 } from "@/api/admin";
 
 export const useAdminStore = defineStore("admin", () => {
@@ -18,7 +23,7 @@ export const useAdminStore = defineStore("admin", () => {
   const logLoading = ref(false);
   const loading = ref(false);
 
-  //  集市 
+  //  集市
   async function fetchMarket() {
     const res = await getMyMarket();
     market.value = res.data;
@@ -33,13 +38,16 @@ export const useAdminStore = defineStore("admin", () => {
     const res = await updateMarket(id, data);
     market.value = res.data;
   }
+  //摊位
+  // 摊位列表
+  const boothList = ref([]);
 
   async function handleToggleStatus(id) {
     await toggleMarketStatus(id);
     await fetchMarket();
   }
 
-  //  申请 
+  //  申请
   async function fetchApplies() {
     const res = await getPendingApplies();
     applyList.value = res.data;
@@ -55,7 +63,7 @@ export const useAdminStore = defineStore("admin", () => {
     await fetchApplies();
   }
 
-  //  日志 
+  //  日志
   async function fetchOperationLogs(start, end) {
     logLoading.value = true;
     try {
@@ -66,7 +74,7 @@ export const useAdminStore = defineStore("admin", () => {
     }
   }
 
-  //  全局刷新 
+  //  全局刷新
   async function refreshAll() {
     loading.value = true;
     try {
@@ -74,6 +82,38 @@ export const useAdminStore = defineStore("admin", () => {
     } finally {
       loading.value = false;
     }
+  }
+
+  //摊位
+  // 获取摊位列表
+  async function fetchBooths(marketId) {
+    const res = await getBoothsByMarketId(marketId);
+    boothList.value = res.data;
+  }
+
+  // 创建摊位
+  async function handleCreateBooth(data) {
+    await createBooth(data);
+    // 创建后刷新列表
+    await fetchBooths(data.marketId);
+  }
+
+  // 更新摊位
+  async function handleUpdateBooth(id, data) {
+    await updateBooth(id, data);
+    await fetchBooths(data.marketId);
+  }
+
+  // 删除摊位
+  async function handleDeleteBooth(id, marketId) {
+    await deleteBooth(id);
+    await fetchBooths(marketId);
+  }
+
+  // 切换摊位状态
+  async function handleToggleBoothStatus(id, marketId) {
+    await toggleBoothStatus(id);
+    await fetchBooths(marketId);
   }
 
   return {
@@ -91,5 +131,11 @@ export const useAdminStore = defineStore("admin", () => {
     handleReject,
     fetchOperationLogs,
     refreshAll,
+    boothList,
+    fetchBooths,
+    handleCreateBooth,
+    handleUpdateBooth,
+    handleDeleteBooth,
+    handleToggleBoothStatus,
   };
 });

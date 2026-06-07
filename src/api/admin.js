@@ -20,7 +20,7 @@ export function rejectApply(id) {
 export function getOperationLogs(start, end) {
   return request.get('/admin/operation-logs', { params: { start, end } })
 }
-//市场
+//集市
 export function createMarket(data) {
   return request.post('/admin/market', data)
 }
@@ -33,4 +33,30 @@ export function updateMarket(id, data) {
 // 切换集市状态（启用/停用）
 export function toggleMarketStatus(id) {
   return request.put(`/admin/market/${id}/toggle-status`)
+}
+
+//摊位
+// 获取集市下的摊位列表
+export function getBoothsByMarketId(marketId) {
+  return request.get('/admin/booths', { params: { marketId } })
+}
+
+// 创建摊位
+export function createBooth(data) {
+  return request.post('/admin/booths', data)
+}
+
+// 更新摊位
+export function updateBooth(id, data) {
+  return request.put(`/admin/booths/${id}`, data)
+}
+
+// 删除摊位
+export function deleteBooth(id) {
+  return request.delete(`/admin/booths/${id}`)
+}
+
+// 切换摊位状态
+export function toggleBoothStatus(id) {
+  return request.put(`/admin/booths/${id}/toggle-status`)
 }
