@@ -27,6 +27,8 @@ export const useUserStore = defineStore(
       avatar: "",
       role: "",
       status: 1,
+      gender: 1,
+      createTime: "",
     });
     const dynamicAdded = ref(false);
 
@@ -51,7 +53,7 @@ export const useUserStore = defineStore(
         role,
         nickname: username,
         avatar: "",
-        id: null,
+        id: null
       });
       await fetchCurrentUser();
     }
@@ -61,6 +63,7 @@ export const useUserStore = defineStore(
       try {
         const res = await getCurrentUser();
         if (res.data) {
+          console.log("用户信息获取成功:", res.data);
           userInfo.value = {
             id: res.data.id,
             phone: res.data.phone || "",
@@ -69,6 +72,8 @@ export const useUserStore = defineStore(
             avatar: res.data.avatar || "",
             role: res.data.role,
             status: res.data.status,
+            gender: res.data.gender ?? 1,
+            createTime: res.data.createTime,
           };
         }
       } catch (error) {
