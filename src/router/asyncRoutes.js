@@ -18,7 +18,7 @@ const adminRoutes = [
     path: 'admin/market/:id',
     name: 'AdminMarketDetail',
     component: () => import('@/views/admin/MarketDetail.vue'),
-    meta: { title: '集市详情', icon: 'InfoFilled', roles: ['admin'] }
+    meta: { title: '集市详情', icon: 'InfoFilled', roles: ['admin'] ,hidden: true}
   },
   {
     path: 'admin/operation-log',

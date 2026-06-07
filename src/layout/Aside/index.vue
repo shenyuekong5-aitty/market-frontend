@@ -23,16 +23,35 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '@/store/modules/user'
 import { useAppStore } from '@/store/modules/app'
+import { useAdminStore } from '@/store/modules/admin'  // 新增
 import { getRoleChildrenRoutes } from '@/router/asyncRoutes'
 import MenuItem from './MenuItem.vue'
 
 const route = useRoute()
 const userStore = useUserStore()
 const appStore = useAppStore()
+const adminStore = useAdminStore()  // 新增
 
 const menuRoutes = computed(() => {
   const role = userStore.userInfo.role
-  const roleRoutes = getRoleChildrenRoutes(role)
+  let roleRoutes = getRoleChildrenRoutes(role)
+
+  // 1. 过滤掉 hidden: true 的菜单项
+  roleRoutes = roleRoutes.filter(item => !item.meta?.hidden)
+
+  // 2. 如果是管理员，将「集市详情」的路径替换为实际集市ID
+  if (role === 'admin') {
+    const marketId = adminStore.market?.id
+    roleRoutes = roleRoutes.map(route => {
+      if (route.name === 'AdminMarketDetail' && marketId) {
+        return {
+          ...route,
+          path: `admin/market/${marketId}`  // 替换动态参数
+        }
+      }
+      return route
+    })
+  }
 
   // 追加所有角色共有的 Profile 路由
   const profileRoute = {
@@ -48,7 +67,6 @@ const activeMenu = computed(() => route.path)
 </script>
 
 <style scoped>
-/* 原有样式基础上修改 */
 .aside {
   width: v-bind('appStore.sidebarCollapsed ? "64px" : "var(--aside-width, 220px)"');
   background-color: #2c3e50;
