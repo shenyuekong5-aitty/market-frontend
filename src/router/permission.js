@@ -43,18 +43,6 @@ router.beforeEach(async (to, from, next) => {
           router.addRoute("Layout", child);
         });
 
-        // 添加所有角色共有的 Profile 子路由
-        router.addRoute("Layout", {
-          path: "profile",
-          name: "Profile",
-          component: () => import("@/views/common/Profile.vue"),
-          meta: {
-            title: "个人信息",
-            icon: "User",
-            roles: ["admin", "vendor", "user"],
-          },
-        });
-
         userStore.dynamicAdded = true;
 
         // 确保 404 永远是最后一条路由
