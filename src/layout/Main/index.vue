@@ -10,7 +10,6 @@
 .main {
   flex: 1; 
   
-  background-color: pink;
   padding: 20px;
   box-sizing: border-box; 
   overflow-y: auto; 
