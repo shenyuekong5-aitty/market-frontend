@@ -31,6 +31,12 @@ const adminRoutes = [
     name: 'AdminIncomeStats',
     component: () => import('@/views/admin/IncomeStats.vue'),
     meta: { title: '收入统计', icon: 'TrendCharts', roles: ['admin'] }
+  },
+  {
+    path: 'admin/messages',
+    name: 'AdminMessages',
+    component: () => import('@/views/admin/Messages.vue'),
+    meta: { title: '消息中心', icon: 'Bell', roles: ['admin'] }
   }
 ]
 
