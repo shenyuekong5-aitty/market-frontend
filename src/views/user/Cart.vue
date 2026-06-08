@@ -3,10 +3,11 @@
     <el-card>
       <template #header>
         <div class="cart-header">
-          <span>我的购物车（{{ store.cartList.length }}）</span>
-          <el-button type="danger" size="small" :disabled="store.cartList.length === 0" @click="handleClear">
-            清空购物车
-          </el-button>
+          <span>我的购物车（{{ store.cartList.length }} 件商品）</span>
+          <div>
+            <el-button type="danger" size="small" :disabled="store.cartList.length === 0" @click="handleClear">清空购物车</el-button>
+            <el-button type="primary" size="small" :disabled="store.cartList.length === 0" @click="handleCheckout">去结算</el-button>
+          </div>
         </div>
       </template>
 
@@ -14,12 +15,7 @@
         <el-table-column prop="productId" label="商品ID" width="80" />
         <el-table-column label="数量" width="150">
           <template #default="{ row }">
-            <el-input-number
-              v-model="row.quantity"
-              :min="1"
-              size="small"
-              @change="(val) => handleQuantityChange(row.id, val)"
-            />
+            <el-input-number v-model="row.quantity" :min="1" size="small" @change="(val) => handleQuantityChange(row.id, val)" />
           </template>
         </el-table-column>
         <el-table-column label="操作" width="120">
@@ -36,8 +32,10 @@
 import { onMounted } from 'vue'
 import { useUserMarketStore } from '@/store/modules/userMarket'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useRouter } from 'vue-router'
 
 const store = useUserMarketStore()
+const router = useRouter()
 
 onMounted(async () => {
   try {
@@ -72,15 +70,21 @@ const handleClear = () => {
     }
   })
 }
+
+const handleCheckout = async () => {
+  ElMessageBox.confirm('确认要结算购物车中的商品吗？', '生成订单', { type: 'info' }).then(async () => {
+    try {
+      const orders = await store.submitCartToOrder()
+      ElMessage.success(`订单已生成，共 ${orders.length} 个订单，请前往我的订单查看`)
+      router.push('/orders')
+    } catch (e) {
+      ElMessage.error(e.message || '生成订单失败')
+    }
+  })
+}
 </script>
 
 <style scoped>
-.cart-page {
-  padding: 20px;
-}
-.cart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+.cart-page { padding: 20px; }
+.cart-header { display: flex; justify-content: space-between; align-items: center; }
 </style>

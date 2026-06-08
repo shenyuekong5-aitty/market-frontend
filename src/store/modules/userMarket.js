@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia'
-import { ref, reactive } from 'vue'
+import { defineStore } from "pinia";
+import { ref, reactive } from "vue";
 import {
   getBoothById,
   getProductsByBoothId,
@@ -7,84 +7,125 @@ import {
   getCartList,
   updateCartQuantity,
   removeFromCart,
-  clearCart
-} from '@/api/user'
+  clearCart,
+  createOrdersFromCart,
+  getOrderList,
+  getOrderItems,
+  payOrder,
+  cancelOrder,
+} from "@/api/user";
 
-export const useUserMarketStore = defineStore('userMarket', () => {
-  // ---------- 摊位与商品 ----------
-  const booth = ref(null)
-  const productList = ref([])
-  const boothLoading = ref(false)
-  const productLoading = ref(false)
+export const useUserMarketStore = defineStore("userMarket", () => {
+  //  摊位与商品
+  const booth = ref(null);
+  const productList = ref([]);
+  const boothLoading = ref(false);
+  const productLoading = ref(false);
+  //订单相关
+  const orderList = ref([]);
+  const orderLoading = ref(false);
+  const currentOrderItems = ref([]);
 
   // 每个商品的数量 (key: productId, value: quantity)
-  const quantities = reactive({})
+  const quantities = reactive({});
 
   async function fetchBooth(boothId) {
-    boothLoading.value = true
+    boothLoading.value = true;
     try {
-      const res = await getBoothById(boothId)
-      booth.value = res.data
+      const res = await getBoothById(boothId);
+      booth.value = res.data;
     } catch (e) {
-      console.error('获取摊位信息失败', e)
-      throw e
+      console.error("获取摊位信息失败", e);
+      throw e;
     } finally {
-      boothLoading.value = false
+      boothLoading.value = false;
     }
   }
 
   async function fetchProducts(boothId) {
-    productLoading.value = true
+    productLoading.value = true;
     try {
-      const res = await getProductsByBoothId(boothId)
-      productList.value = res.data
+      const res = await getProductsByBoothId(boothId);
+      productList.value = res.data;
       // 初始化数量
-      productList.value.forEach(p => {
-        if (!quantities[p.id]) quantities[p.id] = 1
-      })
+      productList.value.forEach((p) => {
+        if (!quantities[p.id]) quantities[p.id] = 1;
+      });
     } catch (e) {
-      console.error('获取商品列表失败', e)
-      throw e
+      console.error("获取商品列表失败", e);
+      throw e;
     } finally {
-      productLoading.value = false
+      productLoading.value = false;
     }
   }
 
-  // ---------- 购物车 ----------
-  const cartList = ref([])
-  const cartLoading = ref(false)
+  //  购物车
+  const cartList = ref([]);
+  const cartLoading = ref(false);
 
   async function fetchCart() {
-    cartLoading.value = true
+    cartLoading.value = true;
     try {
-      const res = await getCartList()
-      cartList.value = res.data
+      const res = await getCartList();
+      cartList.value = res.data;
     } catch (e) {
-      console.error('获取购物车失败', e)
-      throw e
+      console.error("获取购物车失败", e);
+      throw e;
     } finally {
-      cartLoading.value = false
+      cartLoading.value = false;
     }
   }
 
   async function addProductToCart(productId, quantity) {
-    await addToCart(productId, quantity)
+    await addToCart(productId, quantity);
     // 添加后可以选择刷新购物车数量显示，这里暂不刷新列表
   }
 
   async function changeCartQuantity(cartId, quantity) {
-    await updateCartQuantity(cartId, quantity)
-    await fetchCart()
+    await updateCartQuantity(cartId, quantity);
+    await fetchCart();
   }
 
   async function deleteCartItem(cartId) {
-    await removeFromCart(cartId)
-    await fetchCart()
+    await removeFromCart(cartId);
+    await fetchCart();
   }
 
   async function emptyCart() {
-    await clearCart()
-    await fetchCart()
+    await clearCart();
+    await fetchCart();
+  }
+
+  // 订单相关
+  async function submitCartToOrder() {
+    const res = await createOrdersFromCart();
+    await fetchCart(); // 清空购物车后刷新购物车列表
+    return res.data;
+  }
+
+  async function fetchOrders() {
+    orderLoading.value = true;
+    try {
+      const res = await getOrderList();
+      orderList.value = res.data;
+    } finally {
+      orderLoading.value = false;
+    }
+  }
+
+  async function fetchOrderDetail(orderId) {
+    const res = await getOrderItems(orderId);
+    currentOrderItems.value = res.data;
+  }
+
+  async function handlePayOrder(orderId) {
+    await payOrder(orderId);
+    await fetchOrders();
+  }
+
+  async function handleCancelOrder(orderId) {
+    await cancelOrder(orderId);
+    await fetchOrders();
   }
 
   return {
@@ -101,6 +142,14 @@ export const useUserMarketStore = defineStore('userMarket', () => {
     addProductToCart,
     changeCartQuantity,
     deleteCartItem,
-    emptyCart
-  }
-})
+    emptyCart,
+    orderList,
+    orderLoading,
+    currentOrderItems,
+    submitCartToOrder,
+    fetchOrders,
+    fetchOrderDetail,
+    handlePayOrder,
+    handleCancelOrder,
+  };
+});

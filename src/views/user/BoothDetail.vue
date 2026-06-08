@@ -36,7 +36,7 @@
         <el-table-column prop="name" label="商品名称" />
         <el-table-column prop="price" label="价格" />
         <el-table-column prop="stock" label="库存" />
-        <el-table-column label="操作" width="180">
+        <el-table-column label="操作" width="200">
           <template #default="{ row }">
             <div class="cart-action">
               <el-input-number
@@ -90,6 +90,8 @@ const handleAddToCart = async (productId, quantity) => {
   try {
     await store.addProductToCart(productId, quantity)
     ElMessage.success('已加入购物车')
+    // 重置数量为 1
+    store.quantities[productId] = 1
   } catch (e) {
     ElMessage.error(e.message || '添加失败')
   }

@@ -77,3 +77,29 @@ export function removeFromCart(cartId) {
 export function clearCart() {
   return request.delete('/user/cart/clear')
 }
+
+// ========== 订单相关 ==========
+// 从购物车生成订单
+export function createOrdersFromCart() {
+  return request.post('/user/orders/createFromCart')
+}
+
+// 获取用户订单列表
+export function getOrderList() {
+  return request.get('/user/orders')
+}
+
+// 获取订单明细
+export function getOrderItems(orderId) {
+  return request.get(`/user/orders/${orderId}/items`)
+}
+
+// 支付订单
+export function payOrder(orderId) {
+  return request.put(`/user/orders/${orderId}/pay`)
+}
+
+// 取消订单
+export function cancelOrder(orderId) {
+  return request.put(`/user/orders/${orderId}/cancel`)
+}
