@@ -54,7 +54,7 @@ import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMarketStore } from '@/store/modules/market'
 import { useVendorStore } from '@/store/modules/vendor'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const route = useRoute()
 const marketStore = useMarketStore()
@@ -69,7 +69,8 @@ const loadData = async () => {
       ElMessage.error('集市不存在')
       return
     }
-    await marketStore.fetchFreeBooths(marketId)
+    // 改用 fetchAllBooths 显示所有摊位
+    await marketStore.fetchAllBooths(marketId)
   } catch (e) {
     ElMessage.error('加载集市信息失败')
   }
@@ -77,11 +78,19 @@ const loadData = async () => {
 
 const handleApply = async (boothId) => {
   try {
+    await ElMessageBox.confirm(
+      '申请入住后，您的身份将从普通用户转变为小贩，此操作不可逆。确定要继续吗？',
+      '确认身份转变',
+      { confirmButtonText: '确定申请', cancelButtonText: '取消', type: 'warning' }
+    )
     await vendorStore.submitBoothApplication(boothId)
     ElMessage.success('申请已提交，请等待管理员审批')
-    await marketStore.fetchFreeBooths(marketId)
+    // 刷新列表
+    await marketStore.fetchAllBooths(marketId)
   } catch (e) {
-    ElMessage.error(e.message || '申请失败')
+    if (e !== 'cancel') {
+      ElMessage.error(e.message || '申请失败')
+    }
   }
 }
 

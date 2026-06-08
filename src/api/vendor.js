@@ -24,3 +24,8 @@ export function getMyBooth() {
 export function updateMyBooth(data) {
   return request.put('/vendor/booth/my', data)
 }
+
+//所有摊位
+export function getAllBooths(marketId) {
+  return request.get(`/vendor/markets/${marketId}/all-booths`)
+}
