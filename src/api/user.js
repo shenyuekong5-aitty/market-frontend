@@ -41,3 +41,39 @@ export function changePassword(oldPassword, newPassword) {
 export function deactivateAccount() {
   return request.post('/user/deactivate')
 }
+
+//购物相关
+// 根据摊位ID获取摊位信息
+export function getBoothById(boothId) {
+  return request.get(`/user/booths/${boothId}`)
+}
+
+// 获取摊位下的上架商品
+export function getProductsByBoothId(boothId) {
+  return request.get('/user/products', { params: { boothId } })
+}
+
+// 加入购物车
+export function addToCart(productId, quantity) {
+  return request.post('/user/cart/add', null, { params: { productId, quantity } })
+}
+
+// 获取购物车列表
+export function getCartList() {
+  return request.get('/user/cart')
+}
+
+// 修改购物车商品数量
+export function updateCartQuantity(cartId, quantity) {
+  return request.put(`/user/cart/${cartId}/quantity`, null, { params: { quantity } })
+}
+
+// 删除购物车商品
+export function removeFromCart(cartId) {
+  return request.delete(`/user/cart/${cartId}`)
+}
+
+// 清空购物车
+export function clearCart() {
+  return request.delete('/user/cart/clear')
+}

@@ -104,7 +104,7 @@ const userRoutes = [
     path: 'booth/:id',
     name: 'BoothDetail',
     component: () => import('@/views/user/BoothDetail.vue'),
-    meta: { title: '摊位详情', icon: 'InfoFilled', roles: ['user'] }
+    meta: { title: '摊位详情', icon: 'InfoFilled', roles: ['user'],hidden: true  }
   },
   {
     path: 'cart',
