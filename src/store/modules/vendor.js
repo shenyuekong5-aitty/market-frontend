@@ -13,6 +13,8 @@ import {
   getVendorReservations,
   confirmReservation,
   rejectReservation,
+  getVendorOrders,
+  getOrderItems,
 } from "@/api/vendor";
 
 export const useVendorStore = defineStore("vendor", () => {
@@ -25,6 +27,11 @@ export const useVendorStore = defineStore("vendor", () => {
   // 预定
   const vendorReservationList = ref([]);
   const vendorReservationLoading = ref(false);
+  // 订单相关
+  const vendorOrderList = ref([]);
+  const vendorOrderLoading = ref(false);
+  const vendorOrderItems = ref([]);
+  const vendorOrderDetailVisible = ref(false);
 
   async function fetchMyBooth() {
     boothLoading.value = true;
@@ -114,6 +121,31 @@ export const useVendorStore = defineStore("vendor", () => {
     await fetchVendorReservations();
   }
 
+  //订单相关
+  async function fetchVendorOrders() {
+    vendorOrderLoading.value = true;
+    try {
+      const res = await getVendorOrders();
+      vendorOrderList.value = res.data;
+    } finally {
+      vendorOrderLoading.value = false;
+    }
+  }
+
+  async function fetchVendorOrderItems(orderId) {
+    try {
+      const res = await getOrderItems(orderId);
+      vendorOrderItems.value = res.data;
+      vendorOrderDetailVisible.value = true;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  function closeOrderDetail() {
+    vendorOrderDetailVisible.value = false;
+  }
+
   return {
     // 摊位
     myBooth,
@@ -138,5 +170,13 @@ export const useVendorStore = defineStore("vendor", () => {
     fetchVendorReservations,
     handleConfirmReservation,
     handleRejectReservation,
+    // 订单相关
+    vendorOrderList,
+    vendorOrderLoading,
+    vendorOrderItems,
+    vendorOrderDetailVisible,
+    fetchVendorOrders,
+    fetchVendorOrderItems,
+    closeOrderDetail,
   };
 });

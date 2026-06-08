@@ -78,3 +78,12 @@ export function confirmReservation(id) {
 export function rejectReservation(id) {
   return request.put(`/vendor/reservations/${id}/reject`)
 }
+
+// 获取订单明细（小贩端，复用用户端的接口）
+export function getOrderItems(orderId) {
+  return request.get(`/user/orders/${orderId}/items`)
+}
+
+export function getVendorOrders() {
+    return request.get("/vendor/orders");
+  }
