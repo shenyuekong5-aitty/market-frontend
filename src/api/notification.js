@@ -15,3 +15,8 @@ export function markAsRead(id) {
 export function markAllRead() {
   return request.put('/notifications/read-all')
 }
+
+// 管理员发送通知
+export function sendNotification(role, content) {
+  return request.post('/admin/notifications/send', null, { params: { role, content } })
+}
