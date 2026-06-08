@@ -87,3 +87,13 @@ export function getOrderItems(orderId) {
 export function getVendorOrders() {
     return request.get("/vendor/orders");
   }
+
+// 提交更换摊位申请（需要先选择目标摊位，这里先跳转到选择页，由选择页调用申请入住接口的变种）
+export function applyChangeBooth(targetBoothId) {
+  return request.post('/vendor/change-booth', null, { params: { targetBoothId } })
+}
+
+// 提交归还摊位申请
+export function applyReturnBooth() {
+  return request.post('/vendor/return-booth')
+}

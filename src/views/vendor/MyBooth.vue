@@ -18,7 +18,9 @@
           <el-input v-model="form.openTime" placeholder="如 08:00-20:00" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :loading="vendorStore.saving" @click="save">保存修改</el-button>
+          <el-button type="primary" :loading="saving" @click="save">保存修改</el-button>
+          <el-button type="warning" @click="handleChangeBooth">更换摊位</el-button>
+          <el-button type="danger" @click="handleReturnBooth">归还摊位</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -29,18 +31,18 @@
 </template>
 
 <script setup>
-import { reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useVendorStore } from '@/store/modules/vendor'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
+const router = useRouter()
 const vendorStore = useVendorStore()
 
-const form = reactive({
-  title: '',
-  description: '',
-  openTime: ''
-})
+const saving = ref(false)
+const form = reactive({ title: '', description: '', openTime: '' })
 
+// 初始化摊位数据
 const loadBooth = async () => {
   try {
     await vendorStore.fetchMyBooth()
@@ -55,18 +57,39 @@ const loadBooth = async () => {
 }
 
 const save = async () => {
+  saving.value = true
   try {
-    await vendorStore.saveMyBooth({
-      title: form.title,
-      description: form.description,
-      openTime: form.openTime
-    })
+    await vendorStore.saveMyBooth({ ...form })
     ElMessage.success('摊位信息已更新')
-    // 重新加载
-    await loadBooth()
   } catch (e) {
     ElMessage.error(e.message || '保存失败')
+  } finally {
+    saving.value = false
   }
+}
+
+const handleChangeBooth = () => {
+  // 跳转到集市选择页，并传递更换模式
+  router.push('/vendor/market-select?mode=change')
+}
+
+const handleReturnBooth = () => {
+  ElMessageBox.confirm(
+    '确定要归还摊位吗？归还后您的角色将恢复为普通用户（如果无其他摊位）。',
+    '归还摊位',
+    { type: 'warning' }
+  )
+    .then(async () => {
+      try {
+        await vendorStore.submitReturnBooth()
+        ElMessage.success('归还申请已提交，请等待管理员审批')
+        // 归还后摊位可能变为null，重新加载一下页面状态
+        await vendorStore.fetchMyBooth()
+      } catch (e) {
+        ElMessage.error(e.message || '申请失败')
+      }
+    })
+    .catch(() => {})
 }
 
 onMounted(() => {
@@ -75,20 +98,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.my-booth-page {
-  padding: 20px;
-}
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.empty-card {
-  margin-top: 20px;
-}
-.empty-tip {
-  text-align: center;
-  color: #909399;
-  padding: 40px;
-}
+.my-booth-page { padding: 20px; }
+.card-header { display: flex; justify-content: space-between; align-items: center; }
+.empty-card { margin-top: 20px; }
+.empty-tip { text-align: center; color: #909399; padding: 40px; }
 </style>

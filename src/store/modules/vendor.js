@@ -4,6 +4,8 @@ import {
   getMyBooth,
   updateMyBooth,
   applyForBooth,
+  applyChangeBooth,       
+  applyReturnBooth, 
   getMyProducts,
   addProduct,
   updateProduct,
@@ -44,6 +46,19 @@ export const useVendorStore = defineStore("vendor", () => {
     } finally {
       boothLoading.value = false;
     }
+  }
+
+   // 更换摊位申请
+  async function submitChangeBooth(targetBoothId) {
+    await applyChangeBooth(targetBoothId)
+    // 申请后不需要刷新摊位，因为我的摊位还是当前这个
+  }
+
+  // 归还摊位申请
+  async function submitReturnBooth() {
+    await applyReturnBooth()
+    // 归还后，我的摊位可能会变成 null，重新拉一下
+    await fetchMyBooth()
   }
 
   async function saveMyBooth(data) {
@@ -178,5 +193,7 @@ export const useVendorStore = defineStore("vendor", () => {
     fetchVendorOrders,
     fetchVendorOrderItems,
     closeOrderDetail,
+    submitChangeBooth,
+    submitReturnBooth
   };
 });
