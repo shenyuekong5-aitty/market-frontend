@@ -103,3 +103,19 @@ export function payOrder(orderId) {
 export function cancelOrder(orderId) {
   return request.put(`/user/orders/${orderId}/cancel`)
 }
+
+// 预定相关
+// 提交预定
+export function submitReservation(productId, startTime, endTime) {
+  return request.post('/user/reservations', null, { params: { productId, startTime, endTime } })
+}
+
+// 获取用户的预定列表
+export function getReservationList() {
+  return request.get('/user/reservations')
+}
+
+// 取消预定
+export function cancelReservation(id) {
+  return request.put(`/user/reservations/${id}/cancel`)
+}

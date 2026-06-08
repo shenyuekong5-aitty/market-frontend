@@ -62,3 +62,19 @@ export function uploadProductImage(formData) {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
 }
+
+// 预定相关
+// 获取摊主的预定列表
+export function getVendorReservations() {
+  return request.get('/vendor/reservations')
+}
+
+// 确认预定
+export function confirmReservation(id) {
+  return request.put(`/vendor/reservations/${id}/confirm`)
+}
+
+// 拒绝预定
+export function rejectReservation(id) {
+  return request.put(`/vendor/reservations/${id}/reject`)
+}

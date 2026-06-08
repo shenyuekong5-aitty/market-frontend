@@ -13,6 +13,8 @@ import {
   getOrderItems,
   payOrder,
   cancelOrder,
+  getReservationList,
+  cancelReservation,
 } from "@/api/user";
 
 export const useUserMarketStore = defineStore("userMarket", () => {
@@ -25,6 +27,13 @@ export const useUserMarketStore = defineStore("userMarket", () => {
   const orderList = ref([]);
   const orderLoading = ref(false);
   const currentOrderItems = ref([]);
+  //预定相关
+  const reservationList = ref([]);
+  const reservationLoading = ref(false);
+
+  //  购物车
+  const cartList = ref([]);
+  const cartLoading = ref(false);
 
   // 每个商品的数量 (key: productId, value: quantity)
   const quantities = reactive({});
@@ -58,10 +67,6 @@ export const useUserMarketStore = defineStore("userMarket", () => {
       productLoading.value = false;
     }
   }
-
-  //  购物车
-  const cartList = ref([]);
-  const cartLoading = ref(false);
 
   async function fetchCart() {
     cartLoading.value = true;
@@ -127,6 +132,21 @@ export const useUserMarketStore = defineStore("userMarket", () => {
     await cancelOrder(orderId);
     await fetchOrders();
   }
+  //预定相关
+  async function fetchUserReservations() {
+    reservationLoading.value = true;
+    try {
+      const res = await getReservationList();
+      reservationList.value = res.data;
+    } finally {
+      reservationLoading.value = false;
+    }
+  }
+
+  async function cancelUserReservation(id) {
+    await cancelReservation(id);
+    await fetchUserReservations();
+  }
 
   return {
     booth,
@@ -151,5 +171,9 @@ export const useUserMarketStore = defineStore("userMarket", () => {
     fetchOrderDetail,
     handlePayOrder,
     handleCancelOrder,
+    reservationList,
+    reservationLoading,
+    fetchUserReservations,
+    cancelUserReservation,
   };
 });
