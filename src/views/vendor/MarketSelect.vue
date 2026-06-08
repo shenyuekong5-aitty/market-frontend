@@ -1,6 +1,7 @@
 <template>
   <div class="market-select-page">
-    <h3>{{ isChangeMode ? '选择新摊位（更换）' : '选择入驻集市' }}</h3>
+    <!-- 标题根据角色自动切换 -->
+    <h3>{{ isVendorRole ? '选择新摊位（更换）' : '选择入驻集市' }}</h3>
     <el-row :gutter="20">
       <el-col :span="8">
         <el-card>
@@ -19,7 +20,7 @@
         <el-card v-if="activeMarketId">
           <template #header>
             空闲摊位 - {{ selectedMarket?.name }}
-            <span v-if="isChangeMode" style="color: #e6a23c; margin-left: 10px;">（更换模式）</span>
+            <span v-if="isVendorRole" style="color: #e6a23c; margin-left: 10px;">（更换模式）</span>
           </template>
           <el-table :data="boothList" border style="width: 100%" v-loading="boothLoading">
             <el-table-column prop="id" label="ID" width="60" />
@@ -28,26 +29,27 @@
             <el-table-column prop="description" label="描述" />
             <el-table-column label="操作" width="140">
               <template #default="{ row }">
-                <!-- 普通用户申请入住（角色为user且非更换模式） -->
+                <!-- vendor 角色：显示更换至此 -->
                 <el-button
-                  v-if="!isChangeMode && isUserRole && !row.hasPendingApply"
-                  type="primary"
-                  size="small"
-                  @click="handleApply(row.id)"
-                >
-                  申请入住
-                </el-button>
-                <span v-else-if="!isChangeMode && isUserRole && row.hasPendingApply" style="color: #c0c4cc;">等待审批</span>
-
-                <!-- 更换模式按钮（任何角色在更换模式下都显示） -->
-                <el-button
-                  v-if="isChangeMode"
+                  v-if="isVendorRole"
                   type="warning"
                   size="small"
                   @click="handleChange(row.id)"
                 >
                   更换至此
                 </el-button>
+                <!-- user 角色：显示申请入住或等待审批 -->
+                <template v-else>
+                  <el-button
+                    v-if="!row.hasPendingApply"
+                    type="primary"
+                    size="small"
+                    @click="handleApply(row.id)"
+                  >
+                    申请入住
+                  </el-button>
+                  <span v-else style="color: #c0c4cc;">等待审批</span>
+                </template>
               </template>
             </el-table-column>
           </el-table>
@@ -62,31 +64,26 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useMarketStore } from '@/store/modules/market'
 import { useVendorStore } from '@/store/modules/vendor'
 import { useUserStore } from '@/store/modules/user'
 import { ElMessage } from 'element-plus'
 
-const route = useRoute()
 const router = useRouter()
 const marketStore = useMarketStore()
 const vendorStore = useVendorStore()
 const userStore = useUserStore()
 
-// 是否为更换模式
-const isChangeMode = computed(() => route.query.mode === 'change')
-// 当前用户是否为普通用户（只有普通用户可以申请入住）
-const isUserRole = computed(() => userStore.userInfo.role === 'user')
+// 根据角色自动判断是否为 vendor（无需路由参数）
+const isVendorRole = computed(() => userStore.userInfo.role === 'vendor')
 
 const activeMarketId = ref(null)
 const boothList = ref([])
 const boothLoading = ref(false)
 const selectedMarket = ref(null)
 
-//setting
-const changing = ref(false)
-
+// 加载集市列表
 const loadMarkets = async () => {
   try {
     await marketStore.fetchMarkets()
@@ -95,6 +92,7 @@ const loadMarkets = async () => {
   }
 }
 
+// 选中一个集市，加载空闲摊位
 const handleMarketSelect = async (index) => {
   activeMarketId.value = index
   selectedMarket.value = marketStore.marketList.find(m => m.id === Number(index))
@@ -109,7 +107,7 @@ const handleMarketSelect = async (index) => {
   }
 }
 
-// 申请入住（普通用户）
+// user 申请入住
 const handleApply = async (boothId) => {
   try {
     await vendorStore.submitBoothApplication(boothId)
@@ -121,29 +119,18 @@ const handleApply = async (boothId) => {
   }
 }
 
-// 更换摊位（小贩）
+// vendor 更换摊位
 const handleChange = async (targetBoothId) => {
-  if (changing.value) return
-  changing.value = true
   try {
     await vendorStore.submitChangeBooth(targetBoothId)
     ElMessage.success('更换申请已提交，请等待管理员审批')
     router.push('/vendor/my-booth')
   } catch (e) {
     ElMessage.error(e.message || '申请失败')
-  } finally {
-    changing.value = false
   }
 }
 
-onMounted(async () => {
-  // 如果当前用户是 vendor 且已有摊位，但不是更换模式，则自动切换到更换模式
-  if (userStore.userInfo.role === 'vendor') {
-    if (!isChangeMode.value) {
-      router.replace({ query: { mode: 'change' } })
-      return
-    }
-  }
+onMounted(() => {
   loadMarkets()
 })
 </script>
