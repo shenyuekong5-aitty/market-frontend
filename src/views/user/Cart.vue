@@ -62,7 +62,7 @@
             合计：<span class="price">¥{{ totalPrice }}</span>
           </div>
           <div class="actions">
-            <el-button type="primary" size="large" :disabled="store.cartList.length === 0">
+            <el-button type="primary" size="large" :disabled="store.cartList.length === 0" @click="handleCheckout">
               去结算
             </el-button>
           </div>
@@ -112,6 +112,20 @@ const handleDelete = (cartId) => {
       ElMessage.error(e.message || '移除失败')
     }
   })
+}
+
+//提交订单
+const handleCheckout = async () => {
+  try {
+    await ElMessageBox.confirm('确认生成订单吗？', '提示', { type: 'info' })
+    await store.submitCartToOrder()
+    ElMessage.success('订单已生成')
+    router.push('/orders')
+  } catch (e) {
+    if (e !== 'cancel') {
+      ElMessage.error(e.message || '下单失败')
+    }
+  }
 }
 
 // 清空购物车
