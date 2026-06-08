@@ -29,3 +29,36 @@ export function updateMyBooth(data) {
 export function getAllBooths(marketId) {
   return request.get(`/vendor/markets/${marketId}/all-booths`)
 }
+
+//商品相关的
+// 获取我的所有商品
+export function getMyProducts() {
+  return request.get('/vendor/products')
+}
+
+// 新增商品
+export function addProduct(data) {
+  return request.post('/vendor/products', data)
+}
+
+// 更新商品
+export function updateProduct(id, data) {
+  return request.put(`/vendor/products/${id}`, data)
+}
+
+// 删除商品
+export function deleteProduct(id) {
+  return request.delete(`/vendor/products/${id}`)
+}
+
+// 上架/下架商品
+export function toggleProductStatus(id) {
+  return request.put(`/vendor/products/${id}/toggle-status`)
+}
+
+// 上传商品图片
+export function uploadProductImage(formData) {
+  return request.post('/upload/product-image', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+}

@@ -2,6 +2,7 @@ import router from "@/router";
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { login as loginApi, getCurrentUser } from "@/api/auth";
+import { getFullUrl } from '@/utils/urlHelper'
 import {
   uploadAvatar,
   updateProfile,
@@ -44,12 +45,7 @@ export const useUserStore = defineStore("user", () => {
   const isLoggedIn = computed(() => !!token.value);
 
   // 头像完整 URL（拼接后端地址，方便模板直接使用）
-  const avatarFullUrl = computed(() => {
-    if (userInfo.value.avatar) {
-      return `http://localhost:8088${userInfo.value.avatar}`;
-    }
-    return "";
-  });
+  const avatarFullUrl = computed(() => getFullUrl(userInfo.value.avatar))
 
   // 持久化函数
   function saveTokenToStorage() {
