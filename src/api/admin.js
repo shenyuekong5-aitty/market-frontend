@@ -70,3 +70,13 @@ export function getAdminIncomeStats() {
 export function createAdmin(data) {
   return request.post('/admin/manage/create', data)
 }
+
+// 获取所有管理员列表（超级管理员专用）
+export function listAdmins() {
+  return request.get('/admin/manage/list')
+}
+
+// 切换管理员状态
+export function toggleAdminStatus(adminId) {
+  return request.put(`/admin/manage/${adminId}/toggle-status`)
+}
