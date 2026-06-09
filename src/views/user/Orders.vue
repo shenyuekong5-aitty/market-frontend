@@ -5,6 +5,15 @@
         <span>我的订单</span>
       </template>
 
+      <!-- 超时提示横幅 -->
+      <el-alert
+        title="订单提交后请在30分钟内完成付款，超时系统将自动取消订单。"
+        type="info"
+        :closable="false"
+        show-icon
+        style="margin-bottom: 16px;"
+      />
+
       <!-- 空状态 -->
       <div v-if="store.orderList.length === 0 && !store.orderLoading" class="empty-state">
         <el-empty description="暂无订单">
@@ -27,10 +36,9 @@
           <template #default="{ row }">
             <div class="status-cell">
               <el-tag :type="statusTagType(row.status)" size="small">{{ row.status }}</el-tag>
-              <!-- 超时取消提示 -->
               <el-tooltip
                 v-if="row.status === '已取消'"
-                content="您已手动取消或超时未付款，系统自动取消"
+                content="您已手动取消订单或超时未付款，系统自动取消"
                 placement="top"
               >
                 <el-icon class="cancel-icon"><QuestionFilled /></el-icon>
@@ -103,13 +111,11 @@ import { QuestionFilled } from '@element-plus/icons-vue'
 const store = useUserMarketStore()
 const detailVisible = ref(false)
 
-// 状态标签颜色映射
 const statusTagType = (status) => {
   const map = { '待付款': 'warning', '已付款': 'success', '已完成': 'info', '已取消': 'danger' }
   return map[status] || 'info'
 }
 
-// 订单明细总金额
 const detailTotal = computed(() => {
   return store.currentOrderItems.reduce((sum, item) => {
     return sum + (item.productPrice || 0) * (item.quantity || 0)
