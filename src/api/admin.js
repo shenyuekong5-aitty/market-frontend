@@ -65,3 +65,8 @@ export function toggleBoothStatus(id) {
 export function getAdminIncomeStats() {
   return request.get('/admin/income-stats')
 }
+
+//创建超级管理员
+export function createAdmin(data) {
+  return request.post('/admin/manage/create', data)
+}

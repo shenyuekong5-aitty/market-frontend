@@ -15,6 +15,7 @@ import {
   deleteBooth,
   toggleBoothStatus,
   getAdminIncomeStats,
+  createAdmin,
 } from "@/api/admin";
 
 export const useAdminStore = defineStore("admin", () => {
@@ -139,6 +140,11 @@ export const useAdminStore = defineStore("admin", () => {
     }
   }
 
+  //超级管理员相关
+  async function handleCreateAdmin(data) {
+    await createAdmin(data);
+  }
+
   return {
     market,
     applyList,
@@ -164,5 +170,7 @@ export const useAdminStore = defineStore("admin", () => {
     incomeStats,
     incomeLoading,
     fetchIncomeStats,
+    //超级管理员
+    handleCreateAdmin,
   };
 });
