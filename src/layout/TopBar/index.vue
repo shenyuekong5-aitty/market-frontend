@@ -1,15 +1,11 @@
 <template>
   <header class="topbar">
     <div class="left">
-      <!-- 折叠按钮 -->
       <el-icon class="fold-icon" @click="appStore.toggleSidebar">
         <Fold v-if="!appStore.sidebarCollapsed" />
         <Expand v-else />
       </el-icon>
-
-      <!-- 面包屑导航 -->
       <el-breadcrumb :separator-icon="ArrowRight">
-        <!-- 如果 breadcrumbList 为空，显示一个默认首页项 -->
         <template v-if="breadcrumbList.length === 0">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
         </template>
@@ -26,26 +22,22 @@
     <div class="right">
       <!-- 设置按钮区 -->
       <div class="setting">
-        <el-button
-          circle
-          :icon="Refresh"
-          size="small"
-          @click="appStore.refresh"
-        />
+        <el-button circle :icon="Refresh" size="small" @click="appStore.refresh" />
         <el-button circle size="small" @click="handleFullScreen">
-          <el-icon>
-            <FullScreen />
-          </el-icon>
+          <el-icon><FullScreen /></el-icon>
         </el-button>
         <el-button circle size="small" @click="appStore.toggleDarkMode">
-          <el-icon v-if="appStore.isDark">
-            <Sunny />
-          </el-icon>
-          <el-icon v-else>
-            <Moon />
-          </el-icon>
+          <el-icon v-if="appStore.isDark"><Sunny /></el-icon>
+          <el-icon v-else><Moon /></el-icon>
         </el-button>
       </div>
+
+      <!-- 消息通知铃铛 -->
+      <el-badge :value="notificationStore.unreadCount" :max="99" :hidden="notificationStore.unreadCount === 0">
+        <el-icon class="bell-icon" @click="goToMessages">
+          <Bell />
+        </el-icon>
+      </el-badge>
 
       <!-- 用户信息及下拉 -->
       <div class="userinfo">
@@ -58,64 +50,40 @@
         <span v-else class="avatar-placeholder">
           {{ userStore.userInfo.nickname?.charAt(0) || "U" }}
         </span>
-        <span class="username">{{
-          userStore.userInfo.nickname || "用户"
-        }}</span>
-
+        <span class="username">{{ userStore.userInfo.nickname || "用户" }}</span>
         <el-dropdown>
           <span class="el-dropdown-link">
             更多
-            <el-icon>
-              <ArrowDown />
-            </el-icon>
+            <el-icon><ArrowDown /></el-icon>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="checkAccountRef?.open()"
-                >账号检测</el-dropdown-item
-              >
-              <el-dropdown-item @click="editProfileRef?.open()"
-                >修改资料</el-dropdown-item
-              >
-              <el-dropdown-item @click="updatePasswordRef?.open()"
-                >修改密码</el-dropdown-item
-              >
-              <el-dropdown-item @click="handleLogout"
-                >退出登录</el-dropdown-item
-              >
-              <el-dropdown-item divided @click="handleDeactivate"
-                >注销账号</el-dropdown-item
-              >
+              <el-dropdown-item @click="checkAccountRef?.open()">账号检测</el-dropdown-item>
+              <el-dropdown-item @click="editProfileRef?.open()">修改资料</el-dropdown-item>
+              <el-dropdown-item @click="updatePasswordRef?.open()">修改密码</el-dropdown-item>
+              <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
+              <el-dropdown-item divided @click="handleDeactivate">注销账号</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
       </div>
     </div>
 
-    <!-- 弹窗组件 -->
     <CheckAccount ref="checkAccountRef" />
-    <!-- 修改资料弹窗 -->
     <EditProfile ref="editProfileRef" />
-    <!-- 修改密码弹窗 -->
     <UpdatePassword ref="updatePasswordRef" />
   </header>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
-  Fold,
-  Expand,
-  ArrowDown,
-  ArrowRight,
-  Refresh,
-  FullScreen,
-  Moon,
-  Sunny,
+  Fold, Expand, ArrowDown, ArrowRight, Refresh, FullScreen, Moon, Sunny, Bell,
 } from "@element-plus/icons-vue";
 import { useUserStore } from "@/store/modules/user";
 import { useAppStore } from "@/store/modules/app";
+import { useNotificationStore } from "@/store/modules/notification";
 import { ElMessage, ElMessageBox } from "element-plus";
 import EditProfile from "./EditProfile.vue";
 import UpdatePassword from "./UpdatePassword.vue";
@@ -125,12 +93,15 @@ const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const appStore = useAppStore();
+const notificationStore = useNotificationStore();
 
 const editProfileRef = ref(null);
 const updatePasswordRef = ref(null);
 const checkAccountRef = ref(null);
 
-// 面包屑（过滤掉没有 title 的项，排除根路径 /）
+let unreadTimer = null;
+
+// 面包屑
 const breadcrumbList = computed(() => {
   return route.matched.filter((item) => item.meta?.title && item.path !== "/");
 });
@@ -144,13 +115,33 @@ const handleFullScreen = () => {
   }
 };
 
+// 跳转到消息中心
+const goToMessages = () => {
+  const role = userStore.userInfo.role;
+  if (role === "admin") {
+    router.push("/messages");
+  } else if (role === "vendor") {
+    router.push("/vendor/messages");
+  } else {
+    router.push("/messages");
+  }
+};
+
+// 初始化未读消息数量
+const initUnreadCount = async () => {
+  try {
+    await notificationStore.fetchUnreadCount();
+  } catch (e) {
+    // 忽略错误
+  }
+};
+
 const handleLogout = () => {
   userStore.logout();
   ElMessage.success("已退出登录");
   router.push("/login");
 };
 
-// 注销账号处理函数
 const handleDeactivate = () => {
   ElMessageBox.confirm(
     "确定要注销账号吗？注销后可通过忘记密码重新激活。",
@@ -170,8 +161,17 @@ const handleDeactivate = () => {
         ElMessage.error(error.message || "注销失败");
       }
     })
-    .catch(() => {}); // 用户取消
+    .catch(() => {});
 };
+
+onMounted(() => {
+  initUnreadCount();
+  unreadTimer = setInterval(initUnreadCount, 30000);
+});
+
+onUnmounted(() => {
+  if (unreadTimer) clearInterval(unreadTimer);
+});
 </script>
 
 <style scoped>
@@ -231,6 +231,17 @@ const handleDeactivate = () => {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.bell-icon {
+  font-size: 20px;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.bell-icon:hover {
+  transform: scale(1.1);
 }
 
 .userinfo {
