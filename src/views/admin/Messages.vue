@@ -97,7 +97,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, watch } from "vue";
 import { useNotificationStore } from "@/store/modules/notification";
 import { ElMessage } from "element-plus";
 import {
@@ -118,8 +118,20 @@ const sendForm = reactive({
 });
 
 onMounted(async () => {
-  await notificationStore.fetchNotifications();
-});
+  try {
+    await notificationStore.fetchNotifications()
+  } catch (e) {
+    ElMessage.error('获取消息失败')
+  }
+})
+
+// 监听未读数量变化，自动刷新列表
+watch(
+  () => notificationStore.unreadCount,
+  () => {
+    notificationStore.fetchNotifications()
+  }
+)
 
 const handleRead = async (id) => {
   await notificationStore.readNotification(id);

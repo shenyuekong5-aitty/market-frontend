@@ -81,8 +81,9 @@ import { useRoute, useRouter } from "vue-router";
 import {
   Fold, Expand, ArrowDown, ArrowRight, Refresh, FullScreen, Moon, Sunny, Bell,
 } from "@element-plus/icons-vue";
-import { useUserStore } from "@/store/modules/user";
 import { useAppStore } from "@/store/modules/app";
+import { useUserStore } from "@/store/modules/user";
+import { useAdminStore } from '@/store/modules/admin'
 import { useNotificationStore } from "@/store/modules/notification";
 import { ElMessage, ElMessageBox } from "element-plus";
 import EditProfile from "./EditProfile.vue";
@@ -93,9 +94,11 @@ import { playBeep } from '@/utils/beep'
 
 const route = useRoute();
 const router = useRouter();
-const userStore = useUserStore();
 const appStore = useAppStore();
+const userStore = useUserStore();
+const adminStore = useAdminStore() 
 const notificationStore = useNotificationStore();
+
 
 const editProfileRef = ref(null);
 const updatePasswordRef = ref(null);
@@ -119,15 +122,15 @@ const handleFullScreen = () => {
 
 // 跳转到消息中心
 const goToMessages = () => {
-  const role = userStore.userInfo.role;
-  if (role === "admin") {
-    router.push("/messages");
-  } else if (role === "vendor") {
-    router.push("/vendor/messages");
+  const role = userStore.userInfo.role
+  if (role === 'admin') {
+    router.push('/admin/messages')
+  } else if (role === 'vendor') {
+    router.push('/vendor/messages')
   } else {
-    router.push("/messages");
+    router.push('/messages')
   }
-};
+}
 
 // 初始化未读消息数量
 const initUnreadCount = async () => {
@@ -172,10 +175,17 @@ onMounted(() => {
 
 const userId = userStore.userInfo.id
 if (userId) {
-  connectWebSocket(userId, () => {
-    notificationStore.fetchUnreadCount()
-    playBeep()   // 播放提示音
-  })
+  connectWebSocket(userId, async () => {
+  await notificationStore.fetchUnreadCount()
+  console.log('当前未读数量：', notificationStore.unreadCount)
+  // 如果当前用户是管理员，同时刷新待审批申请
+  if (userStore.userInfo.role === 'admin') {
+    try {
+      await adminStore.fetchApplies()
+    } catch (e) { /* 忽略 */ }
+  }
+  playBeep()
+})
 }
 });
 

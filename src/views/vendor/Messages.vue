@@ -61,15 +61,27 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useNotificationStore } from '@/store/modules/notification'
 import { Bell, Check, Warning, InfoFilled, Promotion } from '@element-plus/icons-vue'
 
 const notificationStore = useNotificationStore()
 
 onMounted(async () => {
-  await notificationStore.fetchNotifications()
+  try {
+    await notificationStore.fetchNotifications()
+  } catch (e) {
+    ElMessage.error('获取消息失败')
+  }
 })
+
+// 监听未读数量变化，自动刷新列表
+watch(
+  () => notificationStore.unreadCount,
+  () => {
+    notificationStore.fetchNotifications()
+  }
+)
 
 const handleRead = async (id) => {
   await notificationStore.readNotification(id)
