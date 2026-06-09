@@ -149,7 +149,6 @@ const handleLogin = async () => {
     try {
       await userStore.login(form.username, form.password, form.role);
       ElMessage.success("登录成功");
-      await nextTick();
       // 不再手动添加动态路由，交给路由守卫统一处理
       const redirectPath = route.query.redirect || getHomePath(form.role);
       router.push(redirectPath);
