@@ -4,7 +4,7 @@
     <el-card class="booth-card" v-loading="store.boothLoading">
       <template #header>
         <div class="booth-header">
-          <h3>{{ store.booth?.title || '加载中...' }}</h3>
+          <h3>{{ store.booth?.title || "加载中..." }}</h3>
           <div>
             <el-button
               v-if="store.booth?.vendorId"
@@ -12,9 +12,12 @@
               size="small"
               @click="toggleFollow"
             >
-              {{ isFollowed ? '已关注' : '+ 关注' }}
+              {{ isFollowed ? "已关注" : "+ 关注" }}
             </el-button>
-            <el-tag :type="store.booth?.status === '空闲' ? 'success' : 'warning'" style="margin-left: 8px;">
+            <el-tag
+              :type="store.booth?.status === '空闲' ? 'success' : 'warning'"
+              style="margin-left: 8px"
+            >
               {{ store.booth?.status }}
             </el-tag>
           </div>
@@ -25,9 +28,12 @@
           <el-icon size="48"><Shop /></el-icon>
         </div>
         <div class="booth-info">
-          <p class="booth-desc">{{ store.booth?.description || '暂无描述' }}</p>
+          <p class="booth-desc">{{ store.booth?.description || "暂无描述" }}</p>
           <div class="booth-meta">
-            <span><el-icon><Clock /></el-icon> {{ store.booth?.openTime || '营业时间未设置' }}</span>
+            <span
+              ><el-icon><Clock /></el-icon>
+              {{ store.booth?.openTime || "营业时间未设置" }}</span
+            >
           </div>
         </div>
       </div>
@@ -70,15 +76,21 @@
             <div class="product-actions">
               <div class="cart-action">
                 <el-input-number
-  v-model="store.quantities[product.id]"
-  :min="1"
-  :max="Math.max(1, product.stock)"
-  :disabled="product.stock === 0"
-  size="small"
-  class="quantity-input"
-/>
-                <el-button type="primary" size="small" @click="handleAddToCart(product.id, store.quantities[product.id])">
-                  {{ product.stock === 0 ? '缺货' : '加入购物车' }}
+                  v-model="store.quantities[product.id]"
+                  :min="1"
+                  :max="Math.max(1, product.stock)"
+                  :disabled="product.stock === 0"
+                  size="small"
+                  class="quantity-input"
+                />
+                <el-button
+                  type="primary"
+                  size="small"
+                  @click="
+                    handleAddToCart(product.id, store.quantities[product.id])
+                  "
+                >
+                  {{ product.stock === 0 ? "缺货" : "加入购物车" }}
                 </el-button>
               </div>
               <el-button
@@ -104,7 +116,7 @@
 
     <!-- 预定时间弹窗 -->
     <el-dialog v-model="reserveVisible" title="预定商品" width="450px">
-      <div style="margin-bottom: 15px; color: #606266;">
+      <div style="margin-bottom: 15px; color: #606266">
         <el-icon><InfoFilled /></el-icon>
         本次预定数量固定为 <strong>1 个</strong>，如需多个请分次预定。
       </div>
@@ -139,94 +151,112 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch  } from 'vue'
-import { useRoute } from 'vue-router'
-import { useUserMarketStore } from '@/store/modules/userMarket'
-import { ElMessage } from 'element-plus'
-import { InfoFilled, Shop, Clock, PictureFilled } from '@element-plus/icons-vue'
-import { getFullUrl } from '@/utils/urlHelper'
-import { submitReservation } from '@/api/user'
+import { ref, onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
+import { useUserMarketStore } from "@/store/modules/userMarket";
+import { ElMessage } from "element-plus";
+import {
+  InfoFilled,
+  Shop,
+  Clock,
+  PictureFilled,
+} from "@element-plus/icons-vue";
+import { getFullUrl } from "@/utils/urlHelper";
+import { submitReservation } from "@/api/user";
 
-const route = useRoute()
-const boothId = Number(route.params.id)
-const store = useUserMarketStore()
+const route = useRoute();
+const boothId = Number(route.params.id);
+const store = useUserMarketStore();
 
-const reserveVisible = ref(false)
-const reserveProductId = ref(null)
-const reserveStartTime = ref('')
-const reserveEndTime = ref('')
+const reserveVisible = ref(false);
+const reserveProductId = ref(null);
+const reserveStartTime = ref("");
+const reserveEndTime = ref("");
 
 //关注相关
-const isFollowed = ref(false)
+const isFollowed = ref(false);
 
 // 当摊位数据加载后，检查关注状态
-watch(() => store.booth?.vendorId, async (vendorId) => {
-  if (vendorId) {
-    try {
-      isFollowed.value = await store.isFollowed(vendorId)
-    } catch (e) { /* 忽略 */ }
-  }
-}, { immediate: true })
+watch(
+  () => store.booth?.vendorId,
+  async (vendorId) => {
+    if (vendorId) {
+      try {
+        isFollowed.value = await store.isFollowed(vendorId);
+      } catch (e) {
+        /* 忽略 */
+      }
+    }
+  },
+  { immediate: true },
+);
 
 onMounted(async () => {
   try {
-    await Promise.all([store.fetchBooth(boothId), store.fetchProducts(boothId)])
+    await Promise.all([
+      store.fetchBooth(boothId),
+      store.fetchProducts(boothId),
+    ]);
   } catch (e) {
-    ElMessage.error('加载摊位信息失败')
+    ElMessage.error("加载摊位信息失败");
   }
-})
+});
 
 const handleAddToCart = async (productId, quantity) => {
   try {
-    await store.addProductToCart(productId, quantity)
-    ElMessage.success('已加入购物车')
-    store.quantities[productId] = 1
+    await store.addProductToCart(productId, quantity);
+    ElMessage.success("已加入购物车");
+    store.quantities[productId] = 1;
   } catch (e) {
-    ElMessage.error(e.message || '添加失败')
+    ElMessage.error(e.message || "添加失败");
   }
-}
+};
 
 const openReserveDialog = (productId) => {
-  reserveProductId.value = productId
-  reserveStartTime.value = ''
-  reserveEndTime.value = ''
-  reserveVisible.value = true
-}
+  reserveProductId.value = productId;
+  reserveStartTime.value = "";
+  reserveEndTime.value = "";
+  reserveVisible.value = true;
+};
 
 const handleReserve = async () => {
   if (!reserveStartTime.value || !reserveEndTime.value) {
-    ElMessage.warning('请选择时间段')
-    return
+    ElMessage.warning("请选择时间段");
+    return;
   }
   if (new Date(reserveStartTime.value) >= new Date(reserveEndTime.value)) {
-    ElMessage.warning('结束时间必须大于开始时间')
-    return
+    ElMessage.warning("结束时间必须大于开始时间");
+    return;
   }
   try {
-    await submitReservation(reserveProductId.value, reserveStartTime.value, reserveEndTime.value)
-    ElMessage.success('预定已提交，请等待摊主确认')
-    reserveVisible.value = false
+    await submitReservation(
+      reserveProductId.value,
+      reserveStartTime.value,
+      reserveEndTime.value,
+    );
+    ElMessage.success("预定已提交，请等待摊主确认");
+    reserveVisible.value = false;
   } catch (e) {
-    ElMessage.error(e.message || '预定失败')
+    ElMessage.error(e.message || "预定失败");
   }
-}
+};
 
 //关注功能
 const toggleFollow = async () => {
-  if (!store.booth?.vendorId) return
+  if (!store.booth?.vendorId) return;
   try {
     if (isFollowed.value) {
-      await store.unfollow(store.booth.vendorId)
-      ElMessage.success('已取消关注')
+      await store.unfollow(store.booth.vendorId);
+      ElMessage.success("已取消关注");
     } else {
-      await store.follow(store.booth.vendorId)
-      ElMessage.success('已关注')
+      await store.follow(store.booth.vendorId);
+      ElMessage.success("已关注");
     }
-    isFollowed.value = !isFollowed.value
+    isFollowed.value = !isFollowed.value;
   } catch (e) {
-    ElMessage.error(e.message || '操作失败')
+    ElMessage.error(e.message || "操作失败");
   }
-}
+};
 </script>
 
 <style scoped>
