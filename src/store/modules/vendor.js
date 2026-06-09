@@ -4,8 +4,8 @@ import {
   getMyBooth,
   updateMyBooth,
   applyForBooth,
-  applyChangeBooth,       
-  applyReturnBooth, 
+  applyChangeBooth,
+  applyReturnBooth,
   getMyProducts,
   addProduct,
   updateProduct,
@@ -17,6 +17,7 @@ import {
   rejectReservation,
   getVendorOrders,
   getOrderItems,
+  getVendorIncomeStats,
 } from "@/api/vendor";
 
 export const useVendorStore = defineStore("vendor", () => {
@@ -35,6 +36,17 @@ export const useVendorStore = defineStore("vendor", () => {
   const vendorOrderItems = ref([]);
   const vendorOrderDetailVisible = ref(false);
 
+  //收入
+  const incomeStats = ref({
+    totalIncome: 0,
+    totalOrders: 0,
+    completedOrders: 0,
+    todayIncome: 0,
+    trend: [],
+    orderDetails: [],
+  });
+  const incomeLoading = ref(false);
+
   async function fetchMyBooth() {
     boothLoading.value = true;
     try {
@@ -48,17 +60,17 @@ export const useVendorStore = defineStore("vendor", () => {
     }
   }
 
-   // 更换摊位申请
+  // 更换摊位申请
   async function submitChangeBooth(targetBoothId) {
-    await applyChangeBooth(targetBoothId)
+    await applyChangeBooth(targetBoothId);
     // 申请后不需要刷新摊位，因为我的摊位还是当前这个
   }
 
   // 归还摊位申请
   async function submitReturnBooth() {
-    await applyReturnBooth()
+    await applyReturnBooth();
     // 归还后，我的摊位可能会变成 null，重新拉一下
-    await fetchMyBooth()
+    await fetchMyBooth();
   }
 
   async function saveMyBooth(data) {
@@ -157,6 +169,17 @@ export const useVendorStore = defineStore("vendor", () => {
     }
   }
 
+  //收入
+  async function fetchIncomeStats() {
+    incomeLoading.value = true;
+    try {
+      const res = await getVendorIncomeStats();
+      incomeStats.value = res.data;
+    } finally {
+      incomeLoading.value = false;
+    }
+  }
+
   function closeOrderDetail() {
     vendorOrderDetailVisible.value = false;
   }
@@ -194,6 +217,10 @@ export const useVendorStore = defineStore("vendor", () => {
     fetchVendorOrderItems,
     closeOrderDetail,
     submitChangeBooth,
-    submitReturnBooth
+    submitReturnBooth,
+    //收入
+    incomeStats,
+    incomeLoading,
+    fetchIncomeStats,
   };
 });

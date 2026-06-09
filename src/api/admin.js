@@ -60,3 +60,8 @@ export function deleteBooth(id) {
 export function toggleBoothStatus(id) {
   return request.put(`/admin/booths/${id}/toggle-status`)
 }
+
+//收入
+export function getAdminIncomeStats() {
+  return request.get('/admin/income-stats')
+}

@@ -97,3 +97,8 @@ export function applyChangeBooth(targetBoothId) {
 export function applyReturnBooth() {
   return request.post('/vendor/return-booth')
 }
+
+//收入
+export function getVendorIncomeStats() {
+  return request.get('/vendor/income-stats')
+}

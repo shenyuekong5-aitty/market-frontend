@@ -14,6 +14,7 @@ import {
   updateBooth,
   deleteBooth,
   toggleBoothStatus,
+  getAdminIncomeStats,
 } from "@/api/admin";
 
 export const useAdminStore = defineStore("admin", () => {
@@ -41,6 +42,17 @@ export const useAdminStore = defineStore("admin", () => {
   //摊位
   // 摊位列表
   const boothList = ref([]);
+
+  //收入
+  const incomeStats = ref({
+    totalIncome: 0,
+    totalOrders: 0,
+    completedOrders: 0,
+    todayIncome: 0,
+    trend: [],
+    boothIncome: [],
+  });
+  const incomeLoading = ref(false);
 
   async function handleToggleStatus(id) {
     await toggleMarketStatus(id);
@@ -116,6 +128,17 @@ export const useAdminStore = defineStore("admin", () => {
     await fetchBooths(marketId);
   }
 
+  //收入
+  async function fetchIncomeStats() {
+    incomeLoading.value = true;
+    try {
+      const res = await getAdminIncomeStats();
+      incomeStats.value = res.data;
+    } finally {
+      incomeLoading.value = false;
+    }
+  }
+
   return {
     market,
     applyList,
@@ -137,5 +160,9 @@ export const useAdminStore = defineStore("admin", () => {
     handleUpdateBooth,
     handleDeleteBooth,
     handleToggleBoothStatus,
+    //收入
+    incomeStats,
+    incomeLoading,
+    fetchIncomeStats,
   };
 });
