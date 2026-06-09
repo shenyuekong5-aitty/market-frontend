@@ -42,35 +42,45 @@
       </div>
     </el-card>
 
-    <!-- 功能入口 -->
     <!-- 账号与安全卡片 -->
     <el-card class="actions-card" shadow="hover">
       <template #header>
         <div class="card-header">
           <span class="card-title">账号与安全</span>
-          <el-link type="primary" underline="never">安全评分</el-link>
+          <el-link
+            type="primary"
+            underline="never"
+            @click="checkAccountRef?.open()"
+          >
+            安全检测
+          </el-link>
         </div>
       </template>
 
-      <!-- 安全状态栏 -->
+      <!-- 动态安全状态栏 -->
       <div class="security-status">
         <div class="status-item">
-          <el-icon color="#67c23a"><CircleCheck /></el-icon>
-          <span>账号状态正常</span>
+          <el-icon :color="userStore.userInfo.status === 1 ? '#67c23a' : '#f56c6c'">
+            <CircleCheck v-if="userStore.userInfo.status === 1" />
+            <CircleClose v-else />
+          </el-icon>
+          <span>
+            账号状态：{{ userStore.userInfo.status === 1 ? '正常' : '已注销' }}
+          </span>
         </div>
         <div class="status-item">
           <el-icon color="#e6a23c"><Warning /></el-icon>
-          <span>未绑定备用邮箱</span>
+          <span>最近活跃：{{ lastActiveTime }}</span>
         </div>
         <div class="status-item">
           <el-icon color="#67c23a"><CircleCheck /></el-icon>
-          <span>最近登录：2小时前</span>
+          <span>注册时间：{{ userStore.userInfo.createTime || '未知' }}</span>
         </div>
       </div>
 
       <el-divider />
 
-      <!-- 主要操作按钮 -->
+      <!-- 主要操作入口 -->
       <div class="actions-grid">
         <div class="action-item" @click="editProfileRef?.open()">
           <div class="action-icon" style="background: rgba(64, 158, 255, 0.1)">
@@ -139,7 +149,7 @@
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/modules/user";
-import { ElMessage, ElMessageBox, ElImage  } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import {
   Edit,
   Lock,
@@ -147,6 +157,7 @@ import {
   SwitchButton,
   Delete,
   CircleCheck,
+  CircleClose,
   Warning,
 } from "@element-plus/icons-vue";
 import EditProfile from "@/layout/TopBar/EditProfile.vue";
@@ -176,6 +187,26 @@ const roleText = computed(() => {
 const roleTagType = computed(() => {
   const map = { admin: "danger", vendor: "warning", user: "info" };
   return map[userStore.userInfo.role] || "info";
+});
+
+// 相对时间格式化函数
+const timeAgo = (dateStr) => {
+  if (!dateStr) return "未知";
+  const now = Date.now();
+  const past = new Date(dateStr).getTime();
+  if (isNaN(past)) return dateStr;
+  const diff = Math.floor((now - past) / 1000);
+  if (diff < 60) return "刚刚";
+  if (diff < 3600) return `${Math.floor(diff / 60)} 分钟前`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} 小时前`;
+  if (diff < 2592000) return `${Math.floor(diff / 86400)} 天前`;
+  return dateStr; // 超过一个月直接显示原值
+};
+
+// 最近活跃时间（优先用 updateTime，若无则用 createTime）
+const lastActiveTime = computed(() => {
+  const time = userStore.userInfo.updateTime || userStore.userInfo.createTime;
+  return timeAgo(time);
 });
 
 // 退出登录
@@ -356,7 +387,9 @@ const handleDeactivate = () => {
   font-size: 12px;
   color: #909399;
 }
-.el-image-viewer__img {
+
+/* 修复 Element Plus 图片预览层级 */
+:deep(.el-image-viewer__img) {
   max-height: 90vh !important;
   max-width: 90vw !important;
   object-fit: contain;
