@@ -2,18 +2,32 @@
   <div class="booth-detail-page">
     <!-- 摊位信息卡片 -->
     <el-card class="booth-card" v-loading="store.boothLoading">
-      <div class="booth-header">
+      <template #header>
+        <div class="booth-header">
+          <h3>{{ store.booth?.title || '加载中...' }}</h3>
+          <div>
+            <el-button
+              v-if="store.booth?.vendorId"
+              :type="isFollowed ? 'default' : 'primary'"
+              size="small"
+              @click="toggleFollow"
+            >
+              {{ isFollowed ? '已关注' : '+ 关注' }}
+            </el-button>
+            <el-tag :type="store.booth?.status === '空闲' ? 'success' : 'warning'" style="margin-left: 8px;">
+              {{ store.booth?.status }}
+            </el-tag>
+          </div>
+        </div>
+      </template>
+      <div class="booth-body">
         <div class="booth-avatar">
           <el-icon size="48"><Shop /></el-icon>
         </div>
         <div class="booth-info">
-          <h2>{{ store.booth?.title || '加载中...' }}</h2>
           <p class="booth-desc">{{ store.booth?.description || '暂无描述' }}</p>
           <div class="booth-meta">
             <span><el-icon><Clock /></el-icon> {{ store.booth?.openTime || '营业时间未设置' }}</span>
-            <el-tag :type="store.booth?.status === '空闲' ? 'success' : 'warning'" size="small">
-              {{ store.booth?.status }}
-            </el-tag>
           </div>
         </div>
       </div>
@@ -124,7 +138,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch  } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserMarketStore } from '@/store/modules/userMarket'
 import { ElMessage } from 'element-plus'
@@ -140,6 +154,18 @@ const reserveVisible = ref(false)
 const reserveProductId = ref(null)
 const reserveStartTime = ref('')
 const reserveEndTime = ref('')
+
+//关注相关
+const isFollowed = ref(false)
+
+// 当摊位数据加载后，检查关注状态
+watch(() => store.booth?.vendorId, async (vendorId) => {
+  if (vendorId) {
+    try {
+      isFollowed.value = await store.isFollowed(vendorId)
+    } catch (e) { /* 忽略 */ }
+  }
+}, { immediate: true })
 
 onMounted(async () => {
   try {
@@ -183,6 +209,23 @@ const handleReserve = async () => {
     ElMessage.error(e.message || '预定失败')
   }
 }
+
+//关注功能
+const toggleFollow = async () => {
+  if (!store.booth?.vendorId) return
+  try {
+    if (isFollowed.value) {
+      await store.unfollow(store.booth.vendorId)
+      ElMessage.success('已取消关注')
+    } else {
+      await store.follow(store.booth.vendorId)
+      ElMessage.success('已关注')
+    }
+    isFollowed.value = !isFollowed.value
+  } catch (e) {
+    ElMessage.error(e.message || '操作失败')
+  }
+}
 </script>
 
 <style scoped>
@@ -197,6 +240,12 @@ const handleReserve = async () => {
 .booth-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+
+.booth-body {
+  display: flex;
+  align-items: flex-start;
   gap: 20px;
 }
 

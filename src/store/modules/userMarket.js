@@ -15,6 +15,10 @@ import {
   cancelOrder,
   getReservationList,
   cancelReservation,
+  followVendor,
+  unfollowVendor,
+  getFollowList,
+  checkFollowed,
 } from "@/api/user";
 
 export const useUserMarketStore = defineStore("userMarket", () => {
@@ -148,6 +152,35 @@ export const useUserMarketStore = defineStore("userMarket", () => {
     await fetchUserReservations();
   }
 
+  // 关注相关
+  const followList = ref([]);
+  const followLoading = ref(false);
+
+  async function fetchFollowList() {
+    followLoading.value = true;
+    try {
+      const res = await getFollowList();
+      followList.value = res.data;
+    } finally {
+      followLoading.value = false;
+    }
+  }
+
+  async function follow(vendorId) {
+    await followVendor(vendorId);
+    await fetchFollowList();
+  }
+
+  async function unfollow(vendorId) {
+    await unfollowVendor(vendorId);
+    await fetchFollowList();
+  }
+
+  async function isFollowed(vendorId) {
+    const res = await checkFollowed(vendorId);
+    return res.data;
+  }
+
   return {
     booth,
     productList,
@@ -175,5 +208,12 @@ export const useUserMarketStore = defineStore("userMarket", () => {
     reservationLoading,
     fetchUserReservations,
     cancelUserReservation,
+    // 关注相关
+    followList,
+    followLoading,
+    fetchFollowList,
+    follow,
+    unfollow,
+    isFollowed,
   };
 });

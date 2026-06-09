@@ -2,7 +2,7 @@ import router from "@/router";
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { login as loginApi, getCurrentUser } from "@/api/auth";
-import { getFullUrl } from '@/utils/urlHelper'
+import { getFullUrl } from "@/utils/urlHelper";
 import {
   uploadAvatar,
   updateProfile,
@@ -14,7 +14,11 @@ import {
   deactivateAccount as deactivateApi,
 } from "@/api/user";
 
-import { createMarket, updateMarket, toggleMarketStatus } from "@/api/admin";
+import {
+  createMarket,
+  updateMarket,
+  toggleMarketStatus
+} from "@/api/admin";
 
 import { getRoleChildrenRoutes } from "@/router/asyncRoutes";
 
@@ -45,7 +49,7 @@ export const useUserStore = defineStore("user", () => {
   const isLoggedIn = computed(() => !!token.value);
 
   // 头像完整 URL（拼接后端地址，方便模板直接使用）
-  const avatarFullUrl = computed(() => getFullUrl(userInfo.value.avatar))
+  const avatarFullUrl = computed(() => getFullUrl(userInfo.value.avatar));
 
   // 持久化函数
   function saveTokenToStorage() {
@@ -228,6 +232,7 @@ export const useUserStore = defineStore("user", () => {
     // 刷新集市信息
     await fetchMarket();
   }
+
   return {
     token,
     userInfo,

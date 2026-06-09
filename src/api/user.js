@@ -119,3 +119,25 @@ export function getReservationList() {
 export function cancelReservation(id) {
   return request.put(`/user/reservations/${id}/cancel`)
 }
+
+
+//关注模块
+// 关注摊主
+export function followVendor(vendorId) {
+  return request.post(`/user/follows/${vendorId}`)
+}
+
+// 取消关注
+export function unfollowVendor(vendorId) {
+  return request.delete(`/user/follows/${vendorId}`)
+}
+
+// 获取关注列表
+export function getFollowList() {
+  return request.get('/user/follows')
+}
+
+// 检查是否已关注
+export function checkFollowed(vendorId) {
+  return request.get(`/user/follows/check/${vendorId}`)
+}
