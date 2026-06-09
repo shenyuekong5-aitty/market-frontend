@@ -11,7 +11,7 @@ import {
   resetPassword,
   checkPhone,
   changePassword as changePasswordApi,
-  deactivateAccount as deactivateApi,
+  deactivateAccount as deactivateApi, 
 } from "@/api/user";
 
 import {
@@ -232,7 +232,6 @@ export const useUserStore = defineStore("user", () => {
     // 刷新集市信息
     await fetchMarket();
   }
-
   return {
     token,
     userInfo,

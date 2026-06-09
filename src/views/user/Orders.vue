@@ -59,6 +59,14 @@
               付款
             </el-button>
             <el-button
+  v-if="row.status === '已付款'"
+  size="small"
+  type="primary"
+  @click="handleConfirmReceive(row.id)"
+>
+  确认收货
+</el-button>
+            <el-button
               v-if="row.status === '待付款'"
               size="small"
               type="danger"
@@ -157,6 +165,17 @@ const handleCancel = (orderId) => {
       ElMessage.success('订单已取消')
     } catch (e) {
       ElMessage.error(e.message || '取消失败')
+    }
+  })
+}
+//收获
+const handleConfirmReceive = (orderId) => {
+  ElMessageBox.confirm('确认已收到商品吗？', '确认收货', { type: 'info' }).then(async () => {
+    try {
+      await store.handleConfirmReceive(orderId)
+      ElMessage.success('已确认收货，订单完成')
+    } catch (e) {
+      ElMessage.error(e.message || '操作失败')
     }
   })
 }

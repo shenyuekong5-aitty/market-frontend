@@ -141,3 +141,9 @@ export function getFollowList() {
 export function checkFollowed(vendorId) {
   return request.get(`/user/follows/check/${vendorId}`)
 }
+
+//收获
+// 确认收货
+export function confirmReceive(orderId) {
+  return request.put(`/user/orders/${orderId}/confirm-receive`)
+}

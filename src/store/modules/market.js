@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { getEnabledMarkets, getFreeBooths, getAllBooths  } from "@/api/vendor";
+import { getEnabledMarkets, getFreeBooths, getAllBooths } from "@/api/vendor";
 
 export const useMarketStore = defineStore("market", () => {
   const marketList = ref([]);
@@ -46,7 +46,6 @@ export const useMarketStore = defineStore("market", () => {
     currentMarket.value =
       marketList.value.find((m) => m.id === marketId) || null;
   }
-
   return {
     marketList,
     currentMarket,

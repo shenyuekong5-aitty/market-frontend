@@ -19,6 +19,7 @@ import {
   unfollowVendor,
   getFollowList,
   checkFollowed,
+  confirmReceive,
 } from "@/api/user";
 
 export const useUserMarketStore = defineStore("userMarket", () => {
@@ -180,6 +181,11 @@ export const useUserMarketStore = defineStore("userMarket", () => {
     const res = await checkFollowed(vendorId);
     return res.data;
   }
+    //收获
+  async function handleConfirmReceive(orderId) {
+    await confirmReceive(orderId);
+    await fetchOrders();
+  }
 
   return {
     booth,
@@ -215,5 +221,6 @@ export const useUserMarketStore = defineStore("userMarket", () => {
     follow,
     unfollow,
     isFollowed,
+    handleConfirmReceive,
   };
 });
