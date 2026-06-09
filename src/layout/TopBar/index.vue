@@ -88,6 +88,8 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import EditProfile from "./EditProfile.vue";
 import UpdatePassword from "./UpdatePassword.vue";
 import CheckAccount from "@/components/CheckAccount.vue";
+import { connectWebSocket, disconnectWebSocket } from '@/utils/websocket'
+import { playBeep } from '@/utils/beep'
 
 const route = useRoute();
 const router = useRouter();
@@ -167,10 +169,20 @@ const handleDeactivate = () => {
 onMounted(() => {
   initUnreadCount();
   unreadTimer = setInterval(initUnreadCount, 30000);
+
+const userId = userStore.userInfo.id
+if (userId) {
+  connectWebSocket(userId, () => {
+    notificationStore.fetchUnreadCount()
+    playBeep()   // 播放提示音
+  })
+}
 });
 
 onUnmounted(() => {
   if (unreadTimer) clearInterval(unreadTimer);
+
+  disconnectWebSocket()
 });
 </script>
 
