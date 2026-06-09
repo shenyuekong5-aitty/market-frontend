@@ -5,12 +5,14 @@
         <span>我的订单</span>
       </template>
 
+      <!-- 空状态 -->
       <div v-if="store.orderList.length === 0 && !store.orderLoading" class="empty-state">
         <el-empty description="暂无订单">
           <el-button type="primary" @click="$router.push('/markets')">去逛逛集市</el-button>
         </el-empty>
       </div>
 
+      <!-- 订单列表 -->
       <el-table
         v-else
         :data="store.orderList"
@@ -21,9 +23,19 @@
         <el-table-column prop="orderNo" label="订单编号" width="180" />
         <el-table-column prop="vendorUsername" label="摊主" width="120" />
         <el-table-column prop="totalAmount" label="总金额" width="100" />
-        <el-table-column label="状态" width="100">
+        <el-table-column label="状态" width="120">
           <template #default="{ row }">
-            <el-tag :type="statusTagType(row.status)" size="small">{{ row.status }}</el-tag>
+            <div class="status-cell">
+              <el-tag :type="statusTagType(row.status)" size="small">{{ row.status }}</el-tag>
+              <!-- 超时取消提示 -->
+              <el-tooltip
+                v-if="row.status === '已取消'"
+                content="您已手动取消或超时未付款，系统自动取消"
+                placement="top"
+              >
+                <el-icon class="cancel-icon"><QuestionFilled /></el-icon>
+              </el-tooltip>
+            </div>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="下单时间" width="180" />
@@ -51,6 +63,7 @@
       </el-table>
     </el-card>
 
+    <!-- 订单明细弹窗 -->
     <el-dialog v-model="detailVisible" title="订单明细" width="650px">
       <el-table :data="store.currentOrderItems" border>
         <el-table-column label="商品图片" width="80">
@@ -85,15 +98,18 @@ import { ref, computed, onMounted } from 'vue'
 import { useUserMarketStore } from '@/store/modules/userMarket'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getFullUrl } from '@/utils/urlHelper'
+import { QuestionFilled } from '@element-plus/icons-vue'
 
 const store = useUserMarketStore()
 const detailVisible = ref(false)
 
+// 状态标签颜色映射
 const statusTagType = (status) => {
   const map = { '待付款': 'warning', '已付款': 'success', '已完成': 'info', '已取消': 'danger' }
   return map[status] || 'info'
 }
 
+// 订单明细总金额
 const detailTotal = computed(() => {
   return store.currentOrderItems.reduce((sum, item) => {
     return sum + (item.productPrice || 0) * (item.quantity || 0)
@@ -147,6 +163,16 @@ const handleCancel = (orderId) => {
 .empty-state {
   text-align: center;
   padding: 40px;
+}
+.status-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cancel-icon {
+  font-size: 14px;
+  color: #909399;
+  cursor: help;
 }
 .detail-total {
   text-align: right;
