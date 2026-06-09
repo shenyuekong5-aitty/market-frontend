@@ -69,21 +69,36 @@ const save = async () => {
 }
 
 const handleChangeBooth = () => {
-  // 跳转到集市选择页，并传递更换模式
-  router.push('/vendor/market-select?mode=change')
+  ElMessageBox.confirm(
+    '更换摊位后，原摊位下的所有商品和购物车记录将被永久删除，新摊位需要重新上架商品。\n\n确定要更换摊位吗？',
+    '更换摊位 - 重要提醒',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      router.push('/vendor/market-select?mode=change')
+    })
+    .catch(() => {})
 }
 
 const handleReturnBooth = () => {
   ElMessageBox.confirm(
-    '确定要归还摊位吗？归还后您的角色将恢复为普通用户（如果无其他摊位）。',
-    '归还摊位',
-    { type: 'warning' }
+    '归还摊位后，您的身份将恢复为普通用户（如果无其他摊位）。\n\n⚠️ 此操作将永久删除该摊位下的所有商品和相关购物车记录，且不可恢复。\n\n确定要继续吗？',
+    '归还摊位 - 重要提醒',
+    {
+      confirmButtonText: '确定归还',
+      cancelButtonText: '取消',
+      type: 'warning',
+      dangerouslyUseHTMLString: false,
+    }
   )
     .then(async () => {
       try {
         await vendorStore.submitReturnBooth()
         ElMessage.success('归还申请已提交，请等待管理员审批')
-        // 归还后摊位可能变为null，重新加载一下页面状态
         await vendorStore.fetchMyBooth()
       } catch (e) {
         ElMessage.error(e.message || '申请失败')
