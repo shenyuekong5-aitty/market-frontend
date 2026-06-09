@@ -5,7 +5,7 @@
       <div class="market-header">
         <h3>{{ adminStore.market.name }}</h3>
         <el-tag :type="adminStore.market.status === 1 ? 'success' : 'danger'">
-          {{ adminStore.market.status === 1 ? '启用中' : '已停用' }}
+          {{ adminStore.market.status === 1 ? "启用中" : "已停用" }}
         </el-tag>
       </div>
       <p>位置：{{ adminStore.market.location }}</p>
@@ -33,7 +33,7 @@
           <template #default="{ row }">
             <el-button size="small" @click="openEditDialog(row)">编辑</el-button>
             <el-button size="small" :type="row.status === '停用' ? 'success' : 'warning'" @click="handleToggleStatus(row)">
-              {{ row.status === '停用' ? '启用' : '停用' }}
+              {{ row.status === "停用" ? "启用" : "停用" }}
             </el-button>
             <el-button size="small" type="danger" @click="handleDelete(row)" :disabled="row.status !== '空闲'">删除</el-button>
           </template>
@@ -74,86 +74,88 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useAdminStore } from '@/store/modules/admin'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ref, reactive, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useAdminStore } from "@/store/modules/admin";
+import { ElMessage, ElMessageBox } from "element-plus";
 
-const route = useRoute()
-const router = useRouter()
-const adminStore = useAdminStore()
+const route = useRoute();
+const router = useRouter();
+const adminStore = useAdminStore();
 
-const marketId = ref(null)
-const dialogVisible = ref(false)
-const isEdit = ref(false)
-const submitLoading = ref(false)
-const boothLoading = ref(false)
-const formRef = ref(null)
-const editingBoothId = ref(null)
+const marketId = ref(null);
+const dialogVisible = ref(false);
+const isEdit = ref(false);
+const submitLoading = ref(false);
+const boothLoading = ref(false);
+const formRef = ref(null);
+const editingBoothId = ref(null);
 
-// 表单数据（新增时只需 position，编辑时需要全部字段）
+// 表单数据
 const form = reactive({
-  title: '',
-  position: '',
-  description: '',
-  openTime: ''
-})
+  title: "",
+  position: "",
+  description: "",
+  openTime: "",
+});
 
-// 校验规则（新增时只验证位置，编辑时名称也必填）
+// 定义所有可能字段的校验规则（新增时会自动忽略未渲染的字段）
 const rules = {
-  position: [{ required: true, message: '请输入摊位位置', trigger: 'blur' }],
-  title: [{ required: true, message: '请输入摊位名称', trigger: 'blur' }]
-}
+  title: [{ required: true, message: "请输入摊位名称", trigger: "blur" }],
+  position: [{ required: true, message: "请输入摊位位置", trigger: "blur" }],
+};
 
 // 加载数据
 const loadData = async () => {
-  if (!marketId.value) return
-  boothLoading.value = true
+  if (!marketId.value) return;
+  boothLoading.value = true;
   try {
-    await adminStore.fetchBooths(marketId.value)
+    await adminStore.fetchBooths(marketId.value);
     if (!adminStore.market) {
-      await adminStore.fetchMarket()
+      await adminStore.fetchMarket();
     }
   } finally {
-    boothLoading.value = false
+    boothLoading.value = false;
   }
-}
+};
 
 // 打开新增弹窗
 const openCreateDialog = () => {
-  isEdit.value = false
-  editingBoothId.value = null
-  form.title = ''
-  form.position = ''
-  form.description = ''
-  form.openTime = ''
-  dialogVisible.value = true
-}
+  isEdit.value = false;
+  editingBoothId.value = null;
+  form.title = "";
+  form.position = "";
+  form.description = "";
+  form.openTime = "";
+  dialogVisible.value = true;
+};
 
 // 打开编辑弹窗
 const openEditDialog = (row) => {
-  isEdit.value = true
-  editingBoothId.value = row.id
-  form.title = row.title
-  form.position = row.position
-  form.description = row.description || ''
-  form.openTime = row.openTime || ''
-  dialogVisible.value = true
-}
+  isEdit.value = true;
+  editingBoothId.value = row.id;
+  form.title = row.title;
+  form.position = row.position;
+  form.description = row.description || "";
+  form.openTime = row.openTime || "";
+  dialogVisible.value = true;
+};
 
 // 提交表单
 const handleSubmit = async () => {
-  if (!formRef.value) return
-  // 动态设置校验字段
-  const needValidate = isEdit.value ? ['position', 'title'] : ['position']
-  try {
-    await formRef.value.validate(needValidate)
-  } catch {
-    ElMessage.warning('请检查输入项')
-    return
+  if (!formRef.value) {
+    ElMessage.warning("表单未就绪");
+    return;
   }
 
-  submitLoading.value = true
+  try {
+    await formRef.value.validate();
+  } catch (err) {
+    ElMessage.warning("请检查输入项");
+    return;
+  }
+
+  submitLoading.value = true;
   try {
     if (isEdit.value) {
       await adminStore.handleUpdateBooth(editingBoothId.value, {
@@ -161,69 +163,69 @@ const handleSubmit = async () => {
         position: form.position,
         description: form.description,
         openTime: form.openTime,
-        marketId: marketId.value
-      })
-      ElMessage.success('摊位信息已更新')
+        marketId: marketId.value,
+      });
+      ElMessage.success("摊位信息已更新");
     } else {
       await adminStore.handleCreateBooth({
         position: form.position,
-        marketId: marketId.value
-      })
-      ElMessage.success('摊位创建成功')
+        marketId: marketId.value,
+      });
+      ElMessage.success("摊位创建成功");
     }
-    dialogVisible.value = false
+    dialogVisible.value = false;
   } catch (error) {
-    ElMessage.error(error.message || '操作失败')
+    ElMessage.error(error.message || "操作失败");
   } finally {
-    submitLoading.value = false
+    submitLoading.value = false;
   }
-}
+};
 
 // 切换状态
 const handleToggleStatus = async (row) => {
   try {
-    await adminStore.handleToggleBoothStatus(row.id, marketId.value)
-    ElMessage.success('状态已更新')
+    await adminStore.handleToggleBoothStatus(row.id, marketId.value);
+    ElMessage.success("状态已更新");
   } catch (error) {
-    ElMessage.error(error.message || '操作失败')
+    ElMessage.error(error.message || "操作失败");
   }
-}
+};
 
 // 删除摊位
 const handleDelete = (row) => {
-  if (row.status !== '空闲') {
-    ElMessage.warning('只能删除空闲状态的摊位')
-    return
+  if (row.status !== "空闲") {
+    ElMessage.warning("只能删除空闲状态的摊位");
+    return;
   }
-  ElMessageBox.confirm('确定要删除该摊位吗？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
+  ElMessageBox.confirm("确定要删除该摊位吗？", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
   }).then(async () => {
     try {
-      await adminStore.handleDeleteBooth(row.id, marketId.value)
-      ElMessage.success('摊位已删除')
+      await adminStore.handleDeleteBooth(row.id, marketId.value);
+      ElMessage.success("摊位已删除");
     } catch (error) {
-      ElMessage.error(error.message || '删除失败')
+      ElMessage.error(error.message || "删除失败");
     }
-  })
-}
+  });
+};
 
 // 重置表单
 const resetForm = () => {
-  formRef.value?.resetFields()
-}
+  formRef.value?.resetFields();
+};
 
 onMounted(() => {
-  const id = Number(route.params.id)
+  const id = Number(route.params.id);
   if (isNaN(id)) {
-    ElMessage.error('无效的集市ID')
-    router.push('/admin/market/list')
-    return
+    ElMessage.error("无效的集市ID");
+    router.push("/admin/market/list");
+    return;
   }
-  marketId.value = id
-  loadData()
-})
+  marketId.value = id;
+  loadData();
+});
 </script>
 
 <style scoped>
