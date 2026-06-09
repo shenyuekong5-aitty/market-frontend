@@ -49,12 +49,14 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useUserMarketStore } from '@/store/modules/userMarket'
+import { useNotificationStore } from '@/store/modules/notification'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getFullUrl } from '@/utils/urlHelper'
 
 const store = useUserMarketStore()
+const notificationStore = useNotificationStore()
 
 const statusTag = (status) => {
   const map = { '待确认': 'warning', '已确认': 'success', '已拒绝': 'danger', '已取消': 'info' }
@@ -79,6 +81,12 @@ onMounted(async () => {
     ElMessage.error('获取预定列表失败')
   }
 })
+watch(
+  () => notificationStore.unreadCount,
+  () => {
+    store.fetchUserReservations()
+  }
+)
 </script>
 
 <style scoped>

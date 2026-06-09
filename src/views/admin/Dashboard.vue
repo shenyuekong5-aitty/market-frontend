@@ -100,7 +100,7 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
 import { useAdminStore } from "@/store/modules/admin";
 
 const adminStore = useAdminStore();
@@ -116,6 +116,12 @@ const handleReject = (id) => {
 onMounted(async () => {
   await adminStore.refreshAll();
 });
+watch(
+  () => notificationStore.unreadCount,
+  () => {
+    store.fetchUserReservations()
+  }
+)
 </script>
 
 <style scoped>

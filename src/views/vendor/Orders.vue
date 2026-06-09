@@ -2,7 +2,10 @@
   <div class="orders-page">
     <el-card>
       <template #header>
-        <span>我的订单</span>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span>我的订单</span>
+          <el-button type="primary" size="small" @click="refreshOrders">刷新订单</el-button>
+        </div>
       </template>
       <el-table
         :data="store.vendorOrderList"
@@ -55,12 +58,14 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useVendorStore } from '@/store/modules/vendor'
+import { useNotificationStore } from "@/store/modules/notification";
 import { ElMessage } from 'element-plus'
 import { getFullUrl } from '@/utils/urlHelper'
 
 const store = useVendorStore()
+const notificationStore = useNotificationStore();
 
 const statusTag = (status) => {
   const map = { '待付款': 'warning', '已付款': 'success', '已完成': 'info', '已取消': 'danger' }
@@ -75,9 +80,23 @@ const showDetail = async (orderId) => {
   }
 }
 
+// 手动刷新
+const refreshOrders = () => {
+  store.fetchVendorOrders()
+}
+
 onMounted(() => {
   store.fetchVendorOrders()
 })
+
+// 监听未读数量变化，自动刷新订单列表（增加调试日志）
+watch(
+  () => notificationStore.unreadCount,
+  (newVal, oldVal) => {
+    console.log(`[小贩订单页] 未读数量变化：${oldVal} -> ${newVal}`)
+    store.fetchVendorOrders()
+  }
+)
 </script>
 
 <style scoped>

@@ -70,14 +70,15 @@
             <div class="product-actions">
               <div class="cart-action">
                 <el-input-number
-                  v-model="store.quantities[product.id]"
-                  :min="1"
-                  :max="product.stock"
-                  size="small"
-                  class="quantity-input"
-                />
+  v-model="store.quantities[product.id]"
+  :min="1"
+  :max="Math.max(1, product.stock)"
+  :disabled="product.stock === 0"
+  size="small"
+  class="quantity-input"
+/>
                 <el-button type="primary" size="small" @click="handleAddToCart(product.id, store.quantities[product.id])">
-                  加入购物车
+                  {{ product.stock === 0 ? '缺货' : '加入购物车' }}
                 </el-button>
               </div>
               <el-button

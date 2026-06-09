@@ -119,13 +119,15 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useUserMarketStore } from "@/store/modules/userMarket";
+import { useNotificationStore } from "@/store/modules/notification";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { getFullUrl } from "@/utils/urlHelper";
 import { QuestionFilled } from "@element-plus/icons-vue";
 
 const store = useUserMarketStore();
+const notificationStore = useNotificationStore();
 const detailVisible = ref(false);
 
 const statusTagType = (status) => {
@@ -153,6 +155,13 @@ onMounted(async () => {
     ElMessage.error("获取订单列表失败");
   }
 });
+
+watch(
+  () => notificationStore.unreadCount,
+  () => {
+    store.fetchOrders()
+  }
+)
 
 const showDetail = async (orderId) => {
   try {
