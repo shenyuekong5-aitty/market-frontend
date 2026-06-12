@@ -63,7 +63,7 @@
 <script setup>
 import { watch,onMounted } from 'vue'
 import { useNotificationStore } from '@/store/modules/notification'
-import { Bell, Check, Warning, InfoFilled, Promotion } from '@element-plus/icons-vue'
+import { Bell, Check, Warning, InfoFilled, Promotio, ElMessage  } from '@element-plus/icons-vue'
 
 const notificationStore = useNotificationStore()
 

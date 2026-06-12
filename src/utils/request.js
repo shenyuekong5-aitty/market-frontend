@@ -13,15 +13,22 @@ const request = axios.create({
 // 请求拦截器：每次请求前自动添加 token
 request.interceptors.request.use(
   (config) => {
-    const userStore = useUserStore();
-    if (userStore.token) {
-      config.headers.Authorization = `Bearer ${userStore.token}`;
+    const token = localStorage.getItem('token');
+    if (token) {
+      if (typeof token !== 'string' || token === '[object Object]' || token.length < 10) {
+        console.error('检测到无效 token，清除并跳转登录:', token?.substring?.(0, 30));
+        localStorage.removeItem('token');
+        localStorage.removeItem('userInfo');
+        window.location.href = '/login';
+        return Promise.reject(new Error('无效的登录凭证'));
+      }
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.warn('请求未携带 token:', config.method?.toUpperCase(), config.url);
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error)
 );
 
 // 响应拦截器：统一处理错误
@@ -38,6 +45,12 @@ request.interceptors.response.use(
   (error) => {
     let message = "网络连接失败，请检查网络";
     if (error.response && error.response.data) {
+      console.error('API 错误响应:', {
+        status: error.response.status,
+        url: error.config?.url,
+        method: error.config?.method?.toUpperCase(),
+        data: error.response.data
+      });
       // 优先取 message，其次取 error，最后取默认
       message =
         error.response.data.message || error.response.data.error || message;

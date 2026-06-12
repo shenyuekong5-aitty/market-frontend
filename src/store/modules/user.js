@@ -73,8 +73,9 @@ export const useUserStore = defineStore("user", () => {
   async function login(username, password, role) {
     const res = await loginApi(username, password, role);
     const data = res.data;
+    const tokenStr = typeof data === 'string' ? data : (data?.token || data);
     setLoginData({
-      token: data,
+      token: tokenStr,
       username,
       role,
       nickname: username,
