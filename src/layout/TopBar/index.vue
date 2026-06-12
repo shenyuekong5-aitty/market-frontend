@@ -26,10 +26,6 @@
         <el-button circle size="small" @click="handleFullScreen">
           <el-icon><FullScreen /></el-icon>
         </el-button>
-        <el-button circle size="small" @click="appStore.toggleDarkMode">
-          <el-icon v-if="appStore.isDark"><Sunny /></el-icon>
-          <el-icon v-else><Moon /></el-icon>
-        </el-button>
       </div>
 
       <!-- 消息通知铃铛 -->
@@ -79,7 +75,7 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
-  Fold, Expand, ArrowDown, ArrowRight, Refresh, FullScreen, Moon, Sunny, Bell,
+  Fold, Expand, ArrowDown, ArrowRight, Refresh, FullScreen, Bell,
 } from "@element-plus/icons-vue";
 import { useAppStore } from "@/store/modules/app";
 import { useUserStore } from "@/store/modules/user";

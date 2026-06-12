@@ -141,6 +141,7 @@ export const useVendorStore = defineStore("vendor", () => {
   async function handleConfirmReservation(id) {
     await confirmReservation(id);
     await fetchVendorReservations();
+    await fetchVendorOrders();
   }
 
   async function handleRejectReservation(id) {
