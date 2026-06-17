@@ -126,7 +126,7 @@ const handleChange = async (targetBoothId) => {
     ElMessage.success('更换申请已提交，请等待管理员审批')
     router.push('/vendor/my-booth')
   } catch (e) {
-    ElMessage.error(e.message || '申请失败')
+    console.error('更换申请失败', e)
   }
 }
 
