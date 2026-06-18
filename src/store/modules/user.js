@@ -129,7 +129,7 @@ export const useUserStore = defineStore("user", () => {
     token.value = "";
     userInfo.value = {};
     dynamicAdded.value = false;
-    clearStorage(); // 清空 localStorage
+    clearStorage(); 
     window.location.href = "/login";
   }
 

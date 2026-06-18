@@ -30,10 +30,11 @@ import MenuItem from './MenuItem.vue'
 const route = useRoute()
 const userStore = useUserStore()
 const appStore = useAppStore()
-const adminStore = useAdminStore()  // 新增
+const adminStore = useAdminStore()  
 
 const menuRoutes = computed(() => {
   const role = userStore.userInfo.role
+  //获取动态路由辅助函数
   let roleRoutes = getRoleChildrenRoutes(role)
 
   // 1. 过滤掉 hidden: true 的菜单项

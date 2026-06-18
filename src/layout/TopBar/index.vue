@@ -1,10 +1,12 @@
 <template>
   <header class="topbar">
     <div class="left">
+      <!-- 控制aside缩放 -->
       <el-icon class="fold-icon" @click="appStore.toggleSidebar">
         <Fold v-if="!appStore.sidebarCollapsed" />
         <Expand v-else />
       </el-icon>
+      <!-- 显示当前导航路径的面包屑 -->
       <el-breadcrumb :separator-icon="ArrowRight">
         <template v-if="breadcrumbList.length === 0">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
@@ -22,14 +24,25 @@
     <div class="right">
       <!-- 设置按钮区 -->
       <div class="setting">
-        <el-button circle :icon="Refresh" size="small" @click="appStore.refresh" />
+        <!-- 销毁后重新创建main组件 -->
+        <el-button
+          circle
+          :icon="Refresh"
+          size="small"
+          @click="appStore.refresh"
+        />
+        <!-- mian是否全屏显示 -->
         <el-button circle size="small" @click="handleFullScreen">
           <el-icon><FullScreen /></el-icon>
         </el-button>
       </div>
 
       <!-- 消息通知铃铛 -->
-      <el-badge :value="notificationStore.unreadCount" :max="99" :hidden="notificationStore.unreadCount === 0">
+      <el-badge
+        :value="notificationStore.unreadCount"
+        :max="99"
+        :hidden="notificationStore.unreadCount === 0"
+      >
         <el-icon class="bell-icon" @click="goToMessages">
           <Bell />
         </el-icon>
@@ -46,7 +59,9 @@
         <span v-else class="avatar-placeholder">
           {{ userStore.userInfo.nickname?.charAt(0) || "U" }}
         </span>
-        <span class="username">{{ userStore.userInfo.nickname || "用户" }}</span>
+        <span class="username">{{
+          userStore.userInfo.nickname || "用户"
+        }}</span>
         <el-dropdown>
           <span class="el-dropdown-link">
             更多
@@ -54,19 +69,32 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="checkAccountRef?.open()">账号检测</el-dropdown-item>
-              <el-dropdown-item @click="editProfileRef?.open()">修改资料</el-dropdown-item>
-              <el-dropdown-item @click="updatePasswordRef?.open()">修改密码</el-dropdown-item>
-              <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
-              <el-dropdown-item divided @click="handleDeactivate">注销账号</el-dropdown-item>
+              <el-dropdown-item @click="checkAccountRef?.open()"
+                >账号检测</el-dropdown-item
+              >
+              <el-dropdown-item @click="editProfileRef?.open()"
+                >修改资料</el-dropdown-item
+              >
+              <el-dropdown-item @click="updatePasswordRef?.open()"
+                >修改密码</el-dropdown-item
+              >
+              <el-dropdown-item @click="handleLogout"
+                >退出登录</el-dropdown-item
+              >
+              <el-dropdown-item divided @click="handleDeactivate"
+                >注销账号</el-dropdown-item
+              >
             </el-dropdown-menu>
           </template>
         </el-dropdown>
       </div>
     </div>
 
+    <!-- 检查账号状态弹窗 -->
     <CheckAccount ref="checkAccountRef" />
+    <!-- 编辑用户信息弹窗 -->
     <EditProfile ref="editProfileRef" />
+    <!-- 更新密码弹窗 -->
     <UpdatePassword ref="updatePasswordRef" />
   </header>
 </template>
@@ -75,26 +103,31 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
-  Fold, Expand, ArrowDown, ArrowRight, Refresh, FullScreen, Bell,
+  Fold,
+  Expand,
+  ArrowDown,
+  ArrowRight,
+  Refresh,
+  FullScreen,
+  Bell,
 } from "@element-plus/icons-vue";
 import { useAppStore } from "@/store/modules/app";
 import { useUserStore } from "@/store/modules/user";
-import { useAdminStore } from '@/store/modules/admin'
+import { useAdminStore } from "@/store/modules/admin";
 import { useNotificationStore } from "@/store/modules/notification";
 import { ElMessage, ElMessageBox } from "element-plus";
 import EditProfile from "./EditProfile.vue";
 import UpdatePassword from "./UpdatePassword.vue";
 import CheckAccount from "@/components/CheckAccount.vue";
-import { connectWebSocket, disconnectWebSocket } from '@/utils/websocket'
-import { playBeep } from '@/utils/beep'
+import { connectWebSocket, disconnectWebSocket } from "@/utils/websocket";
+import { playBeep } from "@/utils/beep";
 
 const route = useRoute();
 const router = useRouter();
 const appStore = useAppStore();
 const userStore = useUserStore();
-const adminStore = useAdminStore() 
+const adminStore = useAdminStore();
 const notificationStore = useNotificationStore();
-
 
 const editProfileRef = ref(null);
 const updatePasswordRef = ref(null);
@@ -118,15 +151,15 @@ const handleFullScreen = () => {
 
 // 跳转到消息中心
 const goToMessages = () => {
-  const role = userStore.userInfo.role
-  if (role === 'admin') {
-    router.push('/admin/messages')
-  } else if (role === 'vendor') {
-    router.push('/vendor/messages')
+  const role = userStore.userInfo.role;
+  if (role === "admin") {
+    router.push("/admin/messages");
+  } else if (role === "vendor") {
+    router.push("/vendor/messages");
   } else {
-    router.push('/messages')
+    router.push("/messages");
   }
-}
+};
 
 // 初始化未读消息数量
 const initUnreadCount = async () => {
@@ -169,26 +202,29 @@ onMounted(() => {
   initUnreadCount();
   unreadTimer = setInterval(initUnreadCount, 30000);
 
-const userId = userStore.userInfo.id
-if (userId) {
-  connectWebSocket(userId, async () => {
-  await notificationStore.fetchUnreadCount()
-  console.log('当前未读数量：', notificationStore.unreadCount)
-  // 如果当前用户是管理员，同时刷新待审批申请
-  if (userStore.userInfo.role === 'admin') {
-    try {
-      await adminStore.fetchApplies()
-    } catch (e) { /* 忽略 */ }
+  const userId = userStore.userInfo.id;
+  if (userId) {
+    // 建立websocket连接
+    connectWebSocket(userId, async () => {
+      await notificationStore.fetchUnreadCount();
+      console.log("当前未读数量：", notificationStore.unreadCount);
+      // 如果当前用户是管理员，同时刷新待审批申请
+      if (userStore.userInfo.role === "admin") {
+        try {
+          await adminStore.fetchApplies();
+        } catch (e) {
+          /* 忽略 */
+        }
+      }
+      playBeep();
+    });
   }
-  playBeep()
-})
-}
 });
 
 onUnmounted(() => {
   if (unreadTimer) clearInterval(unreadTimer);
 
-  disconnectWebSocket()
+  disconnectWebSocket();
 });
 </script>
 

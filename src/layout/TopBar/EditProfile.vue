@@ -78,7 +78,7 @@ const activeCollapse = ref([])
 const smsSending = ref(false)
 const smsCountdown = ref(60)
 
-// 新增：手机号校验相关状态
+// 手机号校验相关状态
 const phoneExists = ref(false)      // 新手机号是否已被注册
 const phoneChecking = ref(false)    // 是否正在检查中
 
@@ -140,7 +140,7 @@ const handleAvatarChange = (event) => {
   input.value = ''
 }
 
-// 新增：检查新手机号是否已被注册
+//检查新手机号是否已被注册
 const checkPhoneRegistered = async () => {
   if (!form.newPhone || !/^1[3-9]\d{9}$/.test(form.newPhone)) {
     phoneExists.value = false
@@ -161,6 +161,7 @@ const checkPhoneRegistered = async () => {
   }
 }
 
+// 发送验证码
 const sendPhoneCode = async () => {
   if (!form.newPhone || !/^1[3-9]\d{9}$/.test(form.newPhone)) {
     ElMessage.warning('请输入正确的新手机号')
@@ -191,6 +192,7 @@ const sendPhoneCode = async () => {
   }
 }
 
+// 提交/确认按钮
 const handleSubmit = async () => {
   if (!formRef.value) return
   await formRef.value.validate(async (valid) => {
