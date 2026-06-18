@@ -149,7 +149,7 @@ const handleLogin = async () => {
     try {
       await userStore.login(form.username, form.password, form.role);
       ElMessage.success("登录成功");
-      // 不再手动添加动态路由，交给路由守卫统一处理
+      // 角色不同，跳转到的首页不尽相同
       const redirectPath = route.query.redirect || getHomePath(form.role);
       router.push(redirectPath);
     } catch (error) {
@@ -191,6 +191,7 @@ const resetButtonText = computed(() => {
   return codeSent.value ? "重新获取验证码" : "获取验证码";
 });
 
+// 提示文本
 const validateConfirmPassword = (rule, value, callback) => {
   if (value === "") {
     callback(new Error("请再次输入新密码"));
