@@ -25,6 +25,7 @@
         <span class="unit">分</span>
       </div>
 
+      <!-- 提示文本 -->
       <p class="tip-text">
         {{ scanning ? "系统正在全面扫描安全漏洞..." : overallMessage }}
         <span
@@ -34,6 +35,7 @@
         >
       </p>
 
+      <!-- 扫描过程 -->
       <div class="check-content">
         <div v-for="item in checkItems" :key="item.id" class="item-row" :title="item.id === 'info' ? '检测项包含：头像、昵称、手机号' : ''">
           <div class="left">
@@ -61,6 +63,7 @@
         </div>
       </div>
 
+      <!-- 底部文本 -->
       <div class="footer">
         <el-button type="primary" plain :loading="scanning" @click="startCheck">
           {{ scanning ? "正在扫描" : "重新扫描" }}
@@ -75,16 +78,15 @@ import { ref, computed, onUnmounted } from "vue";
 import { getSecurityCheck } from "@/api/account";
 import { ElMessage } from "element-plus";
 
-const visible = ref(false);
-const scanning = ref(false);
-const randomScore = ref(0);
-const checkItems = ref([]);
-const overallMessage = ref("");
-const realScore = ref(100);
-// 错误状态，用于控制错误提示显示
-const errorOccurred = ref(false);
+const visible = ref(false); // 弹窗显隐
+const scanning = ref(false); // 是否正在扫描
+const randomScore = ref(0); // 扫描中的随机动画分数
+const checkItems = ref([]); // 安全检测项列表
+const overallMessage = ref(""); // 总体评价信息
+const realScore = ref(100); // 接口返回的真实安全评分
+const errorOccurred = ref(false); // 网络异常标记，控制错误提示显示
 
-// 动态分数颜色（绿 / 橙 / 红）
+// 根据真实分数动态映射颜色：绿(>=90) / 橙(>=70) / 红(<70)
 const scoreColor = computed(() => {
   const s = realScore.value ?? 100;
   if (s >= 90) return "#67c23a";
@@ -92,8 +94,9 @@ const scoreColor = computed(() => {
   return "#f56c6c";
 });
 
-let timer = null;
+let timer = null; // 分数动画定时器
 
+// 请求后端安全检测数据，若失败且无旧数据则设默认文案
 const fetchData = async () => {
   try {
     const res = await getSecurityCheck();
@@ -101,9 +104,8 @@ const fetchData = async () => {
     overallMessage.value = data.message;
     checkItems.value = data.items;
     realScore.value = data.score ?? 100;
-    errorOccurred.value = false; // 请求成功，清除错误状态
+    errorOccurred.value = false;
   } catch (error) {
-    // 如果之前有数据，保留；如果没有，给一个默认提示
     if (checkItems.value.length === 0) {
       overallMessage.value = "网络异常，无法获取安全检测结果";
     }
@@ -113,6 +115,7 @@ const fetchData = async () => {
   }
 };
 
+// 启动扫描：40~99 间随机闪烁分数，拉取接口，最短展示 1.2 秒
 const startCheck = async () => {
   if (scanning.value) return;
   scanning.value = true;
@@ -129,18 +132,20 @@ const startCheck = async () => {
       await new Promise((resolve) => setTimeout(resolve, 1200 - costTime));
     }
   } catch (e) {
-    // 错误已提示
+    // 错误已在 fetchData 中提示，此处无需额外处理
   } finally {
     clearInterval(timer);
     scanning.value = false;
   }
 };
 
+// 对外暴露：打开弹窗并自动开始安全检测
 const open = () => {
   visible.value = true;
   startCheck();
 };
 
+// 组件销毁时清除定时器，防止内存泄漏
 onUnmounted(() => {
   clearInterval(timer);
 });
