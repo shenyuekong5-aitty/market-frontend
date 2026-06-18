@@ -103,11 +103,9 @@
 import { onMounted, watch } from "vue";
 import { useAdminStore } from "@/store/modules/admin";
 import { useNotificationStore } from "@/store/modules/notification"
-import {useUserMarketStore} from "@/store/modules/userMarket"
 
 const adminStore = useAdminStore();
 const notificationStore = useNotificationStore()
-const store  = useUserMarketStore()
 
 const handleApprove = (id) => {
   adminStore.handleApprove(id);
@@ -123,7 +121,7 @@ onMounted(async () => {
 watch(
   () => notificationStore.unreadCount,
   () => {
-    store.fetchUserReservations()
+    adminStore.refreshAll()
   }
 )
 </script>
