@@ -23,7 +23,6 @@ import {
 import { getRoleChildrenRoutes } from "@/router/asyncRoutes";
 
 export const useUserStore = defineStore("user", () => {
-  // localStorage 恢复状态
   const savedToken = localStorage.getItem("token") || "";
   const savedUserInfo = localStorage.getItem("userInfo");
 

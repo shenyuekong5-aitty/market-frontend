@@ -5,11 +5,6 @@ export const useAppStore = defineStore('app', () => {
   // 侧边栏折叠
   const sidebarCollapsed = ref(false)
 
-
-  function toggleDarkMode() {
-    isDark.value = !isDark.value
-  }
-
   function toggleSidebar() {
     sidebarCollapsed.value = !sidebarCollapsed.value
   }
