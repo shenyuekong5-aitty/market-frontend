@@ -36,6 +36,7 @@ const constantRoutes = [
   //   component: () => import('@/views/common/Profile.vue'),
   //   meta: { title: '个人信息', icon: 'User', requiresAuth: true }
   // },
+  // 已作为动态路由添加，因为我想保证该页面位于最底层
   {
     path: "/403",
     name: "Forbidden",
