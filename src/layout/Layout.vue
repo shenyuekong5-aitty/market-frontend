@@ -7,6 +7,7 @@
     <User v-else-if="showUser">
       <router-view />
     </User>
+    <AiCustomerService v-if="userStore.isLoggedIn" />
   </div>
 </template>
 
@@ -16,6 +17,7 @@ import { useUserStore } from '@/store/modules/user'
 import Admin from "./admin/index.vue"
 import Vendor from "./vendor/index.vue"
 import User from "./user/index.vue"
+import AiCustomerService from '@/components/AiCustomerService.vue'
 
 const userStore = useUserStore()
 

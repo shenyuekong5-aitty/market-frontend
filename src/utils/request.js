@@ -24,8 +24,6 @@ request.interceptors.request.use(
         return Promise.reject(new Error('无效的登录凭证'));
       }
       config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      console.warn('请求未携带 token:', config.method?.toUpperCase(), config.url);
     }
     return config;
   },

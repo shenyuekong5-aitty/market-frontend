@@ -6,34 +6,43 @@ let currentUserId = null
 let reconnectTimer = null
 
 export function connectWebSocket(userId, onMessage) {
-  if (ws && ws.readyState === WebSocket.OPEN) return
+  if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return
   const token = localStorage.getItem('token')
   if (!userId || !token) return
 
   currentUserId = userId
   notificationCallback = onMessage
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer)
+    reconnectTimer = null
+  }
 
   const url = `${getWebSocketOrigin()}/ws/notification/${userId}?token=${encodeURIComponent(token)}`
-  ws = new WebSocket(url)
+  const socket = new WebSocket(url)
+  ws = socket
 
-  ws.onopen = () => {
+  socket.onopen = () => {
     console.log('WebSocket 连接成功')
   }
 
-  ws.onmessage = (event) => {
+  socket.onmessage = (event) => {
     if (event.data === 'new_notification' && notificationCallback) {
       notificationCallback()
     }
   }
 
-  ws.onerror = (error) => {
+  socket.onerror = (error) => {
     console.error('WebSocket 错误:', error)
   }
 
-  ws.onclose = () => {
-    console.log('WebSocket 连接关闭，5秒后重连...')
+  socket.onclose = (event) => {
+    if (ws !== socket) return
+    ws = null
+    if (!currentUserId || event.code === 1008) return
+    console.info('WebSocket 连接关闭，5秒后重连...')
     reconnectTimer = setTimeout(() => {
-      if (currentUserId) {
+      reconnectTimer = null
+      if (currentUserId && localStorage.getItem('token')) {
         connectWebSocket(currentUserId, notificationCallback)
       }
     }, 5000)
@@ -48,7 +57,8 @@ export function disconnectWebSocket() {
     reconnectTimer = null
   }
   if (ws) {
-    ws.close()
+    const activeSocket = ws
     ws = null
+    activeSocket.close()
   }
 }
