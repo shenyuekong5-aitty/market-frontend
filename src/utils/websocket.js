@@ -1,13 +1,19 @@
+import { getWebSocketOrigin } from '@/utils/runtimeConfig'
+
 let ws = null
 let notificationCallback = null
 let currentUserId = null
+let reconnectTimer = null
 
 export function connectWebSocket(userId, onMessage) {
   if (ws && ws.readyState === WebSocket.OPEN) return
+  const token = localStorage.getItem('token')
+  if (!userId || !token) return
+
   currentUserId = userId
   notificationCallback = onMessage
 
-  const url = `ws://localhost:8088/ws/notification/${userId}`
+  const url = `${getWebSocketOrigin()}/ws/notification/${userId}?token=${encodeURIComponent(token)}`
   ws = new WebSocket(url)
 
   ws.onopen = () => {
@@ -26,7 +32,7 @@ export function connectWebSocket(userId, onMessage) {
 
   ws.onclose = () => {
     console.log('WebSocket 连接关闭，5秒后重连...')
-    setTimeout(() => {
+    reconnectTimer = setTimeout(() => {
       if (currentUserId) {
         connectWebSocket(currentUserId, notificationCallback)
       }
@@ -35,6 +41,12 @@ export function connectWebSocket(userId, onMessage) {
 }
 
 export function disconnectWebSocket() {
+  currentUserId = null
+  notificationCallback = null
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer)
+    reconnectTimer = null
+  }
   if (ws) {
     ws.close()
     ws = null

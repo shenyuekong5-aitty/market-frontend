@@ -1,69 +1,69 @@
 <template>
   <div class="admin-manage-page">
-    <el-card>
+    <UiCard>
       <template #header>
         <div class="card-header">
           <span>管理员管理</span>
-          <el-button type="primary" size="small" @click="openCreateDialog">创建管理员</el-button>
+          <UiButton type="primary" size="small" @click="openCreateDialog">创建管理员</UiButton>
         </div>
       </template>
 
       <!-- 管理员列表 -->
-      <el-table :data="adminStore.adminList" border style="width: 100%" v-loading="adminStore.adminListLoading">
-        <el-table-column prop="username" label="账号" width="120" />
-        <el-table-column prop="nickname" label="昵称" width="120" />
-        <el-table-column label="超级管理员" width="100">
+      <UiTable :data="adminStore.adminList" border style="width: 100%" v-loading="adminStore.adminListLoading">
+        <UiTableColumn prop="username" label="账号" width="120" />
+        <UiTableColumn prop="nickname" label="昵称" width="120" />
+        <UiTableColumn label="超级管理员" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.isSuperAdmin === 1 ? 'danger' : 'info'" size="small">
+            <UiTag :type="row.isSuperAdmin === 1 ? 'danger' : 'info'">
               {{ row.isSuperAdmin === 1 ? '是' : '否' }}
-            </el-tag>
+            </UiTag>
           </template>
-        </el-table-column>
-        <el-table-column label="状态" width="100">
+          </UiTableColumn>
+        <UiTableColumn label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.status === 1 ? 'success' : 'danger'" size="small">
+            <UiTag :type="row.status === 1 ? 'success' : 'danger'">
               {{ row.status === 1 ? '正常' : '已停用' }}
-            </el-tag>
+            </UiTag>
           </template>
-        </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" width="140">
+          </UiTableColumn>
+        <UiTableColumn prop="createTime" label="创建时间" width="180" />
+        <UiTableColumn label="操作" width="140">
           <template #default="{ row }">
-            <el-button
+            <UiButton
               v-if="row.id !== userStore.userInfo.id"
               size="small"
               :type="row.status === 1 ? 'danger' : 'success'"
               @click="handleToggleStatus(row.id)"
             >
               {{ row.status === 1 ? '停用' : '启用' }}
-            </el-button>
+            </UiButton>
             <span v-else style="color: #c0c4cc;">当前账号</span>
           </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
+        </UiTableColumn>
+      </UiTable>
+    </UiCard>
 
     <!-- 创建管理员弹窗 -->
-    <el-dialog v-model="createVisible" title="创建管理员账号" width="450px">
+    <UiDialog v-model="createVisible" title="创建管理员账号" width="450px">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="账号" prop="username">
-          <el-input v-model="form.username" />
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" type="password" show-password />
-        </el-form-item>
-        <el-form-item label="昵称">
-          <el-input v-model="form.nickname" />
-        </el-form-item>
-        <el-form-item label="手机号">
-          <el-input v-model="form.phone" />
-        </el-form-item>
+        <UiFormItem label="账号" prop="username">
+          <UiInput v-model="form.username" />
+        </UiFormItem>
+        <UiFormItem label="密码" prop="password">
+          <UiInput v-model="form.password" type="password" show-password />
+        </UiFormItem>
+        <UiFormItem label="昵称">
+          <UiInput v-model="form.nickname" />
+        </UiFormItem>
+        <UiFormItem label="手机号">
+          <UiInput v-model="form.phone" />
+        </UiFormItem>
       </el-form>
       <template #footer>
-        <el-button @click="createVisible = false">取消</el-button>
-        <el-button type="primary" :loading="creating" @click="handleCreate">确定创建</el-button>
+        <UiButton @click="createVisible = false">取消</UiButton>
+        <UiButton type="primary" :loading="creating" @click="handleCreate">确定创建</UiButton>
       </template>
-    </el-dialog>
+    </UiDialog>
   </div>
 </template>
 

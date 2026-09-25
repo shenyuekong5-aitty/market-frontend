@@ -1,22 +1,22 @@
 <template>
   <div class="messages-page">
-    <el-card class="msg-card" shadow="never">
+    <UiCard class="msg-card">
       <template #header>
         <div class="msg-header">
           <div class="header-left">
             <el-icon size="20"><Bell /></el-icon>
             <span class="header-title">消息中心</span>
-            <el-badge
+            <UiBadge
               v-if="notificationStore.unreadCount > 0"
               :value="notificationStore.unreadCount"
               class="unread-badge"
             />
           </div>
           <div class="header-actions">
-            <el-button type="primary" size="small" @click="openSendDialog"
-              >发送通知</el-button
+            <UiButton type="primary" size="small" @click="openSendDialog"
+              >发送通知</UiButton
             >
-            <el-button
+            <UiButton
               type="primary"
               text
               size="small"
@@ -24,14 +24,14 @@
               @click="handleReadAll"
             >
               全部标为已读
-            </el-button>
+            </UiButton>
           </div>
         </div>
       </template>
 
       <!-- 消息列表（同之前） -->
       <div v-if="notificationStore.list.length === 0" class="empty-state">
-        <el-empty description="暂无消息" :image-size="80" />
+        <UiEmpty description="暂无消息" />
       </div>
       <div v-else class="msg-list">
         <div
@@ -60,39 +60,39 @@
           </div>
         </div>
       </div>
-    </el-card>
+    </UiCard>
 
     <!-- 发送通知弹窗 -->
-    <el-dialog v-model="sendVisible" title="发送系统通知" width="500px">
+    <UiDialog v-model="sendVisible" title="发送系统通知" width="500px">
       <el-form :model="sendForm" label-width="80px">
-        <el-form-item label="目标角色">
-          <el-select
+        <UiFormItem label="目标角色">
+          <UiSelect
             v-model="sendForm.role"
             placeholder="请选择接收角色"
             style="width: 100%"
           >
-            <el-option label="所有用户" value="all" />
-            <el-option label="管理员" value="admin" />
-            <el-option label="小贩" value="vendor" />
-            <el-option label="普通用户" value="user" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="通知内容">
-          <el-input
+            <UiOption label="所有用户" value="all" />
+            <UiOption label="管理员" value="admin" />
+            <UiOption label="小贩" value="vendor" />
+            <UiOption label="普通用户" value="user" />
+          </UiSelect>
+        </UiFormItem>
+        <UiFormItem label="通知内容">
+          <UiInput
             v-model="sendForm.content"
             type="textarea"
             :rows="4"
             placeholder="请输入通知内容"
           />
-        </el-form-item>
+        </UiFormItem>
       </el-form>
       <template #footer>
-        <el-button @click="sendVisible = false">取消</el-button>
-        <el-button type="primary" :loading="sending" @click="handleSend"
-          >发送</el-button
+        <UiButton @click="sendVisible = false">取消</UiButton>
+        <UiButton type="primary" :loading="sending" @click="handleSend"
+          >发送</UiButton
         >
       </template>
-    </el-dialog>
+    </UiDialog>
   </div>
 </template>
 
@@ -183,22 +183,22 @@ const getIcon = (type) => {
 
 const getIconBg = (type) => {
   const map = {
-    预定请求: "#e6f7ff",
-    预定结果: "#fff7e6",
-    申请结果: "#f6ffed",
-    系统通知: "#f0f5ff",
+    预定请求: "var(--brand-primary-soft)",
+    预定结果: "#fff3d8",
+    申请结果: "#e8f5ef",
+    系统通知: "var(--surface-subtle)",
   };
-  return map[type] || "#f5f5f5";
+  return map[type] || "var(--surface-subtle)";
 };
 
 const getIconColor = (type) => {
   const map = {
-    预定请求: "#1890ff",
-    预定结果: "#fa8c16",
-    申请结果: "#52c41a",
-    系统通知: "#2f54eb",
+    预定请求: "var(--brand-primary)",
+    预定结果: "var(--warning)",
+    申请结果: "var(--success)",
+    系统通知: "var(--ink)",
   };
-  return map[type] || "#8c8c8c";
+  return map[type] || "var(--ink-muted)";
 };
 
 const formatTime = (time) => {
@@ -211,11 +211,7 @@ const formatTime = (time) => {
 .messages-page {
   padding: 20px;
 }
-.msg-card {
-  border-radius: 12px;
-  border: none;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-}
+.msg-card { border-radius: var(--radius-md); border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
 .msg-header {
   display: flex;
   justify-content: space-between;
@@ -229,7 +225,7 @@ const formatTime = (time) => {
 .header-title {
   font-size: 18px;
   font-weight: 600;
-  color: #303133;
+  color: var(--ink-strong);
 }
 .unread-badge {
   margin-left: 4px;
@@ -252,7 +248,7 @@ const formatTime = (time) => {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--line);
   transition: all 0.2s;
   cursor: pointer;
 }
@@ -260,13 +256,13 @@ const formatTime = (time) => {
   border-bottom: none;
 }
 .msg-item:hover {
-  background: #fafafa;
+  background: var(--surface-subtle);
 }
 .msg-item.is-unread {
-  background: #fafbff;
+  background: var(--brand-primary-soft);
 }
 .msg-item.is-unread:hover {
-  background: #f0f5ff;
+  background: var(--brand-primary-soft);
 }
 .msg-left {
   display: flex;
@@ -295,8 +291,8 @@ const formatTime = (time) => {
 }
 .msg-type-tag {
   font-size: 13px;
-  color: #606266;
-  background: #f5f5f5;
+  color: var(--ink);
+  background: var(--surface-subtle);
   padding: 2px 8px;
   border-radius: 4px;
   font-weight: 500;
@@ -305,11 +301,11 @@ const formatTime = (time) => {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #f5222d;
+  background: var(--danger);
 }
 .msg-text {
   font-size: 14px;
-  color: #303133;
+  color: var(--ink-strong);
   line-height: 1.5;
   word-break: break-all;
 }
@@ -319,7 +315,7 @@ const formatTime = (time) => {
 }
 .msg-time {
   font-size: 12px;
-  color: #c0c4cc;
+  color: var(--ink-muted);
   white-space: nowrap;
 }
 </style>

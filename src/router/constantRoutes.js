@@ -4,18 +4,7 @@ const constantRoutes = [
     path: "/",
     name: "Layout",
     component: () => import("@/layout/Layout.vue"),
-    children: [
-      {
-        path: "/profile",
-        name: "Profile",
-        component: () => import("@/views/common/Profile.vue"),
-        meta: {
-          title: "个人信息",
-          icon: "User",
-          roles: ["admin", "vendor", "user"],
-        },
-      },
-    ], // 初始为空，动态添加
+    children: [], // 初始为空，动态添加
   },
   {
     path: "/login",

@@ -1,0 +1,3 @@
+<template><div class="ui-skeleton" :class="{ 'is-animated': animated }"><span v-for="line in rows" :key="line" /></div></template>
+<script setup>defineProps({ rows: { type: Number, default: 3 }, animated: Boolean })</script>
+<style scoped>.ui-skeleton { display: grid; gap: 12px; padding: 16px; }.ui-skeleton span { height: 16px; border-radius: 8px; background: var(--surface-subtle); }.ui-skeleton span:nth-child(1) { width: 45%; height: 22px; }.ui-skeleton span:nth-child(2n) { width: 88%; }.is-animated span { background: linear-gradient(90deg,var(--surface-subtle) 25%,#fff 50%,var(--surface-subtle) 75%); background-size: 200% 100%; animation: ui-shimmer 1.4s infinite; }@keyframes ui-shimmer { to { background-position: -200% 0; } }</style>

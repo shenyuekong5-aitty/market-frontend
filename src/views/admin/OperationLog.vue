@@ -1,6 +1,6 @@
 <template>
   <div class="operation-log-page">
-    <el-card>
+    <UiCard>
       <template #header>
         <div class="header">
           <span>操作日志</span>
@@ -9,8 +9,8 @@
 
       <!-- 筛选条件 -->
       <el-form :inline="true" :model="queryForm" class="filter-form">
-        <el-form-item label="开始时间">
-          <el-date-picker
+        <UiFormItem label="开始时间">
+          <UiDateInput
             v-model="queryForm.start"
             type="datetime"
             placeholder="选择开始时间"
@@ -18,9 +18,9 @@
             value-format="YYYY-MM-DD HH:mm:ss"
             :clearable="true"
           />
-        </el-form-item>
-        <el-form-item label="结束时间">
-          <el-date-picker
+        </UiFormItem>
+        <UiFormItem label="结束时间">
+          <UiDateInput
             v-model="queryForm.end"
             type="datetime"
             placeholder="选择结束时间"
@@ -28,21 +28,21 @@
             value-format="YYYY-MM-DD HH:mm:ss"
             :clearable="true"
           />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="resetQuery">重置</el-button>
-        </el-form-item>
+        </UiFormItem>
+        <UiFormItem>
+        <UiButton type="primary" @click="handleQuery">查询</UiButton>
+        <UiButton @click="resetQuery">重置</UiButton>
+        </UiFormItem>
       </el-form>
 
       <!-- 日志表格 -->
-      <el-table :data="adminStore.logList" border style="width: 100%" v-loading="adminStore.logLoading">
-        <el-table-column prop="id" label="ID" width="60" />
-        <el-table-column prop="type" label="操作类型" width="120" />
-        <el-table-column prop="description" label="操作描述" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="createTime" label="操作时间" width="180" />
-      </el-table>
-    </el-card>
+      <UiTable :data="adminStore.logList" border style="width: 100%" v-loading="adminStore.logLoading">
+        <UiTableColumn prop="id" label="ID" width="60" />
+        <UiTableColumn prop="type" label="操作类型" width="120" />
+        <UiTableColumn prop="description" label="操作描述" min-width="200" show-overflow-tooltip />
+        <UiTableColumn prop="createTime" label="操作时间" width="180" />
+      </UiTable>
+    </UiCard>
   </div>
 </template>
 

@@ -108,7 +108,7 @@ export const useAdminStore = defineStore("admin", () => {
   // 获取摊位列表
   async function fetchBooths(marketId) {
     const res = await getBoothsByMarketId(marketId);
-    boothList.value = res.data;
+    boothList.value = res.data.list;
   }
 
   // 创建摊位

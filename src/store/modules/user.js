@@ -20,7 +20,7 @@ import {
   toggleMarketStatus
 } from "@/api/admin";
 
-import { getRoleChildrenRoutes } from "@/router/asyncRoutes";
+import { getRoleChildrenRoutes, sharedRoutes } from "@/router/asyncRoutes";
 
 export const useUserStore = defineStore("user", () => {
   const savedToken = localStorage.getItem("token") || "";
@@ -99,11 +99,13 @@ export const useUserStore = defineStore("user", () => {
           status: res.data.status,
           gender: res.data.gender ?? 1,
           createTime: res.data.createTime,
+          updateTime: res.data.updateTime,
         };
         saveUserInfoToStorage(); // 保存到 localStorage
       }
     } catch (error) {
       console.error("获取用户信息失败", error);
+      throw error;
     }
   }
 
@@ -118,6 +120,9 @@ export const useUserStore = defineStore("user", () => {
       avatar: data.avatar || "",
       role: data.role || "",
       status: data.status !== undefined ? data.status : 1,
+      gender: data.gender ?? 1,
+      createTime: data.createTime || "",
+      updateTime: data.updateTime || "",
     };
     saveTokenToStorage();
     saveUserInfoToStorage();
@@ -166,6 +171,8 @@ export const useUserStore = defineStore("user", () => {
       phone: updatedUser.phone,
       gender: updatedUser.gender,
       status: updatedUser.status,
+      createTime: updatedUser.createTime,
+      updateTime: updatedUser.updateTime,
     });
     return updatedUser;
   }
@@ -192,14 +199,18 @@ export const useUserStore = defineStore("user", () => {
 
   // 动态路由添加
   function addDynamicRoutes(role) {
-    if (dynamicAdded.value) return; // 内存中的标记，刷新后自动消失
+    if (dynamicAdded.value) return;
 
     const children = getRoleChildrenRoutes(role);
+
     children.forEach((child) => {
       router.addRoute("Layout", child);
     });
 
-    // 确保 404 在最后
+    sharedRoutes.forEach((route) => {
+      router.addRoute("Layout", route);
+    });
+
     router.removeRoute("NotFound");
     router.addRoute({
       path: "/:pathMatch(.*)*",

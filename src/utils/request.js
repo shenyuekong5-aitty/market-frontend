@@ -3,10 +3,11 @@ import axios from "axios";
 import { ElMessage } from "element-plus";
 import router from "@/router";
 import { useUserStore } from "@/store/modules/user";
+import { API_BASE_URL } from "@/utils/runtimeConfig";
 
 // 创建 axios 实例
 const request = axios.create({
-  baseURL: "http://localhost:8088/api", // 后端 API 基础地址
+  baseURL: API_BASE_URL,
   timeout: 10000, // 10 秒超时
 });
 

@@ -1,0 +1,30 @@
+:root {
+  --topbar-height: 64px;
+  --aside-width: 248px;
+  --aside-collapsed-width: 72px;
+  --brand-primary: #176b68;
+  --brand-primary-hover: #125653;
+  --brand-primary-soft: #e5f3f1;
+  --brand-secondary: #ef8b68;
+  --brand-secondary-soft: #fff0ea;
+  --surface-page: #f4f7f8;
+  --surface-card: #ffffff;
+  --surface-subtle: #edf3f4;
+  --ink-strong: #18313b;
+  --ink: #405762;
+  --ink-muted: #78909a;
+  --ink-faint: #a5b7bb;
+  --line: #dce8ea;
+  --success: #2f8f70;
+  --warning: #d79a3b;
+  --danger: #cf5b5b;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --shadow-sm: 0 4px 16px rgba(24, 49, 59, .06);
+  --shadow-md: 0 14px 36px rgba(24, 49, 59, .10);
+  --focus-ring: 0 0 0 3px rgba(23, 107, 104, .14);
+  --font-sans: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+:root, body { color: var(--ink); background: var(--surface-page); font-family: var(--font-sans); }

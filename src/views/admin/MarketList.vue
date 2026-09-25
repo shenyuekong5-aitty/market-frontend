@@ -1,34 +1,30 @@
 <template>
   <div class="market-list-page">
-    <el-card>
+    <UiCard>
       <template #header>
         <div class="card-header">
           <span>集市管理</span>
-          <el-button v-if="!adminStore.market" type="primary" size="small" @click="openCreateDialog">创建集市</el-button>
+          <UiButton v-if="!adminStore.market" type="primary" size="small" @click="openCreateDialog">创建集市</UiButton>
         </div>
       </template>
 
       <!-- 已有集市时显示信息及操作 -->
       <div v-if="adminStore.market" class="market-info">
-        <el-descriptions :column="2" border>
-          <el-descriptions-item label="集市名称">{{ adminStore.market.name }}</el-descriptions-item>
-          <el-descriptions-item label="位置">{{ adminStore.market.location }}</el-descriptions-item>
-          <el-descriptions-item label="状态">
-            <el-tag :type="adminStore.market.status === 1 ? 'success' : 'danger'">
-              {{ adminStore.market.status === 1 ? '启用' : '停用' }}
-            </el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="创建时间">{{ adminStore.market.createTime }}</el-descriptions-item>
-        </el-descriptions>
+        <div class="market-details-grid">
+          <div class="market-detail-item"><span>集市名称</span><strong>{{ adminStore.market.name }}</strong></div>
+          <div class="market-detail-item"><span>位置</span><strong>{{ adminStore.market.location }}</strong></div>
+          <div class="market-detail-item"><span>状态</span><UiTag :type="adminStore.market.status === 1 ? 'success' : 'danger'">{{ adminStore.market.status === 1 ? '启用' : '停用' }}</UiTag></div>
+          <div class="market-detail-item"><span>创建时间</span><strong>{{ adminStore.market.createTime }}</strong></div>
+        </div>
         <div class="action-buttons">
-          <el-button type="primary" @click="openEditDialog">编辑</el-button>
-          <el-button
+          <UiButton type="primary" @click="openEditDialog">编辑</UiButton>
+          <UiButton
             :type="adminStore.market.status === 1 ? 'warning' : 'success'"
             @click="handleToggleStatus"
           >
             {{ adminStore.market.status === 1 ? '停用' : '启用' }}
-          </el-button>
-          <el-button type="info" @click="$router.push(`/admin/market/${adminStore.market.id}`)">管理摊位</el-button>
+          </UiButton>
+          <UiButton type="info" @click="$router.push(`/admin/market/${adminStore.market.id}`)">管理摊位</UiButton>
         </div>
       </div>
 
@@ -36,28 +32,28 @@
       <div v-else class="empty-state">
         <p>您还没有创建集市，请点击右上角按钮创建。</p>
       </div>
-    </el-card>
+    </UiCard>
 
     <!-- 创建/编辑集市弹窗 -->
-    <el-dialog
+    <UiDialog
       v-model="dialogVisible"
       :title="isEdit ? '编辑集市' : '创建集市'"
       width="500px"
       @close="resetForm"
     >
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="集市名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入集市名称" />
-        </el-form-item>
-        <el-form-item label="位置" prop="location">
-          <el-input v-model="form.location" placeholder="请输入集市位置" />
-        </el-form-item>
+        <UiFormItem label="集市名称" prop="name">
+          <UiInput v-model="form.name" placeholder="请输入集市名称" />
+        </UiFormItem>
+        <UiFormItem label="位置" prop="location">
+          <UiInput v-model="form.location" placeholder="请输入集市位置" />
+        </UiFormItem>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
+        <UiButton @click="dialogVisible = false">取消</UiButton>
+        <UiButton type="primary" :loading="submitLoading" @click="handleSubmit">确定</UiButton>
       </template>
-    </el-dialog>
+    </UiDialog>
   </div>
 </template>
 
@@ -161,9 +157,15 @@ onMounted(async () => {
   display: flex;
   gap: 10px;
 }
+.market-details-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.market-detail-item { min-height: 58px; display: flex; align-items: center; gap: 16px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.market-detail-item:nth-child(odd) { border-right: 1px solid var(--line); }
+.market-detail-item:nth-last-child(-n + 2) { border-bottom: 0; }
+.market-detail-item span { min-width: 56px; color: var(--ink-muted); font-size: 13px; }.market-detail-item strong { color: var(--ink-strong); font-size: 14px; }
 .empty-state {
   text-align: center;
   color: #909399;
   padding: 40px;
 }
+@media (max-width: 640px) { .market-list-page { padding: 0; }.market-details-grid { grid-template-columns: 1fr; }.market-detail-item:nth-child(odd) { border-right: 0; }.market-detail-item:nth-last-child(-n + 2) { border-bottom: 1px solid var(--line); }.market-detail-item:last-child { border-bottom: 0; } }
 </style>

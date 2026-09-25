@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 import {
   getBoothById,
   getProductsByBoothId,
@@ -39,6 +39,7 @@ export const useUserMarketStore = defineStore("userMarket", () => {
   //  购物车
   const cartList = ref([]);
   const cartLoading = ref(false);
+  const cartCount = computed(() => cartList.value.reduce((sum, item) => sum + Number(item.quantity || 0), 0));
 
   // 每个商品的数量 (key: productId, value: quantity)
   const quantities = reactive({});
@@ -196,6 +197,7 @@ export const useUserMarketStore = defineStore("userMarket", () => {
     fetchBooth,
     fetchProducts,
     cartList,
+    cartCount,
     cartLoading,
     fetchCart,
     addProductToCart,

@@ -1,5 +1,5 @@
 <template>
-  <el-drawer v-model="visible" title="账号安全中心" size="380px">
+  <UiDrawer v-model="visible" title="账号安全中心" size="380px">
     <div class="check-main">
       <!-- 评分圆环 -->
       <div
@@ -7,19 +7,19 @@
         :class="{ 'is-scanning': scanning }"
         :style="{
           borderColor: scanning
-            ? '#409eff'
+            ? 'var(--brand-primary)'
             : realScore >= 90
-              ? '#67c23a'
+              ? 'var(--success)'
               : realScore >= 70
-                ? '#e6a23c'
-                : '#f56c6c',
+                ? 'var(--warning)'
+                : 'var(--danger)',
           boxShadow: scanning
-            ? '0 0 18px rgba(64, 158, 255, 0.25)'
-            : '0 6px 24px rgba(0, 0, 0, 0.08)',
+            ? 'var(--focus-ring)'
+            : 'var(--shadow-md)',
         }"
       >
         <!-- 分数数字：扫描中深灰，结束后动态变色 -->
-        <span class="num" :style="{ color: scanning ? '#303133' : scoreColor }">
+        <span class="num" :style="{ color: scanning ? 'var(--ink-strong)' : scoreColor }">
           {{ scanning ? randomScore : realScore }}
         </span>
         <span class="unit">分</span>
@@ -30,7 +30,7 @@
         {{ scanning ? "系统正在全面扫描安全漏洞..." : overallMessage }}
         <span
           v-if="errorOccurred && !scanning"
-          style="color: #e6a23c; margin-left: 6px"
+          class="warning-note"
           >（上次检测结果）</span
         >
       </p>
@@ -56,7 +56,7 @@
           </div>
           <div
             class="right-result"
-            :style="{ color: scanning ? '#409eff' : '#606266' }"
+            :style="{ color: scanning ? 'var(--brand-primary)' : 'var(--ink)' }"
           >
             {{ scanning ? "检测中..." : item.result }}
           </div>
@@ -65,12 +65,12 @@
 
       <!-- 底部文本 -->
       <div class="footer">
-        <el-button type="primary" plain :loading="scanning" @click="startCheck">
+        <UiButton type="primary" plain :loading="scanning" @click="startCheck">
           {{ scanning ? "正在扫描" : "重新扫描" }}
-        </el-button>
+        </UiButton>
       </div>
     </div>
-  </el-drawer>
+  </UiDrawer>
 </template>
 
 <script setup>
@@ -89,9 +89,9 @@ const errorOccurred = ref(false); // 网络异常标记，控制错误提示显�
 // 根据真实分数动态映射颜色：绿(>=90) / 橙(>=70) / 红(<70)
 const scoreColor = computed(() => {
   const s = realScore.value ?? 100;
-  if (s >= 90) return "#67c23a";
-  if (s >= 70) return "#e6a23c";
-  return "#f56c6c";
+  if (s >= 90) return "var(--success)";
+  if (s >= 70) return "var(--warning)";
+  return "var(--danger)";
 });
 
 let timer = null; // 分数动画定时器
@@ -159,7 +159,7 @@ defineExpose({ open });
   flex-direction: column;
   align-items: center;
   padding: 28px 16px;
-  background: #f5f7fa;
+  background: var(--surface-page);
   min-height: 100%;
   box-sizing: border-box;
 }
@@ -167,15 +167,15 @@ defineExpose({ open });
 .score-circle {
   width: 140px;
   height: 140px;
-  border: 6px solid #e4e7ed;
+  border: 6px solid var(--line);
   border-radius: 50%;
-  background: #ffffff;
+  background: var(--surface-card);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   margin-bottom: 22px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-md);
   transition:
     border-color 0.4s,
     box-shadow 0.4s;
@@ -197,18 +197,18 @@ defineExpose({ open });
 .unit {
   font-size: 14px;
   font-weight: 500;
-  color: #909399;
+  color: var(--ink-muted);
   letter-spacing: 1px;
 }
 
 .tip-text {
   font-size: 14px;
-  color: #606266;
+  color: var(--ink);
   margin: 0 0 24px 0;
   padding: 6px 18px;
-  background: #ffffff;
+  background: var(--surface-card);
   border-radius: 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .check-content {
@@ -221,7 +221,7 @@ defineExpose({ open });
   justify-content: space-between;
   align-items: center;
   padding: 14px 0;
-  border-bottom: 1px dashed #dcdfe6;
+  border-bottom: 1px dashed var(--line);
   transition: background-color 0.25s;
 }
 
@@ -230,7 +230,7 @@ defineExpose({ open });
 }
 
 .item-row:hover {
-  background-color: #f0f2f5;
+  background-color: var(--surface-subtle);
 }
 
 .left {
@@ -243,24 +243,24 @@ defineExpose({ open });
   font-size: 18px;
 }
 .status-icon.success {
-  color: #67c23a;
+  color: var(--success);
 }
 .status-icon.warning {
-  color: #e6a23c;
+  color: var(--warning);
 }
 .status-icon.is-loading {
   animation: rotating 2s linear infinite;
-  color: #409eff;
+  color: var(--brand-primary);
 }
 
 .label {
   font-size: 15px;
-  color: #303133;
+  color: var(--ink-strong);
 }
 
 .right-result {
   font-size: 13px;
-  color: #606266;
+  color: var(--ink);
   text-align: right;
   max-width: 130px;
   word-break: break-word;
@@ -272,6 +272,8 @@ defineExpose({ open });
   justify-content: center;
   margin-top: 28px;
 }
+
+.warning-note { color: var(--warning); margin-left: 6px; }
 
 .footer .el-button {
   min-width: 140px;

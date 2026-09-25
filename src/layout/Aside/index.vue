@@ -1,11 +1,17 @@
 <template>
-  <aside class="aside">
+  <div
+    v-if="!appStore.sidebarCollapsed"
+    class="aside-backdrop"
+    aria-hidden="true"
+    @click="appStore.toggleSidebar"
+  />
+  <aside class="aside" :class="{ 'is-open': !appStore.sidebarCollapsed }">
     <el-menu
       :default-active="activeMenu"
       :collapse="appStore.sidebarCollapsed"
-      background-color="#2c3e50"
-      text-color="#bfcbd9"
-      active-text-color="#409eff"
+      background-color="var(--ink-strong)"
+      text-color="#b9cbd0"
+      active-text-color="#ffffff"
       router
       class="aside-menu"
     >
@@ -94,5 +100,46 @@ const activeMenu = computed(() => route.path)
 /* Element Plus 折叠后的宽度默认是 64px */
 .aside-menu.el-menu--collapse {
   width: 64px;
+}
+
+.aside-backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .aside {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 1100;
+    width: 248px !important;
+    height: 100dvh;
+    transform: translateX(-102%);
+    box-shadow: 18px 0 45px rgba(14, 39, 45, .18);
+    transition: transform .24s ease;
+  }
+
+  .aside.is-open {
+    transform: translateX(0);
+  }
+
+  .aside-menu,
+  .aside-menu:not(.el-menu--collapse),
+  .aside-menu.el-menu--collapse {
+    width: 248px !important;
+  }
+
+  .aside-menu.el-menu--collapse .el-menu-item,
+  .aside-menu.el-menu--collapse .el-sub-menu__title {
+    padding-left: 22px !important;
+  }
+
+  .aside-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1099;
+    background: rgba(24, 49, 59, .38);
+    backdrop-filter: blur(2px);
+  }
 }
 </style>

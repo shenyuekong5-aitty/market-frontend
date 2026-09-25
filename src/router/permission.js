@@ -20,7 +20,7 @@ router.beforeEach(async (to, from, next) => {
       const role = userStore.userInfo.role;
       if (role === "admin") next({ name: "AdminDashboard" });
       else if (role === "vendor") next({ name: "VendorHome" });
-      else next({ name: "MarketList" });
+      else next();
       return;
     }
 
@@ -29,7 +29,7 @@ router.beforeEach(async (to, from, next) => {
       const role = userStore.userInfo.role;
       if (role === "admin") next({ name: "AdminDashboard" });
       else if (role === "vendor") next({ name: "VendorHome" });
-      else next({ name: "MarketList" });
+      else next({ path: "/" });
       return;
     }
 

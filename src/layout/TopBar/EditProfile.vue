@@ -1,65 +1,65 @@
 <template>
-  <el-dialog v-model="visible" title="修改资料" width="440px" center @close="handleClose">
+  <UiDialog v-model="visible" title="修改资料" width="440px" center @close="handleClose">
     <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
       <!-- 头像：预览使用本地 blob 或现有 URL -->
-      <el-form-item label="头像">
+      <UiFormItem label="头像">
         <div class="avatar-upload" @click="triggerFileInput">
           <input type="file" ref="fileInputRef" accept="image/*" style="display: none" @change="handleAvatarChange" />
           <img v-if="form.avatarPreview" :src="form.avatarPreview" class="avatar-preview" />
           <el-icon v-else class="avatar-placeholder-icon"><Plus /></el-icon>
         </div>
         <span class="upload-tip">点击更换头像</span>
-      </el-form-item>
+      </UiFormItem>
 
       <!-- 昵称 -->
-      <el-form-item label="昵称" prop="nickname">
-        <el-input v-model="form.nickname" maxlength="20" placeholder="请输入昵称" clearable />
-      </el-form-item>
+      <UiFormItem label="昵称" prop="nickname">
+        <UiInput v-model="form.nickname" maxlength="20" placeholder="请输入昵称" clearable />
+      </UiFormItem>
 
       <!-- 性别 -->
-      <el-form-item label="性别">
-        <el-radio-group v-model="form.gender">
-          <el-radio :label="1">男</el-radio>
-          <el-radio :label="0">女</el-radio>
-          <el-radio :label="2">保密</el-radio>
-        </el-radio-group>
-      </el-form-item>
+      <UiFormItem label="性别">
+        <UiRadioGroup v-model="form.gender">
+          <UiRadio :label="1">男</UiRadio>
+          <UiRadio :label="0">女</UiRadio>
+          <UiRadio :label="2">保密</UiRadio>
+        </UiRadioGroup>
+      </UiFormItem>
 
       <!-- 手机号修改（折叠） -->
       <el-collapse v-model="activeCollapse" style="border: none">
         <el-collapse-item title="更换手机号" name="phone">
-          <el-form-item label="新手机号" prop="newPhone">
-            <el-input
+          <UiFormItem label="新手机号" prop="newPhone">
+            <UiInput
               v-model="form.newPhone"
               maxlength="11"
               placeholder="请输入新手机号"
               @blur="checkPhoneRegistered"  
             />
-          </el-form-item>
-          <el-form-item label="验证码">
+          </UiFormItem>
+          <UiFormItem label="验证码">
             <div style="display: flex; gap: 8px;">
-              <el-input v-model="form.phoneCode" placeholder="请输入验证码" style="flex:1" />
-              <el-button
+              <UiInput v-model="form.phoneCode" placeholder="请输入验证码" style="flex:1" />
+              <UiButton
                 :disabled="smsSending || !form.newPhone || phoneExists"  
                 @click="sendPhoneCode"
                 style="width: 120px;"
               >
                 {{ smsSending ? smsCountdown + '秒' : '获取验证码' }}
-              </el-button>
+              </UiButton>
             </div>
-          </el-form-item>
-          <el-form-item label="登录密码" prop="confirmPassword">
-            <el-input v-model="form.confirmPassword" type="password" placeholder="请输入当前密码" show-password />
-          </el-form-item>
+          </UiFormItem>
+          <UiFormItem label="登录密码" prop="confirmPassword">
+            <UiInput v-model="form.confirmPassword" type="password" placeholder="请输入当前密码" show-password />
+          </UiFormItem>
         </el-collapse-item>
       </el-collapse>
     </el-form>
 
     <template #footer>
-      <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" :loading="loading" @click="handleSubmit">保存</el-button>
+      <UiButton @click="visible = false">取消</UiButton>
+      <UiButton type="primary" :loading="loading" @click="handleSubmit">保存</UiButton>
     </template>
-  </el-dialog>
+  </UiDialog>
 </template>
 
 <script setup>

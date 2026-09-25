@@ -95,15 +95,9 @@ const vendorRoutes = [
     component: () => import("@/views/vendor/IncomeStats.vue"),
     meta: { title: "收入统计", icon: "TrendCharts", roles: ["vendor"] },
   },
-  {
-    path: "vendor/messages",
-    name: "VendorMessages",
-    component: () => import("@/views/vendor/Messages.vue"),
-    meta: { title: "消息中心", icon: "Bell", roles: ["vendor"] },
-  },
 ];
 
-// 普通用户路由（作为 Layout 的 children）
+// 普通用户路由（作为 Layout 的 children，path 不带 /）
 const userRoutes = [
   {
     path: "markets",
@@ -152,11 +146,21 @@ const userRoutes = [
     component: () => import("@/views/user/Reservations.vue"),
     meta: { title: "我的预定", icon: "Calendar", roles: ["user"] },
   },
+];
+
+// 共享路由（user 和 vendor 共用，作为 Layout 的子路由）
+const sharedRoutes = [
+  {
+    path: "profile",
+    name: "SharedProfile",
+    component: () => import("@/views/common/Profile.vue"),
+    meta: { title: "个人信息", icon: "User", roles: ["admin", "user", "vendor"] },
+  },
   {
     path: "messages",
-    name: "UserMessages",
+    name: "SharedMessages",
     component: () => import("@/views/user/Messages.vue"),
-    meta: { title: "消息中心", icon: "Bell", roles: ["user"] },
+    meta: { title: "消息中心", icon: "Bell", roles: ["user", "vendor"] },
   },
 ];
 
@@ -167,3 +171,5 @@ export function getRoleChildrenRoutes(role) {
   if (role === "user") return userRoutes;
   return [];
 }
+
+export { adminRoutes, vendorRoutes, userRoutes, sharedRoutes };

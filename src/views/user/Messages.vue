@@ -1,31 +1,31 @@
 <template>
   <div class="messages-page">
-    <el-card class="msg-card" shadow="never">
+    <UiCard class="msg-card">
       <template #header>
         <div class="msg-header">
           <div class="header-left">
             <el-icon size="20"><Bell /></el-icon>
             <span class="header-title">消息中心</span>
-            <el-badge
+            <UiBadge
               v-if="notificationStore.unreadCount > 0"
               :value="notificationStore.unreadCount"
               class="unread-badge"
             />
           </div>
-          <el-button
+          <UiButton
             type="primary"
             text
             :disabled="notificationStore.unreadCount === 0"
             @click="handleReadAll"
           >
             全部标为已读
-          </el-button>
+          </UiButton>
         </div>
       </template>
 
       <!-- 空状态 -->
       <div v-if="notificationStore.list.length === 0" class="empty-state">
-        <el-empty description="暂无消息" :image-size="80" />
+        <UiEmpty description="暂无消息" />
       </div>
 
       <!-- 消息列表 -->
@@ -56,7 +56,7 @@
           </div>
         </div>
       </div>
-    </el-card>
+    </UiCard>
   </div>
 </template>
 
@@ -106,23 +106,23 @@ const getIcon = (type) => {
 // 根据消息类型返回不同图标背景色
 const getIconBg = (type) => {
   const map = {
-    '预定请求': '#e6f7ff',
-    '预定结果': '#fff7e6',
-    '申请结果': '#f6ffed',
-    '系统通知': '#f0f5ff',
+    '预定请求': 'var(--brand-primary-soft)',
+    '预定结果': '#fff3d8',
+    '申请结果': '#e8f5ef',
+    '系统通知': 'var(--surface-subtle)',
   }
-  return map[type] || '#f5f5f5'
+  return map[type] || 'var(--surface-subtle)'
 }
 
 // 根据消息类型返回不同图标颜色
 const getIconColor = (type) => {
   const map = {
-    '预定请求': '#1890ff',
-    '预定结果': '#fa8c16',
-    '申请结果': '#52c41a',
-    '系统通知': '#2f54eb',
+    '预定请求': 'var(--brand-primary)',
+    '预定结果': 'var(--warning)',
+    '申请结果': 'var(--success)',
+    '系统通知': 'var(--ink)',
   }
-  return map[type] || '#8c8c8c'
+  return map[type] || 'var(--ink-muted)'
 }
 
 // 格式化时间（截取前16位，如 2024-01-01 12:30）
@@ -137,11 +137,7 @@ const formatTime = (time) => {
   padding: 20px;
 }
 
-.msg-card {
-  border-radius: 12px;
-  border: none;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-}
+.msg-card { border-radius: var(--radius-md); border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
 
 .msg-header {
   display: flex;
@@ -158,7 +154,7 @@ const formatTime = (time) => {
 .header-title {
   font-size: 18px;
   font-weight: 600;
-  color: #303133;
+  color: var(--ink-strong);
 }
 
 .unread-badge {
@@ -180,7 +176,7 @@ const formatTime = (time) => {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--line);
   transition: all 0.2s;
   cursor: pointer;
 }
@@ -190,15 +186,15 @@ const formatTime = (time) => {
 }
 
 .msg-item:hover {
-  background: #fafafa;
+  background: var(--surface-subtle);
 }
 
 .msg-item.is-unread {
-  background: #fafbff;
+  background: var(--brand-primary-soft);
 }
 
 .msg-item.is-unread:hover {
-  background: #f0f5ff;
+  background: var(--brand-primary-soft);
 }
 
 .msg-left {
@@ -232,8 +228,8 @@ const formatTime = (time) => {
 
 .msg-type-tag {
   font-size: 13px;
-  color: #606266;
-  background: #f5f5f5;
+  color: var(--ink);
+  background: var(--surface-subtle);
   padding: 2px 8px;
   border-radius: 4px;
   font-weight: 500;
@@ -243,12 +239,12 @@ const formatTime = (time) => {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #f5222d;
+  background: var(--danger);
 }
 
 .msg-text {
   font-size: 14px;
-  color: #303133;
+  color: var(--ink-strong);
   line-height: 1.5;
   word-break: break-all;
 }
@@ -260,7 +256,7 @@ const formatTime = (time) => {
 
 .msg-time {
   font-size: 12px;
-  color: #c0c4cc;
+  color: var(--ink-muted);
   white-space: nowrap;
 }
 </style>

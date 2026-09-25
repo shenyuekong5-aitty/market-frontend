@@ -1,75 +1,75 @@
 <template>
   <div class="market-detail-page">
     <!-- 集市信息头部 -->
-    <el-card v-if="adminStore.market" class="market-info-card">
+    <UiCard v-if="adminStore.market" class="market-info-card">
       <div class="market-header">
         <h3>{{ adminStore.market.name }}</h3>
-        <el-tag :type="adminStore.market.status === 1 ? 'success' : 'danger'">
+        <UiTag :type="adminStore.market.status === 1 ? 'success' : 'danger'">
           {{ adminStore.market.status === 1 ? "启用中" : "已停用" }}
-        </el-tag>
+        </UiTag>
       </div>
       <p>位置：{{ adminStore.market.location }}</p>
-      <el-button type="primary" @click="openCreateDialog" style="margin-top: 10px">新增摊位</el-button>
-    </el-card>
+      <UiButton type="primary" @click="openCreateDialog" style="margin-top: 10px">新增摊位</UiButton>
+    </UiCard>
 
     <!-- 摊位列表 -->
-    <el-card class="booth-list-card">
+    <UiCard class="booth-list-card">
       <template #header>
         <span>摊位列表（共 {{ adminStore.boothList.length }} 个）</span>
       </template>
-      <el-table :data="adminStore.boothList" border style="width: 100%" v-loading="boothLoading">
-        <el-table-column prop="id" label="ID" width="60" />
-        <el-table-column prop="title" label="摊位名称" />
-        <el-table-column prop="position" label="位置" />
-        <el-table-column prop="openTime" label="营业时间" />
-        <el-table-column label="状态">
+      <UiTable :data="adminStore.boothList" border style="width: 100%" v-loading="boothLoading">
+        <UiTableColumn prop="id" label="ID" width="60" />
+        <UiTableColumn prop="title" label="摊位名称" />
+        <UiTableColumn prop="position" label="位置" />
+        <UiTableColumn prop="openTime" label="营业时间" />
+        <UiTableColumn label="状态">
           <template #default="{ row }">
-            <el-tag :type="row.status === '空闲' ? 'success' : row.status === '已占用' ? 'warning' : 'info'">
+            <UiTag :type="row.status === '空闲' ? 'success' : row.status === '已占用' ? 'warning' : 'info'">
               {{ row.status }}
-            </el-tag>
+            </UiTag>
           </template>
-        </el-table-column>
-        <el-table-column label="操作" width="240">
+        </UiTableColumn>
+        <UiTableColumn label="操作" width="240">
           <template #default="{ row }">
-            <el-button size="small" @click="openEditDialog(row)">编辑</el-button>
-            <el-button size="small" :type="row.status === '停用' ? 'success' : 'warning'" @click="handleToggleStatus(row)">
+          <UiButton size="small" @click="openEditDialog(row)">编辑</UiButton>
+          <UiButton size="small" :type="row.status === '停用' ? 'success' : 'warning'" @click="handleToggleStatus(row)">
               {{ row.status === "停用" ? "启用" : "停用" }}
-            </el-button>
-            <el-button size="small" type="danger" @click="handleDelete(row)" :disabled="row.status !== '空闲'">删除</el-button>
+          </UiButton>
+          <UiButton size="small" type="danger" @click="handleDelete(row)" :disabled="row.status !== '空闲'">删除</UiButton>
           </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
+        </UiTableColumn>
+      </UiTable>
+    </UiCard>
 
     <!-- 新增/编辑摊位弹窗 -->
-    <el-dialog v-model="dialogVisible" :title="isEdit ? '编辑摊位' : '新增摊位'" width="500px" @close="resetForm">
+    <UiDialog v-model="dialogVisible" :title="isEdit ? '编辑摊位' : '新增摊位'" width="500px" @close="resetForm">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <!-- 新增时只显示位置，编辑时显示所有字段 -->
         <template v-if="!isEdit">
-          <el-form-item label="摊位位置" prop="position">
-            <el-input v-model="form.position" placeholder="如：A区03号" />
-          </el-form-item>
+          <UiFormItem label="摊位位置" prop="position">
+            <UiInput v-model="form.position" placeholder="如：A区03号" />
+          </UiFormItem>
         </template>
         <template v-else>
-          <el-form-item label="摊位名称" prop="title">
-            <el-input v-model="form.title" />
-          </el-form-item>
-          <el-form-item label="位置" prop="position">
-            <el-input v-model="form.position" />
-          </el-form-item>
-          <el-form-item label="描述">
-            <el-input v-model="form.description" type="textarea" />
-          </el-form-item>
-          <el-form-item label="营业时间">
-            <el-input v-model="form.openTime" placeholder="如 08:00-20:00" />
-          </el-form-item>
+          <UiFormItem label="摊位名称" prop="title">
+            <UiInput v-model="form.title" />
+          </UiFormItem>
+          <UiFormItem label="位置" prop="position">
+            <UiInput v-model="form.position" />
+          </UiFormItem>
+          <UiFormItem label="描述">
+            <UiInput v-model="form.description" type="textarea" />
+          </UiFormItem>
+          <UiFormItem label="营业时间">
+            <UiInput v-model="form.openTime" placeholder="如 08:00-20:00" />
+          </UiFormItem>
         </template>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
+        <UiButton @click="dialogVisible = false">取消</UiButton>
+        <UiButton type="primary" :loading="submitLoading" @click="handleSubmit">确定</UiButton>
       </template>
-    </el-dialog>
+    </UiDialog>
   </div>
 </template>
 

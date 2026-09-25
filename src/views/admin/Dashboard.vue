@@ -1,219 +1,117 @@
 <template>
   <div class="dashboard">
-    <el-row :gutter="20" class="dashboard-row">
-      <!-- 我的集市卡片 -->
-      <el-col :span="8" class="dashboard-col">
-        <el-card shadow="hover" class="dashboard-card">
-          <template #header>
-            <div class="card-header">
-              <span>我的集市</span>
-              <el-tag v-if="adminStore.market" type="success">运营中</el-tag>
+    <div class="dashboard-grid">
+      <div class="dashboard-col">
+        <section class="market-card dashboard-card">
+          <div class="card-header">
+            <div>
+              <span class="eyebrow">MARKET PROFILE</span>
+              <h2>我的集市</h2>
             </div>
-          </template>
-          <div v-if="adminStore.market" class="market-info">
-            <p><strong>名称：</strong>{{ adminStore.market.name }}</p>
-            <p><strong>位置：</strong>{{ adminStore.market.location }}</p>
-            <p>
-              <strong>状态：</strong
-              >{{ adminStore.market.status === 1 ? "启用" : "停用" }}
-            </p>
+            <UiTag v-if="adminStore.market" type="success">运营中</UiTag>
           </div>
-          <div v-else class="empty-state">
-            <p>您还没有管理任何集市</p>
-            <el-button
-              type="primary"
-              size="small"
-              @click="$router.push('/admin/market/list')"
-              >创建集市</el-button
-            >
+          <div class="card-body">
+            <div v-if="adminStore.market" class="market-info">
+              <p><strong>名称：</strong>{{ adminStore.market.name }}</p>
+              <p><strong>位置：</strong>{{ adminStore.market.location }}</p>
+              <p><strong>状态：</strong>{{ adminStore.market.status === 1 ? "启用" : "停用" }}</p>
+            </div>
+            <div v-else class="empty-state">
+              <p>您还没有管理任何集市</p>
+              <UiButton type="primary" size="small" @click="$router.push('/admin/market/list')">创建集市</UiButton>
+            </div>
           </div>
-        </el-card>
-      </el-col>
+        </section>
+      </div>
 
-      <!-- 待审批申请卡片 -->
-      <el-col :span="8" class="dashboard-col">
-        <el-card shadow="hover" class="dashboard-card">
-          <template #header>
-            <div class="card-header">
-              <span>待审批申请</span>
-              <el-badge :value="adminStore.applyList.length" :max="99" />
+      <div class="dashboard-col">
+        <section class="market-card dashboard-card">
+          <div class="card-header">
+            <div>
+              <span class="eyebrow">NEEDS REVIEW</span>
+              <h2>待审批申请</h2>
             </div>
-          </template>
-          <div
-            v-if="adminStore.applyList.length > 0"
-            class="apply-list-wrapper"
-          >
-            <div
-              v-for="apply in adminStore.applyList"
-              :key="apply.id"
-              class="apply-item"
-            >
-              <p><strong>申请人：</strong>{{ apply.vendorName }}</p>
-              <p><strong>类型：</strong>{{ apply.type }}</p>
-              <p><strong>目标摊位：</strong>{{ apply.targetBoothTitle }}</p>
-              <p><strong>申请时间：</strong>{{ apply.applyTime }}</p>
-              <div class="apply-actions">
-                <el-button
-                  type="success"
-                  size="small"
-                  @click="handleApprove(apply.id)"
-                  >通过</el-button
-                >
-                <el-button
-                  type="danger"
-                  size="small"
-                  @click="handleReject(apply.id)"
-                  >拒绝</el-button
-                >
+            <UiBadge :value="adminStore.applyList.length" :max="99" />
+          </div>
+          <div class="card-body">
+            <div v-if="adminStore.applyList.length > 0" class="apply-list-wrapper">
+              <div v-for="apply in adminStore.applyList" :key="apply.id" class="apply-item">
+                <p><strong>申请人：</strong>{{ apply.vendorName }}</p>
+                <p><strong>类型：</strong>{{ apply.type }}</p>
+                <p><strong>目标摊位：</strong>{{ apply.targetBoothTitle }}</p>
+                <p><strong>申请时间：</strong>{{ apply.applyTime }}</p>
+                <div class="apply-actions">
+                  <UiButton type="success" size="small" @click="handleApprove(apply.id)">通过</UiButton>
+                  <UiButton type="danger" size="small" @click="handleReject(apply.id)">拒绝</UiButton>
+                </div>
               </div>
             </div>
+            <div v-else class="empty-state">暂无待审批申请</div>
           </div>
-          <div v-else class="empty-state">暂无待审批申请</div>
-        </el-card>
-      </el-col>
+        </section>
+      </div>
 
-      <!-- 快捷操作卡片 -->
-      <el-col :span="8" class="dashboard-col">
-        <el-card shadow="hover" class="dashboard-card">
-          <template #header>快捷操作</template>
-          <div class="quick-actions">
-            <div
-              class="action-btn"
-              @click="$router.push('/admin/operation-log')"
-            >
-              操作日志
-            </div>
-            <div
-              class="action-btn"
-              @click="$router.push('/admin/income-stats')"
-            >
-              收入统计
-            </div>
-            <div class="action-btn" @click="$router.push('/admin/market/list')">
-              集市管理
+      <div class="dashboard-col">
+        <section class="market-card dashboard-card">
+          <div class="card-header">
+            <div>
+              <span class="eyebrow">QUICK ACCESS</span>
+              <h2>快捷操作</h2>
             </div>
           </div>
-        </el-card>
-      </el-col>
-    </el-row>
+          <div class="card-body">
+            <div class="quick-actions">
+              <button class="action-btn" @click="$router.push('/admin/operation-log')"><span>操作日志</span><b>→</b></button>
+              <button class="action-btn" @click="$router.push('/admin/income-stats')"><span>收入统计</span><b>→</b></button>
+              <button class="action-btn" @click="$router.push('/admin/market/list')"><span>集市管理</span><b>→</b></button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { onMounted, watch } from "vue";
 import { useAdminStore } from "@/store/modules/admin";
-import { useNotificationStore } from "@/store/modules/notification"
+import { useNotificationStore } from "@/store/modules/notification";
 
 const adminStore = useAdminStore();
-const notificationStore = useNotificationStore()
+const notificationStore = useNotificationStore();
 
-const handleApprove = (id) => {
-  adminStore.handleApprove(id);
-};
+const handleApprove = (id) => adminStore.handleApprove(id);
+const handleReject = (id) => adminStore.handleReject(id);
 
-const handleReject = (id) => {
-  adminStore.handleReject(id);
-};
-
-onMounted(async () => {
-  await adminStore.refreshAll();
-});
-watch(
-  () => notificationStore.unreadCount,
-  () => {
-    adminStore.refreshAll()
-  }
-)
+onMounted(async () => { await adminStore.refreshAll(); });
+watch(() => notificationStore.unreadCount, () => { adminStore.refreshAll(); });
 </script>
 
 <style scoped>
-.dashboard {
-  padding: 20px;
-}
-.dashboard-row {
-  display: flex;
-  flex-wrap: wrap;
-}
-.dashboard-col {
-  display: flex;
-}
-.dashboard-card {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-.dashboard-card :deep(.el-card__body) {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.market-info p,
-.apply-item p {
-  margin: 8px 0;
-  font-size: 14px;
-}
-.apply-item {
-  padding: 12px 0;
-  border-bottom: 1px solid #ebeef5;
-}
-.apply-item:last-child {
-  border-bottom: none;
-}
-.apply-actions {
-  margin-top: 8px;
-  display: flex;
-  gap: 8px;
-}
-.empty-state {
-  text-align: center;
-  color: #909399;
-  padding: 20px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.quick-actions {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.action-btn {
-  width: 100%;
-  padding: 10px 15px;
-  background-color: #409eff;
-  color: white;
-  border-radius: 4px;
-  text-align: left;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  box-sizing: border-box;
-  font-size: 14px;
-  line-height: 1.5;
-}
-.action-btn:hover {
-  background-color: #337ecc;
-}
+.dashboard { padding: 4px; }
+.dashboard-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.dashboard-col { display: flex; }
+.dashboard-card { flex: 1; min-height: 260px; display: flex; flex-direction: column; }
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 22px 24px 14px; }
+.card-header h2 { margin: 3px 0 0; color: var(--ink-strong); font-size: 18px; letter-spacing: -.02em; }
+.eyebrow { color: var(--brand-primary); font-size: 10px; font-weight: 700; letter-spacing: .12em; }
+.card-body { flex: 1; padding: 6px 24px 24px; display: flex; flex-direction: column; }
+.market-card { position: relative; overflow: hidden; background: var(--surface-card); border: 1px solid var(--line); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); transition: transform .2s ease, box-shadow .2s ease; }
+.market-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 3px; background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary)); }
+.market-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.market-info p, .apply-item p { margin: 8px 0; color: var(--ink); font-size: 14px; }
+.market-info strong, .apply-item strong { color: var(--ink-strong); }
+.apply-item { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.apply-item:last-child { border-bottom: none; }
+.apply-actions { margin-top: 10px; display: flex; gap: 8px; }
+.empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--ink-muted); padding: 20px; }
+.quick-actions { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+.action-btn { width: 100%; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-subtle); color: var(--ink-strong); text-align: left; cursor: pointer; transition: .2s ease; }
+.action-btn b { color: var(--brand-primary); font-size: 18px; font-weight: 400; }
+.action-btn:hover { color: #fff; border-color: var(--brand-primary); background: var(--brand-primary); transform: translateX(3px); }
+.action-btn:hover b { color: #fff; }
+.apply-list-wrapper { max-height: 400px; overflow-y: auto; padding-right: 4px; }
 
-.apply-list-wrapper {
-  max-height: 400px; /* 根据卡片高度调整，可设为 300~500px */
-  overflow-y: auto;
-  padding-right: 4px; /* 给滚动条留出空间 */
-}
-
-/* 美化滚动条（可选） */
-.apply-list-wrapper::-webkit-scrollbar {
-  width: 4px;
-}
-.apply-list-wrapper::-webkit-scrollbar-thumb {
-  background: #dcdfe6;
-  border-radius: 2px;
-}
+@media (max-width: 900px) { .dashboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .dashboard { padding: 0; } .dashboard-grid { grid-template-columns: 1fr; gap: 14px; } .dashboard-card { min-height: 0; } .apply-list-wrapper { max-height: none; } .card-header { padding: 18px 18px 12px; } .card-body { padding: 4px 18px 18px; } }
 </style>

@@ -9,7 +9,8 @@
 
 <style scoped>
 .main {
-  flex: 1; 
+  flex: 1;
+  min-width: 0;
   
   padding: 20px;
   box-sizing: border-box; 

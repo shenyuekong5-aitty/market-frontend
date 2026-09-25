@@ -1,5 +1,5 @@
 <template>
-  <el-dialog
+  <UiDialog
     v-model="visible"
     title="修改密码"
     width="450px"
@@ -13,41 +13,41 @@
       label-position="right"
       style="padding: 20px 20px 0 0"
     >
-      <el-form-item label="旧密码" prop="password">
-        <el-input
+      <UiFormItem label="旧密码" prop="password">
+        <UiInput
           v-model="form.password"
           placeholder="请输入原登录密码"
           show-password
         />
-      </el-form-item>
+      </UiFormItem>
 
-      <el-form-item label="新密码" prop="newPassword">
-        <el-input
+      <UiFormItem label="新密码" prop="newPassword">
+        <UiInput
           v-model="form.newPassword"
           placeholder="6-18位，需包含数字和字母"
           show-password
         />
-      </el-form-item>
+      </UiFormItem>
 
-      <el-form-item label="确认密码" prop="confirmPassword">
-        <el-input
+      <UiFormItem label="确认密码" prop="confirmPassword">
+        <UiInput
           v-model="form.confirmPassword"
           placeholder="请再次输入新密码"
           show-password
           @keyup.enter="submit"
         />
-      </el-form-item>
+      </UiFormItem>
     </el-form>
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="visible = false">取消</el-button>
-        <el-button type="primary" :loading="loading" @click="submit"
-          >确认修改</el-button
+        <UiButton @click="visible = false">取消</UiButton>
+        <UiButton type="primary" :loading="loading" @click="submit"
+          >确认修改</UiButton
         >
       </span>
     </template>
-  </el-dialog>
+  </UiDialog>
 </template>
 
 <script setup>

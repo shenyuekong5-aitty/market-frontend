@@ -7,38 +7,38 @@
         <Expand v-else />
       </el-icon>
       <!-- 显示当前导航路径的面包屑 -->
-      <el-breadcrumb :separator-icon="ArrowRight">
-        <template v-if="breadcrumbList.length === 0">
-          <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+      <nav class="app-breadcrumb" aria-label="面包屑导航">
+        <router-link v-if="breadcrumbList.length === 0" to="/">首页</router-link>
+        <template v-for="(item, index) in breadcrumbList" :key="item.path">
+          <span class="crumb-separator" aria-hidden="true">/</span>
+          <router-link
+            :class="{ current: index === breadcrumbList.length - 1 }"
+            :to="{ path: item.path }"
+          >
+            {{ item.meta?.title || item.name }}
+          </router-link>
         </template>
-        <el-breadcrumb-item
-          v-for="item in breadcrumbList"
-          :key="item.path"
-          :to="{ path: item.path }"
-        >
-          {{ item.meta?.title || item.name }}
-        </el-breadcrumb-item>
-      </el-breadcrumb>
+      </nav>
     </div>
 
     <div class="right">
       <!-- 设置按钮区 -->
       <div class="setting">
         <!-- 销毁后重新创建main组件 -->
-        <el-button
+        <UiButton
           circle
           :icon="Refresh"
           size="small"
           @click="appStore.refresh"
         />
         <!-- mian是否全屏显示 -->
-        <el-button circle size="small" @click="handleFullScreen">
+        <UiButton circle size="small" @click="handleFullScreen">
           <el-icon><FullScreen /></el-icon>
-        </el-button>
+        </UiButton>
       </div>
 
       <!-- 消息通知铃铛 -->
-      <el-badge
+      <UiBadge
         :value="notificationStore.unreadCount"
         :max="99"
         :hidden="notificationStore.unreadCount === 0"
@@ -46,7 +46,7 @@
         <el-icon class="bell-icon" @click="goToMessages">
           <Bell />
         </el-icon>
-      </el-badge>
+      </UiBadge>
 
       <!-- 用户信息及下拉 -->
       <div class="userinfo">
@@ -62,31 +62,19 @@
         <span class="username">{{
           userStore.userInfo.nickname || "用户"
         }}</span>
-        <el-dropdown>
-          <span class="el-dropdown-link">
-            更多
-            <el-icon><ArrowDown /></el-icon>
-          </span>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="checkAccountRef?.open()"
-                >账号检测</el-dropdown-item
-              >
-              <el-dropdown-item @click="editProfileRef?.open()"
-                >修改资料</el-dropdown-item
-              >
-              <el-dropdown-item @click="updatePasswordRef?.open()"
-                >修改密码</el-dropdown-item
-              >
-              <el-dropdown-item @click="handleLogout"
-                >退出登录</el-dropdown-item
-              >
-              <el-dropdown-item divided @click="handleDeactivate"
-                >注销账号</el-dropdown-item
-              >
-            </el-dropdown-menu>
+        <UiDropdown>
+          <template #trigger>
+            <span class="dropdown-link">
+              更多
+              <el-icon><ArrowDown /></el-icon>
+            </span>
           </template>
-        </el-dropdown>
+          <button type="button" @click="checkAccountRef?.open()">账号检测</button>
+          <button type="button" @click="editProfileRef?.open()">修改资料</button>
+          <button type="button" @click="updatePasswordRef?.open()">修改密码</button>
+          <button type="button" @click="handleLogout">退出登录</button>
+          <button type="button" class="is-danger" @click="handleDeactivate">注销账号</button>
+        </UiDropdown>
       </div>
     </div>
 
@@ -106,7 +94,6 @@ import {
   Fold,
   Expand,
   ArrowDown,
-  ArrowRight,
   Refresh,
   FullScreen,
   Bell,
@@ -154,8 +141,6 @@ const goToMessages = () => {
   const role = userStore.userInfo.role;
   if (role === "admin") {
     router.push("/admin/messages");
-  } else if (role === "vendor") {
-    router.push("/vendor/messages");
   } else {
     router.push("/messages");
   }
@@ -231,8 +216,8 @@ onUnmounted(() => {
 <style scoped>
 .topbar {
   height: var(--topbar-height, 60px);
-  background-color: #409eff;
-  color: white;
+  background-color: var(--surface-card);
+  color: var(--ink-strong);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -259,20 +244,36 @@ onUnmounted(() => {
   transform: scale(1.1);
 }
 
-:deep(.el-breadcrumb) {
+.app-breadcrumb {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-:deep(.el-breadcrumb__inner) {
-  color: rgba(255, 255, 255, 0.85);
+.app-breadcrumb a {
+  color: var(--ink-muted);
   font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-decoration: none;
 }
 
-:deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
-  color: white;
-  font-weight: 500;
+.app-breadcrumb a:hover {
+  color: var(--brand-primary);
+}
+
+.app-breadcrumb .crumb-separator {
+  flex-shrink: 0;
+  color: var(--ink-faint);
+}
+
+.app-breadcrumb a.current {
+  color: var(--ink-strong);
+  font-weight: 650;
 }
 
 .right {
@@ -289,7 +290,7 @@ onUnmounted(() => {
 
 .bell-icon {
   font-size: 20px;
-  color: white;
+  color: var(--brand-primary);
   cursor: pointer;
   transition: transform 0.2s;
 }
@@ -317,7 +318,7 @@ onUnmounted(() => {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: var(--brand-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -329,20 +330,42 @@ onUnmounted(() => {
 
 .username {
   font-size: 16px;
-  color: white;
+  color: var(--ink-strong);
 }
 
-.el-dropdown-link {
+.dropdown-link {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: white;
+  color: var(--ink);
   font-size: 14px;
   cursor: pointer;
   outline: none;
 }
 
-.el-dropdown-link:focus {
+.dropdown-link:focus {
   outline: none;
+}
+
+.ui-dropdown :deep(.is-danger) {
+  margin-top: 4px;
+  border-top: 1px solid var(--line) !important;
+  border-radius: 0 0 9px 9px !important;
+  color: var(--danger) !important;
+}
+
+@media (max-width: 767px) {
+  .app-breadcrumb {
+    gap: 6px;
+  }
+
+  .app-breadcrumb a {
+    max-width: 42vw;
+    font-size: 13px;
+  }
+
+  .app-breadcrumb .crumb-separator {
+    font-size: 12px;
+  }
 }
 </style>
