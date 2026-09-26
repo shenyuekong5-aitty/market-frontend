@@ -63,20 +63,20 @@
         </div>
       </UiCard>
 
-      <UiCard v-if="roleKey !== 'user'" class="profile-card role-card">
+      <UiCard v-if="roleKey === 'market_admin' || roleKey === 'vendor'" class="profile-card role-card">
         <template #header>
           <div class="section-heading">
-            <div><span class="section-kicker">{{ roleKey === 'admin' ? 'MARKET SPACE' : 'BUSINESS SPACE' }}</span><h2>{{ roleKey === 'admin' ? '集市管理' : '摊位经营' }}</h2></div>
-            <UiTag :type="roleKey === 'admin' ? 'primary' : 'warning'">{{ roleKey === 'admin' ? '管理员' : '经营者' }}</UiTag>
+            <div><span class="section-kicker">{{ roleKey === 'market_admin' ? 'MARKET SPACE' : 'BUSINESS SPACE' }}</span><h2>{{ roleKey === 'market_admin' ? '集市管理' : '摊位经营' }}</h2></div>
+            <UiTag :type="roleKey === 'market_admin' ? 'primary' : 'warning'">{{ roleKey === 'market_admin' ? '集市管理员' : '经营者' }}</UiTag>
           </div>
         </template>
         <div class="role-summary">
           <div class="role-mark"><Shop /></div>
-          <div><strong>{{ roleKey === 'admin' ? adminStore.market?.name || '尚未配置集市' : vendorStore.myBooth?.title || '尚未分配摊位' }}</strong><p>{{ roleKey === 'admin' ? adminStore.market?.location || '完善集市信息后即可开始管理' : vendorStore.myBooth?.position || '申请摊位后即可开始经营' }}</p></div>
+          <div><strong>{{ roleKey === 'market_admin' ? adminStore.market?.name || '尚未配置集市' : vendorStore.myBooth?.title || '尚未分配摊位' }}</strong><p>{{ roleKey === 'market_admin' ? adminStore.market?.location || '完善集市信息后即可开始管理' : vendorStore.myBooth?.position || '申请摊位后即可开始经营' }}</p></div>
         </div>
         <div class="role-facts">
-          <div><span>当前状态</span><strong>{{ roleKey === 'admin' ? marketStatus : boothStatus }}</strong></div>
-          <div><span>{{ roleKey === 'admin' ? '待处理申请' : '商品数量' }}</span><strong>{{ roleKey === 'admin' ? adminStore.applyList.length : vendorStore.productList.length }}</strong></div>
+          <div><span>当前状态</span><strong>{{ roleKey === 'market_admin' ? marketStatus : boothStatus }}</strong></div>
+          <div><span>{{ roleKey === 'market_admin' ? '待处理申请' : '商品数量' }}</span><strong>{{ roleKey === 'market_admin' ? adminStore.applyList.length : vendorStore.productList.length }}</strong></div>
         </div>
       </UiCard>
 
@@ -122,11 +122,12 @@ const checkAccountRef = ref(null)
 
 const roleKey = computed(() => userStore.userInfo.role || 'user')
 const initials = computed(() => (userStore.userInfo.nickname || userStore.userInfo.username || 'U').slice(0, 1).toUpperCase())
-const roleText = computed(() => ({ admin: '集市管理员', vendor: '摊位经营者', user: '普通用户' }[roleKey.value] || '平台用户'))
+const roleText = computed(() => ({ super_admin: '超级管理员', market_admin: '集市管理员', vendor: '摊位经营者', user: '普通用户' }[roleKey.value] || '平台用户'))
 const genderText = computed(() => ({ 0: '女', 1: '男', 2: '保密' }[userStore.userInfo.gender] || '未设置'))
 const statusText = computed(() => userStore.userInfo.status === 1 ? '正常' : '已停用')
 const profileCopy = computed(() => ({
-  admin: { eyebrow: 'MARKET CONTROL', description: '管理集市空间、摊位和平台运营状态。' },
+  super_admin: { eyebrow: 'PLATFORM CONTROL', description: '管理平台管理员账号与跨集市审批。' },
+  market_admin: { eyebrow: 'MARKET CONTROL', description: '管理所属集市、摊位与申请。' },
   vendor: { eyebrow: 'BUSINESS SPACE', description: '整理经营资料，专注于你的摊位与商品。' },
   user: { eyebrow: 'PERSONAL SPACE', description: '管理你的账号资料，保持账户安全与活跃。' },
 }[roleKey.value] || { eyebrow: 'PERSONAL SPACE', description: '管理你的账号资料与账户安全。' }))
@@ -141,14 +142,16 @@ const boothStatus = computed(() => {
 })
 
 const profileMetrics = computed(() => {
-  if (roleKey.value === 'admin') return [{ label: '集市状态', value: marketStatus.value, note: adminStore.market?.name || '管理空间' }, { label: '待处理申请', value: adminStore.applyList.length, note: '需要及时关注' }, { label: '账号状态', value: statusText.value, note: `注册于 ${daysSince(userStore.userInfo.createTime)} 前` }]
+  if (roleKey.value === 'super_admin') return [{ label: '管理员账号', value: adminStore.adminList.length, note: '平台管理员' }, { label: '待处理申请', value: adminStore.applyList.length, note: '跨集市审批' }, { label: '账号状态', value: statusText.value, note: `注册于 ${daysSince(userStore.userInfo.createTime)} 前` }]
+  if (roleKey.value === 'market_admin') return [{ label: '集市状态', value: marketStatus.value, note: adminStore.market?.name || '管理空间' }, { label: '待处理申请', value: adminStore.applyList.length, note: '需要及时关注' }, { label: '账号状态', value: statusText.value, note: `注册于 ${daysSince(userStore.userInfo.createTime)} 前` }]
   if (roleKey.value === 'vendor') return [{ label: '摊位状态', value: boothStatus.value, note: vendorStore.myBooth?.title || '经营空间' }, { label: '在售商品', value: vendorStore.productList.filter(item => item.saleStatus === '上架').length, note: '商品管理' }, { label: '账号状态', value: statusText.value, note: `注册于 ${daysSince(userStore.userInfo.createTime)} 前` }]
   return [{ label: '账号状态', value: statusText.value, note: '账户运行正常' }, { label: '手机绑定', value: userStore.userInfo.phone ? '已绑定' : '未绑定', note: '建议完成绑定' }, { label: '加入平台', value: daysSince(userStore.userInfo.createTime), note: formatDate(userStore.userInfo.createTime) }]
 })
 
 const profileDetails = computed(() => {
   const common = [{ label: '登录账号', value: userStore.userInfo.username }, { label: '手机号码', value: userStore.userInfo.phone || '未绑定' }, { label: '性别', value: genderText.value }, { label: '注册时间', value: formatDate(userStore.userInfo.createTime) }]
-  if (roleKey.value === 'admin') return [{ label: '当前身份', value: roleText.value }, ...common, { label: '管理集市', value: adminStore.market?.name || '尚未配置' }]
+  if (roleKey.value === 'super_admin') return [{ label: '当前身份', value: roleText.value }, ...common, { label: '管理范围', value: '全平台' }]
+  if (roleKey.value === 'market_admin') return [{ label: '当前身份', value: roleText.value }, ...common, { label: '管理集市', value: adminStore.market?.name || '尚未配置' }]
   if (roleKey.value === 'vendor') return [{ label: '当前身份', value: roleText.value }, ...common, { label: '经营摊位', value: vendorStore.myBooth?.title || '尚未分配' }]
   return [{ label: '当前身份', value: roleText.value }, ...common]
 })
@@ -174,7 +177,11 @@ const actions = computed(() => [
 ])
 
 onMounted(async () => {
-  if (roleKey.value === 'admin' && !adminStore.market) adminStore.fetchMarket().catch(() => {})
+  if (roleKey.value === 'super_admin') {
+    adminStore.fetchAdminList().catch(() => {})
+    adminStore.fetchApplies().catch(() => {})
+  }
+  if (roleKey.value === 'market_admin' && !adminStore.market) adminStore.fetchMarket().catch(() => {})
   if (roleKey.value === 'vendor') {
     if (!vendorStore.myBooth) vendorStore.fetchMyBooth().catch(() => {})
     if (!vendorStore.productList.length) vendorStore.fetchProducts().catch(() => {})
@@ -185,7 +192,7 @@ onMounted(async () => {
 <style scoped>
 .profile-page { --profile-accent: var(--brand-primary); --profile-accent-soft: var(--brand-primary-soft); width: 100%; max-width: 1240px; margin: 0 auto; padding: 4px 0 36px; color: var(--ink-strong); }
 .role-vendor { --profile-accent: var(--brand-secondary); --profile-accent-soft: var(--brand-secondary-soft); }.role-user { --profile-accent: var(--brand-primary); --profile-accent-soft: var(--brand-primary-soft); }
-.profile-hero { position: relative; overflow: hidden; margin-bottom: 18px; padding: 30px; border: 1px solid rgba(23,107,104,.18); border-radius: 24px; background: linear-gradient(135deg, #153f46 0%, var(--brand-primary) 56%, #3d978b 100%); color: #fff; box-shadow: 0 18px 42px rgba(23,107,104,.18); }.role-vendor .profile-hero { background: linear-gradient(135deg, #6d4333 0%, var(--brand-secondary) 56%, #f1ae8b 100%); box-shadow: 0 18px 42px rgba(239,139,104,.18); }
+.profile-hero { position: relative; overflow: hidden; margin-bottom: 18px; padding: 30px; border: 1px solid rgba(23,107,104,.18); border-radius: 24px; background: linear-gradient(135deg, #153f46 0%, var(--brand-primary) 56%, #3d978b 100%); color: #fff; box-shadow: 0 18px 42px rgba(23,107,104,.18); }.role-super_admin .profile-hero { background: linear-gradient(135deg, #172c42 0%, #28515c 56%, #3d978b 100%); }.role-vendor .profile-hero { background: linear-gradient(135deg, #6d4333 0%, var(--brand-secondary) 56%, #f1ae8b 100%); box-shadow: 0 18px 42px rgba(239,139,104,.18); }
 .hero-main, .hero-stats { position: relative; z-index: 1; }.hero-main { display: flex; align-items: center; justify-content: space-between; gap: 24px; }.identity-block { display: flex; align-items: center; min-width: 0; gap: 20px; }.avatar-shell { position: relative; flex: 0 0 auto; }.profile-avatar { display: block; width: 92px; height: 92px; border: 4px solid rgba(255,255,255,.32); border-radius: 50%; object-fit: cover; background: rgba(255,255,255,.16); }.avatar-fallback { display: grid; place-items: center; color: #fff; font-size: 34px; font-weight: 750; letter-spacing: .04em; }.online-dot { position: absolute; right: 4px; bottom: 6px; width: 16px; height: 16px; border: 3px solid #246c6d; border-radius: 50%; background: #9be4bc; }.role-vendor .online-dot { border-color: #8f5a45; }.online-dot.is-offline { background: #f49e92; }
 .identity-copy { min-width: 0; }.eyebrow, .section-kicker { display: block; color: rgba(255,255,255,.65); font-size: 10px; font-weight: 750; letter-spacing: .18em; }.identity-copy h1 { margin: 5px 0 4px; color: #fff; font-size: clamp(25px, 3vw, 36px); line-height: 1.1; }.identity-copy p { max-width: 510px; margin: 0; color: rgba(255,255,255,.78); font-size: 13px; }.identity-meta { display: flex; flex-wrap: wrap; gap: 12px 18px; margin-top: 14px; color: rgba(255,255,255,.76); font-size: 12px; }.identity-meta span { display: inline-flex; align-items: center; gap: 5px; }.meta-icon { width: 14px; height: 14px; }
 .hero-actions { display: flex; flex: 0 0 auto; gap: 8px; }.hero-actions :deep(.ui-button) { border-color: rgba(255,255,255,.3); }.hero-actions :deep(.ui-button.is-primary) { border-color: #fff; background: #fff; color: var(--profile-accent); }.hero-actions :deep(.ui-button.is-plain) { background: rgba(255,255,255,.1); color: #fff; }

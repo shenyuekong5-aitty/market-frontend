@@ -13,7 +13,7 @@
             />
           </div>
           <div class="header-actions">
-            <UiButton type="primary" size="small" @click="openSendDialog"
+            <UiButton v-if="canSendGlobalNotice" type="primary" size="small" @click="openSendDialog"
               >发送通知</UiButton
             >
             <UiButton
@@ -72,7 +72,9 @@
             style="width: 100%"
           >
             <UiOption label="所有用户" value="all" />
-            <UiOption label="管理员" value="admin" />
+            <UiOption label="全部管理员" value="admin" />
+            <UiOption label="超级管理员" value="super_admin" />
+            <UiOption label="集市管理员" value="market_admin" />
             <UiOption label="小贩" value="vendor" />
             <UiOption label="普通用户" value="user" />
           </UiSelect>
@@ -97,8 +99,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from "vue";
+import { ref, reactive, computed, onMounted, watch } from "vue";
 import { useNotificationStore } from "@/store/modules/notification";
+import { useUserStore } from "@/store/modules/user";
 import { ElMessage } from "element-plus";
 import {
   Bell,
@@ -109,6 +112,8 @@ import {
 } from "@element-plus/icons-vue";
 
 const notificationStore = useNotificationStore();
+const userStore = useUserStore();
+const canSendGlobalNotice = computed(() => userStore.userInfo.role === 'super_admin');
 
 const sendVisible = ref(false);
 const sending = ref(false);

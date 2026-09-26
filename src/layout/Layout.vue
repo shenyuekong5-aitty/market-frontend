@@ -18,13 +18,14 @@ import Admin from "./admin/index.vue"
 import Vendor from "./vendor/index.vue"
 import User from "./user/index.vue"
 import AiCustomerService from '@/components/AiCustomerService.vue'
+import { isAdminRole } from '@/utils/roles'
 
 const userStore = useUserStore()
 
 
 // 根据不同的角色显示不同的面板
 const showAdmin = computed(() => {
-  return userStore.userInfo.role === 'admin'
+  return isAdminRole(userStore.userInfo.role)
 })
 const showVendor = computed(() => {
   return userStore.userInfo.role === 'vendor'

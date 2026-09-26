@@ -23,13 +23,19 @@ import {
 import { getRoleChildrenRoutes, sharedRoutes } from "@/router/asyncRoutes";
 
 export const useUserStore = defineStore("user", () => {
-  const savedToken = localStorage.getItem("token") || "";
   const savedUserInfo = localStorage.getItem("userInfo");
+  const previousUser = savedUserInfo ? JSON.parse(savedUserInfo) : null;
+  // 旧版 admin Token 的角色声明已失效；需重新登录获取四角色 Token。
+  if (previousUser?.role === 'admin') {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userInfo');
+  }
+  const savedToken = localStorage.getItem("token") || "";
 
   const token = ref(savedToken);
   const userInfo = ref(
-    savedUserInfo
-      ? JSON.parse(savedUserInfo)
+    savedToken && previousUser
+      ? previousUser
       : {
           id: null,
           phone: "",
@@ -37,6 +43,7 @@ export const useUserStore = defineStore("user", () => {
           nickname: "",
           avatar: "",
           role: "",
+          isSuperAdmin: 0,
           status: 1,
           gender: 1,
           createTime: "",
@@ -96,6 +103,7 @@ export const useUserStore = defineStore("user", () => {
           nickname: res.data.nickname || res.data.username,
           avatar: res.data.avatar || "",
           role: res.data.role,
+          isSuperAdmin: res.data.isSuperAdmin,
           status: res.data.status,
           gender: res.data.gender ?? 1,
           createTime: res.data.createTime,
@@ -119,6 +127,7 @@ export const useUserStore = defineStore("user", () => {
       nickname: data.nickname || data.username || "",
       avatar: data.avatar || "",
       role: data.role || "",
+      isSuperAdmin: data.isSuperAdmin ?? 0,
       status: data.status !== undefined ? data.status : 1,
       gender: data.gender ?? 1,
       createTime: data.createTime || "",
@@ -168,6 +177,7 @@ export const useUserStore = defineStore("user", () => {
       nickname: updatedUser.nickname,
       avatar: updatedUser.avatar,
       role: updatedUser.role,
+      isSuperAdmin: updatedUser.isSuperAdmin,
       phone: updatedUser.phone,
       gender: updatedUser.gender,
       status: updatedUser.status,

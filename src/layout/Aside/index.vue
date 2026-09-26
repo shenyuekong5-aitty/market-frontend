@@ -32,6 +32,7 @@ import { useAppStore } from '@/store/modules/app'
 import { useAdminStore } from '@/store/modules/admin'  // 新增
 import { getRoleChildrenRoutes } from '@/router/asyncRoutes'
 import MenuItem from './MenuItem.vue'
+import { isAdminRole } from '@/utils/roles'
 
 const route = useRoute()
 const userStore = useUserStore()
@@ -47,7 +48,7 @@ const menuRoutes = computed(() => {
   roleRoutes = roleRoutes.filter(item => !item.meta?.hidden)
 
   // 2. 如果是管理员，将「集市详情」的路径替换为实际集市ID
-  if (role === 'admin') {
+  if (isAdminRole(role)) {
     const marketId = adminStore.market?.id
     roleRoutes = roleRoutes.map(route => {
       if (route.name === 'AdminMarketDetail' && marketId) {

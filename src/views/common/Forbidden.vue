@@ -36,9 +36,10 @@ function goBack() {
 }
 
 function goHome() {
-  const role = JSON.parse(localStorage.getItem('userRole') || '""')
+  const role = JSON.parse(localStorage.getItem('userInfo') || '{}').role
   const homeMap = {
-    admin: '/admin/dashboard',
+    super_admin: '/admin/manage',
+    market_admin: '/admin/dashboard',
     vendor: '/vendor/home',
     user: '/markets'
   }

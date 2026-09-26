@@ -108,6 +108,7 @@ import UpdatePassword from "./UpdatePassword.vue";
 import CheckAccount from "@/components/CheckAccount.vue";
 import { connectWebSocket, disconnectWebSocket } from "@/utils/websocket";
 import { playBeep } from "@/utils/beep";
+import { isAdminRole } from "@/utils/roles";
 
 const route = useRoute();
 const router = useRouter();
@@ -139,7 +140,7 @@ const handleFullScreen = () => {
 // 跳转到消息中心
 const goToMessages = () => {
   const role = userStore.userInfo.role;
-  if (role === "admin") {
+  if (isAdminRole(role)) {
     router.push("/admin/messages");
   } else {
     router.push("/messages");
@@ -194,7 +195,7 @@ onMounted(() => {
       await notificationStore.fetchUnreadCount();
       console.log("当前未读数量：", notificationStore.unreadCount);
       // 如果当前用户是管理员，同时刷新待审批申请
-      if (userStore.userInfo.role === "admin") {
+      if (isAdminRole(userStore.userInfo.role)) {
         try {
           await adminStore.fetchApplies();
         } catch (e) {

@@ -1,24 +1,18 @@
 import Layout from "@/layout/Layout.vue";
 
-// 管理员路由（作为 Layout 的 children，path 不带 /）
-const adminRoutes = [
+// 集市管理员路由（只管理本人所属集市）
+const marketAdminRoutes = [
   {
     path: "admin/dashboard",
     name: "AdminDashboard",
     component: () => import("@/views/admin/Dashboard.vue"),
-    meta: { title: "管理后台", icon: "HomeFilled", roles: ["admin"] },
+    meta: { title: "集市工作台", icon: "HomeFilled", roles: ["market_admin"] },
   },
   {
     path: "admin/market/list",
     name: "AdminMarketList",
     component: () => import("@/views/admin/MarketList.vue"),
-    meta: { title: "集市管理", icon: "Shop", roles: ["admin"] },
-  },
-  {
-    path: "admin/manage",
-    name: "AdminManage",
-    component: () => import("@/views/admin/AdminManage.vue"),
-    meta: { title: "管理员管理", icon: "Avatar",roles: ["admin"] },
+    meta: { title: "集市管理", icon: "Shop", roles: ["market_admin"] },
   },
   {
     path: "admin/market/:id",
@@ -27,7 +21,7 @@ const adminRoutes = [
     meta: {
       title: "集市详情",
       icon: "InfoFilled",
-      roles: ["admin"],
+      roles: ["market_admin"],
       hidden: true,
     },
   },
@@ -35,20 +29,36 @@ const adminRoutes = [
     path: "admin/operation-log",
     name: "AdminOperationLog",
     component: () => import("@/views/admin/OperationLog.vue"),
-    meta: { title: "操作日志", icon: "DocumentChecked", roles: ["admin"] },
+    meta: { title: "操作日志", icon: "DocumentChecked", roles: ["market_admin"] },
   },
   {
     path: "admin/income-stats",
     name: "AdminIncomeStats",
     component: () => import("@/views/admin/IncomeStats.vue"),
-    meta: { title: "收入统计", icon: "TrendCharts", roles: ["admin"] },
+    meta: { title: "收入统计", icon: "TrendCharts", roles: ["market_admin"] },
   },
   {
     path: "admin/messages",
     name: "AdminMessages",
     component: () => import("@/views/admin/Messages.vue"),
-    meta: { title: "消息中心", icon: "Bell", roles: ["admin"] },
+    meta: { title: "消息中心", icon: "Bell", roles: ["market_admin", "super_admin"] },
   },
+];
+
+const superAdminRoutes = [
+  {
+    path: "admin/manage",
+    name: "AdminManage",
+    component: () => import("@/views/admin/AdminManage.vue"),
+    meta: { title: "管理员管理", icon: "Avatar", roles: ["super_admin"] },
+  },
+  {
+    path: "admin/applies",
+    name: "SuperAdminApplies",
+    component: () => import("@/views/admin/SuperAdminApplies.vue"),
+    meta: { title: "全平台审批", icon: "DocumentChecked", roles: ["super_admin"] },
+  },
+  marketAdminRoutes.find(route => route.name === "AdminMessages"),
 ];
 
 // 小贩路由（作为 Layout 的 children）
@@ -148,13 +158,13 @@ const userRoutes = [
   },
 ];
 
-// 共享路由（user 和 vendor 共用，作为 Layout 的子路由）
+// 共享路由（作为 Layout 的子路由）
 const sharedRoutes = [
   {
     path: "profile",
     name: "SharedProfile",
     component: () => import("@/views/common/Profile.vue"),
-    meta: { title: "个人信息", icon: "User", roles: ["admin", "user", "vendor"] },
+    meta: { title: "个人信息", icon: "User", roles: ["super_admin", "market_admin", "user", "vendor"] },
   },
   {
     path: "messages",
@@ -166,10 +176,11 @@ const sharedRoutes = [
 
 // 根据角色获取子路由数组
 export function getRoleChildrenRoutes(role) {
-  if (role === "admin") return adminRoutes;
+  if (role === "super_admin") return superAdminRoutes;
+  if (role === "market_admin") return marketAdminRoutes;
   if (role === "vendor") return vendorRoutes;
   if (role === "user") return userRoutes;
   return [];
 }
 
-export { adminRoutes, vendorRoutes, userRoutes, sharedRoutes };
+export { superAdminRoutes, marketAdminRoutes, vendorRoutes, userRoutes, sharedRoutes };

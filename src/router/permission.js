@@ -1,5 +1,6 @@
 import router from "./index";
 import { useUserStore } from "@/store/modules/user";
+import { homePathForRole, isAdminRole } from "@/utils/roles";
 
 const whiteList = ["Login", "Register", "Forbidden"];
 
@@ -18,18 +19,14 @@ router.beforeEach(async (to, from, next) => {
     // ========== 2. 根路径重定向 ==========
     if (to.path === "/") {
       const role = userStore.userInfo.role;
-      if (role === "admin") next({ name: "AdminDashboard" });
-      else if (role === "vendor") next({ name: "VendorHome" });
-      else next();
+      next({ path: homePathForRole(role) });
       return;
     }
 
     // ========== 3. 登录页重定向 ==========
     if (to.name === "Login") {
       const role = userStore.userInfo.role;
-      if (role === "admin") next({ name: "AdminDashboard" });
-      else if (role === "vendor") next({ name: "VendorHome" });
-      else next({ path: "/" });
+      next({ path: homePathForRole(role) });
       return;
     }
 
@@ -40,9 +37,15 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // ========== 5. 越权保护 ==========
-    if (to.name === "NotFound" && to.fullPath.startsWith("/admin") && userStore.userInfo.role !== "admin") {
-      next({ name: "Forbidden" });
-      return;
+    if (to.name === "NotFound" && to.path.startsWith("/admin")) {
+      const role = userStore.userInfo.role;
+      const superOnly = /^\/admin\/(manage|applies)(\/|$)/.test(to.path);
+      const marketOnly = /^\/admin\/(dashboard|market|operation-log|income-stats)(\/|$)/.test(to.path);
+      if (!isAdminRole(role) || (superOnly && role !== "super_admin")
+          || (marketOnly && role !== "market_admin")) {
+        next({ name: "Forbidden" });
+        return;
+      }
     }
     if (to.name === "NotFound" && to.fullPath.startsWith("/vendor") && userStore.userInfo.role !== "vendor") {
       next({ name: "Forbidden" });

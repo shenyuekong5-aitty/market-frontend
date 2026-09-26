@@ -4,7 +4,7 @@
       <template #header>
         <div class="card-header">
           <span>管理员管理</span>
-          <UiButton type="primary" size="small" @click="openCreateDialog">创建管理员</UiButton>
+          <UiButton type="primary" size="small" @click="openCreateDialog">创建集市管理员</UiButton>
         </div>
       </template>
 
@@ -12,10 +12,10 @@
       <UiTable :data="adminStore.adminList" border style="width: 100%" v-loading="adminStore.adminListLoading">
         <UiTableColumn prop="username" label="账号" width="120" />
         <UiTableColumn prop="nickname" label="昵称" width="120" />
-        <UiTableColumn label="超级管理员" width="100">
+        <UiTableColumn label="身份" width="130">
           <template #default="{ row }">
-            <UiTag :type="row.isSuperAdmin === 1 ? 'danger' : 'info'">
-              {{ row.isSuperAdmin === 1 ? '是' : '否' }}
+            <UiTag :type="row.role === 'super_admin' ? 'danger' : 'info'">
+              {{ row.role === 'super_admin' ? '超级管理员' : '集市管理员' }}
             </UiTag>
           </template>
           </UiTableColumn>
@@ -44,7 +44,7 @@
     </UiCard>
 
     <!-- 创建管理员弹窗 -->
-    <UiDialog v-model="createVisible" title="创建管理员账号" width="450px">
+    <UiDialog v-model="createVisible" title="创建集市管理员账号" width="450px">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <UiFormItem label="账号" prop="username">
           <UiInput v-model="form.username" />
@@ -111,7 +111,7 @@ const handleCreate = async () => {
     creating.value = true
     try {
       await adminStore.handleCreateAdmin({ ...form })
-      ElMessage.success('管理员账号创建成功')
+      ElMessage.success('集市管理员账号创建成功')
       createVisible.value = false
       await adminStore.fetchAdminList()
     } catch (e) {

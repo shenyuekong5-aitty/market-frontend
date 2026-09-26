@@ -47,7 +47,8 @@
             placeholder="请选择登录角色"
             class="login-select"
           >
-            <UiOption label="管理员" value="admin" />
+            <UiOption label="超级管理员" value="super_admin" />
+            <UiOption label="集市管理员" value="market_admin" />
             <UiOption label="小贩" value="vendor" />
             <UiOption label="普通用户" value="user" />
           </UiSelect>
@@ -153,6 +154,7 @@ import { ref, reactive, watch, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useUserStore } from "@/store/modules/user";
 import { ElMessage } from "element-plus";
+import { homePathForRole } from '@/utils/roles'
 
 const router = useRouter();
 const route = useRoute();
@@ -194,12 +196,7 @@ const handleLogin = async () => {
 };
 
 function getHomePath(role) {
-  const map = {
-    admin: "/admin/dashboard",
-    vendor: "/vendor/home",
-    user: "/markets",
-  };
-  return map[role] || "/";
+  return homePathForRole(role);
 }
 
 const showResetDialog = ref(false);
