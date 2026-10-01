@@ -18,7 +18,7 @@ request.interceptors.request.use(
     const token = localStorage.getItem('token');
     if (token) {
       if (typeof token !== 'string' || token === '[object Object]' || token.length < 10) {
-        console.error('检测到无效 token，清除并跳转登录:', token?.substring?.(0, 30));
+        console.error('检测到无效 token，清除并跳转登录');
         localStorage.removeItem('token');
         localStorage.removeItem('userInfo');
         window.location.href = '/login';
@@ -68,7 +68,7 @@ request.interceptors.response.use(
           break;
         case 403:
           message = "没有权限访问";
-          router.push("/403");
+          if (!error.config?.skipAuth) router.push("/403");
           break;
       }
     }

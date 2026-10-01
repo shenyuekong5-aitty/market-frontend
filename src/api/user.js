@@ -19,17 +19,17 @@ export function sendChangePhoneSms(phone) {
 
 // 发送忘记密码验证码
 export function sendResetPasswordSms(phone) {
-  return request.post('/sms/send-reset', null, { params: { phone } })
+  return request.post('/sms/send-reset', null, { params: { phone }, skipAuth: true })
 }
 
 // 重置密码（忘记密码）
 export function resetPassword(phone, code, newPassword) {
-  return request.post('/auth/reset-password', null, { params: { phone, code, newPassword } })
+  return request.post('/auth/reset-password', null, { params: { phone, code, newPassword }, skipAuth: true })
 }
 
 // 检查手机号是否已注册
 export function checkPhone(phone) {
-  return request.get('/auth/check-phone', { params: { phone } })
+  return request.get('/auth/check-phone', { params: { phone }, skipAuth: true })
 }
 
 // 修改密码（已登录）

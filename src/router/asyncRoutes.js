@@ -1,5 +1,3 @@
-import Layout from "@/layout/Layout.vue";
-
 // 集市管理员路由（只管理本人所属集市）
 const marketAdminRoutes = [
   {

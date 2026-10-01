@@ -42,9 +42,9 @@
           @click="handleRead(item.id)"
         >
           <div class="msg-left">
-            <div class="msg-icon" :style="{ background: getIconBg(item.type) }">
-              <el-icon :color="getIconColor(item.type)" size="18">
-                <component :is="getIcon(item.type)" />
+            <div class="msg-icon" :style="{ background: getNotificationStyle(item.type).background }">
+              <el-icon :color="getNotificationStyle(item.type).color" size="18">
+                <component :is="getNotificationStyle(item.type).icon" />
               </el-icon>
             </div>
             <div class="msg-body">
@@ -56,7 +56,7 @@
             </div>
           </div>
           <div class="msg-right">
-            <span class="msg-time">{{ formatTime(item.createTime) }}</span>
+            <span class="msg-time">{{ formatNotificationTime(item.createTime) }}</span>
           </div>
         </div>
       </div>
@@ -99,19 +99,16 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from "vue";
-import { useNotificationStore } from "@/store/modules/notification";
+import { ref, reactive, computed } from "vue";
 import { useUserStore } from "@/store/modules/user";
 import { ElMessage } from "element-plus";
+import { useNotificationInbox } from '@/composables/useNotificationInbox'
+import { getNotificationStyle, formatNotificationTime } from '@/utils/notificationDisplay'
 import {
   Bell,
-  Check,
-  Warning,
-  InfoFilled,
-  Promotion,
 } from "@element-plus/icons-vue";
 
-const notificationStore = useNotificationStore();
+const { notificationStore, handleRead, handleReadAll } = useNotificationInbox()
 const userStore = useUserStore();
 const canSendGlobalNotice = computed(() => userStore.userInfo.role === 'super_admin');
 
@@ -122,29 +119,6 @@ const sendForm = reactive({
   content: "",
 });
 
-onMounted(async () => {
-  try {
-    await notificationStore.fetchNotifications()
-  } catch (e) {
-    ElMessage.error('获取消息失败')
-  }
-})
-
-// 监听未读数量变化，自动刷新列表
-watch(
-  () => notificationStore.unreadCount,
-  () => {
-    notificationStore.fetchNotifications()
-  }
-)
-
-const handleRead = async (id) => {
-  await notificationStore.readNotification(id);
-};
-
-const handleReadAll = async () => {
-  await notificationStore.readAll();
-};
 
 // 打开发送弹窗
 const openSendDialog = () => {
@@ -176,40 +150,6 @@ const handleSend = async () => {
   }
 };
 
-const getIcon = (type) => {
-  const map = {
-    预定请求: "Promotion",
-    预定结果: "Warning",
-    申请结果: "Check",
-    系统通知: "InfoFilled",
-  };
-  return map[type] || "InfoFilled";
-};
-
-const getIconBg = (type) => {
-  const map = {
-    预定请求: "var(--brand-primary-soft)",
-    预定结果: "#fff3d8",
-    申请结果: "#e8f5ef",
-    系统通知: "var(--surface-subtle)",
-  };
-  return map[type] || "var(--surface-subtle)";
-};
-
-const getIconColor = (type) => {
-  const map = {
-    预定请求: "var(--brand-primary)",
-    预定结果: "var(--warning)",
-    申请结果: "var(--success)",
-    系统通知: "var(--ink)",
-  };
-  return map[type] || "var(--ink-muted)";
-};
-
-const formatTime = (time) => {
-  if (!time) return "";
-  return time.substring(0, 16);
-};
 </script>
 
 <style scoped>
