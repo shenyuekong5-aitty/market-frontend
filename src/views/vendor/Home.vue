@@ -2,9 +2,9 @@
   <div class="vendor-home">
     <UiSkeleton v-if="loading" animated :rows="8" />
     <template v-else>
-        <div class="greeting-section">
+        <div class="greeting-section mobile-greeting">
           <p class="greeting-text">{{ greeting }}</p>
-          <p class="greeting-sub">管理你的摊位和商品</p>
+          <p class="greeting-sub">今天也把小店经营得有声有色吧。</p>
         </div>
 
         <div v-if="myBooth" class="booth-card">
@@ -51,7 +51,7 @@
           </div>
           <p class="empty-title">还没有摊位</p>
           <p class="empty-desc">入驻一个集市，开始你的小生意</p>
-          <button class="btn-primary" @click="$router.push('/vendor/markets')">去选择集市</button>
+          <button class="btn-primary" @click="$router.push('/vendor/market-select')">去选择集市</button>
         </div>
 
         <div class="quick-section">
@@ -216,7 +216,6 @@ onMounted(async () => {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
   color: var(--text);
 }
-
 .greeting-section {
   padding: 16px 4px 8px;
 }
@@ -525,12 +524,42 @@ onMounted(async () => {
 
 @media (min-width: 768px) and (max-width: 1024px) {
   .vendor-home { padding: 0 12px 24px; max-width: 100%; }
+  .mobile-greeting { display: none; }
   .booth-card { padding: 20px 24px 18px; }
   .quick-grid { gap: 10px; }
 }
 
 @media (min-width: 1025px) {
-  .vendor-home { padding: 4px 0 32px; }
-  .booth-card { padding: 22px 26px 20px; }
+  .vendor-home { max-width: none; display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, .8fr); gap: 22px; align-items: start; padding: 0 0 42px; }
+  .mobile-greeting { display: none; }
+  .greeting-text { font-size: 22px; }
+  .booth-card, .empty-card { grid-column: 1; margin: 0; padding: 30px; min-height: 252px; border-radius: 24px; }
+  .booth-name { font-size: 24px; }
+  .booth-location { font-size: 14px; margin-top: 8px; }
+  .booth-stats { margin-top: 27px; padding-top: 23px; }
+  .stat-num { font-size: 28px; }
+  .stat-label { font-size: 12px; }
+  .quick-section { grid-column: 2; margin: 0; }
+  .quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .quick-item { align-items: flex-start; min-height: 112px; padding: 20px; border-radius: 20px; font-size: 15px; font-weight: 750; }
+  .quick-icon { color: var(--brand-primary); }
+  .income-link { justify-content: space-between; margin-top: 12px; min-height: 50px; padding: 0 18px; border-radius: 15px; font-size: 13px; }
+  .activity-section { grid-column: 1 / -1; margin-top: 6px; }
+  .activity-title { font-size: 15px; color: var(--ink-strong); font-weight: 750; }
+  .activity-list { border-radius: 18px; }
+}
+@media (max-width: 767px) {
+  .vendor-home { padding: 0 0 28px; }
+  .greeting-section { padding: 3px 1px 20px; }
+  .greeting-text { font-size: 25px; font-weight: 800; letter-spacing: -.04em; }
+  .greeting-sub { margin-top: 5px; color: #6d8379; font-size: 13px; }
+  .booth-card, .empty-card { padding: 22px; border-radius: 23px; box-shadow: 0 10px 24px rgba(23,61,58,.06); }
+  .booth-name { font-size: 19px; font-weight: 800; }
+  .stat-num { font-size: 19px; font-weight: 800; }
+  .stat-label { font-size: 10px; }
+  .quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .quick-item { align-items: flex-start; min-height: 94px; padding: 15px; border-radius: 18px; font-size: 13px; font-weight: 750; }
+  .quick-icon { color: var(--brand-primary); }
+  .income-link { justify-content: space-between; min-height: 48px; padding: 0 17px; border-radius: 15px; }
 }
 </style>

@@ -2,7 +2,7 @@ import router from "./index";
 import { useUserStore } from "@/store/modules/user";
 import { homePathForRole, isAdminRole } from "@/utils/roles";
 
-const whiteList = ["Login", "Register", "Forbidden"];
+const whiteList = ["Welcome", "About", "Discover", "Login", "Register", "Forbidden"];
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
@@ -55,7 +55,9 @@ router.beforeEach(async (to, from, next) => {
     next();
   } else {
     // 未登录
-    if (whiteList.includes(to.name)) {
+    if (to.path === "/") {
+      next({ name: "Welcome", replace: true });
+    } else if (whiteList.includes(to.name)) {
       next();
     } else {
       next({ name: "Login", query: { redirect: to.fullPath } });

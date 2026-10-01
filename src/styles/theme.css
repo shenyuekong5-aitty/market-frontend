@@ -1,5 +1,17 @@
 html { background: var(--surface-page); }
+.market-confirm-dialog { width: min(430px, calc(100vw - 28px)); padding: 0; overflow: hidden; border: 1px solid #dce9e5; border-radius: 22px; background: #fffdf9; box-shadow: 0 24px 70px rgba(17, 55, 53, .2); }
+.market-confirm-dialog .el-message-box__header { padding: 24px 26px 6px; }
+.market-confirm-dialog .el-message-box__title { color: #173d3a; font-size: 19px; font-weight: 800; }
+.market-confirm-dialog .el-message-box__headerbtn { top: 21px; right: 22px; }
+.market-confirm-dialog .el-message-box__content { padding: 12px 26px 20px; color: #607a71; line-height: 1.8; }
+.market-confirm-dialog .el-message-box__status { color: #e99173; }
+.market-confirm-dialog .el-message-box__btns { display: flex; gap: 10px; padding: 0 26px 24px; }
+.market-confirm-dialog .el-message-box__btns button { flex: 1; min-height: 42px; margin: 0; border-radius: 999px; }
+.market-confirm-dialog .el-message-box__btns .el-button--primary { border-color: #176b68; background: #176b68; color: #fff; }
+.market-confirm-dialog.is-danger .el-message-box__btns .el-button--primary { border-color: #c45d4d; background: #c45d4d; }
+.market-confirm-dialog .el-message-box__btns .el-button--primary:hover { filter: brightness(.92); }
 body { min-width: 320px; overflow-x: hidden; }
+:where(a, button, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 3px; }
 .text-link { border: 0; padding: 0; background: transparent; color: var(--brand-primary); font: inherit; cursor: pointer; }
 .text-link:hover { color: var(--brand-primary-hover); text-decoration: underline; text-underline-offset: 3px; }
 button, .el-button, .el-input__wrapper, .el-card, .el-table, .el-dialog, .el-message, .el-tag, .el-select__wrapper { border-radius: var(--radius-sm); }
@@ -78,6 +90,7 @@ button, .el-button, .el-input__wrapper, .el-card, .el-table, .el-dialog, .el-mes
 .topbar .el-button.is-circle { color: var(--ink); border-color: var(--line); background: var(--surface-card); }
 .main { background: var(--surface-page); }
 .main .content { width: 100%; max-width: 1480px; margin: 0 auto; }
+.main > .content > * { min-width: 0; }
 
 .user-layout-body, .vendor-layout-body { --bg: var(--surface-page) !important; --card-bg: var(--surface-card) !important; --text: var(--ink-strong) !important; --text-secondary: var(--ink) !important; --text-muted: var(--ink-muted) !important; --accent: var(--brand-primary) !important; --accent-light: var(--brand-primary-soft) !important; --green: var(--success) !important; --green-bg: #e9f6f0 !important; --shadow: var(--shadow-sm) !important; --shadow-hover: var(--shadow-md) !important; }
 
@@ -111,8 +124,9 @@ button, .el-button, .el-input__wrapper, .el-card, .el-table, .el-dialog, .el-mes
   .ui-dialog__footer > * { flex: 1 1 120px; }
   .topbar .el-dropdown-menu { max-width: calc(100vw - 24px); }
 }
-@media (min-width: 768px) and (max-width: 1100px) {
+@media (min-width: 768px) and (max-width: 1024px) {
   .main { padding: 18px !important; }
   .main .content { min-width: 0; }
   .ui-table-shell { max-width: 100%; }
 }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }

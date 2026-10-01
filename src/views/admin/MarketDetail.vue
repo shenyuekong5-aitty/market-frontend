@@ -15,7 +15,7 @@
     <!-- 摊位列表 -->
     <UiCard class="booth-list-card">
       <template #header>
-        <span>摊位列表（共 {{ adminStore.boothList.length }} 个）</span>
+        <div class="booth-list-heading"><span>摊位列表（共 {{ adminStore.boothList.length }} 个）</span><small>空闲摊位先停用，才能删除；已占用摊位需先结束占用。</small></div>
       </template>
       <UiTable :data="adminStore.boothList" border style="width: 100%" v-loading="boothLoading">
         <UiTableColumn prop="id" label="ID" width="60" />
@@ -32,10 +32,10 @@
         <UiTableColumn label="操作" width="240">
           <template #default="{ row }">
           <UiButton size="small" @click="openEditDialog(row)">编辑</UiButton>
-          <UiButton size="small" :type="row.status === '停用' ? 'success' : 'warning'" @click="handleToggleStatus(row)">
+          <UiButton size="small" :type="row.status === '停用' ? 'success' : 'warning'" :disabled="row.status === '已占用'" :title="row.status === '已占用' ? '已占用摊位不能直接停用' : ''" @click="handleToggleStatus(row)">
               {{ row.status === "停用" ? "启用" : "停用" }}
           </UiButton>
-          <UiButton size="small" type="danger" @click="handleDelete(row)" :disabled="row.status !== '空闲'">删除</UiButton>
+          <UiButton size="small" type="danger" @click="handleDelete(row)" :disabled="row.status !== '停用'" :title="row.status !== '停用' ? '请先停用摊位再删除' : '删除已停用摊位'">删除</UiButton>
           </template>
         </UiTableColumn>
       </UiTable>
@@ -193,14 +193,15 @@ const handleToggleStatus = async (row) => {
 
 // 删除摊位
 const handleDelete = (row) => {
-  if (row.status !== "空闲") {
-    ElMessage.warning("只能删除空闲状态的摊位");
+  if (row.status !== "停用") {
+    ElMessage.warning("请先停用摊位，再进行删除");
     return;
   }
-  ElMessageBox.confirm("确定要删除该摊位吗？", "提示", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
+  ElMessageBox.confirm(`摊位「${row.title || row.position}」将从集市中移除，此操作不可撤销。`, "删除摊位", {
+    confirmButtonText: "确认删除",
+    cancelButtonText: "保留摊位",
     type: "warning",
+    customClass: "market-confirm-dialog is-danger",
   }).then(async () => {
     try {
       await adminStore.handleDeleteBooth(row.id, marketId.value);
@@ -208,7 +209,7 @@ const handleDelete = (row) => {
     } catch (error) {
       ElMessage.error(error.message || "删除失败");
     }
-  });
+  }).catch(() => {});
 };
 
 // 重置表单
@@ -232,6 +233,8 @@ onMounted(() => {
 .market-detail-page {
   padding: 20px;
 }
+.booth-list-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
+.booth-list-heading small { color: var(--ink-muted); font-size: 12px; font-weight: 400; }
 .market-info-card {
   margin-bottom: 20px;
 }
@@ -246,4 +249,6 @@ onMounted(() => {
 .booth-list-card .el-table {
   margin-top: 10px;
 }
+@media (min-width: 768px) and (max-width: 1024px) { .market-detail-page { padding: 12px; } }
+@media (max-width: 767px) { .market-detail-page { padding: 0; } .market-header { flex-wrap: wrap; } .market-info-card { margin-bottom: 12px; } }
 </style>

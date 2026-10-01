@@ -107,7 +107,7 @@ const activeMenu = computed(() => route.path)
   display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .aside {
     position: fixed;
     inset: 0 auto 0 0;

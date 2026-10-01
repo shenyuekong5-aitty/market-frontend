@@ -232,20 +232,20 @@ watch(
 /* ============================================================
    2. 卡片样式
    ============================================================ */
-:deep(.el-card) {
+:deep(.ui-card) {
   border: none !important;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
 }
 
-:deep(.el-card__header) {
+:deep(.ui-card__header) {
   border-bottom: 1px solid var(--line);
   padding: 18px 24px;
   background: var(--surface-card);
 }
 
-:deep(.el-card__body) {
+:deep(.ui-card__body) {
   padding: 24px;
 }
 
@@ -527,11 +527,11 @@ watch(
     padding: 8px;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 12px 14px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 12px 8px;
   }
 
@@ -670,11 +670,11 @@ watch(
     max-width: 100%;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 16px 20px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 20px;
   }
 
@@ -706,11 +706,11 @@ watch(
     padding: 28px 20px;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 20px 28px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 28px;
   }
 }

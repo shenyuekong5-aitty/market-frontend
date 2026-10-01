@@ -70,5 +70,6 @@ onMounted(load)
 .apply-copy strong { color: var(--ink-strong); }
 .apply-copy span, .apply-copy small { color: var(--ink-muted); }
 .actions { display: flex; gap: 8px; flex-shrink: 0; }
-@media (max-width: 600px) { .apply-item { align-items: stretch; flex-direction: column; } }
+@media (min-width: 768px) and (max-width: 1024px) { .super-applies { padding: 0; } }
+@media (max-width: 767px) { .super-applies { padding: 0; }.heading { align-items: flex-start; flex-wrap: wrap; }.apply-item { align-items: stretch; flex-direction: column; }.actions { flex-wrap: wrap; }.actions > * { flex: 1; } }
 </style>

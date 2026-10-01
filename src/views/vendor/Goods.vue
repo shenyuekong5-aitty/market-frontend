@@ -10,7 +10,7 @@
               <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
             </svg>
           </span>
-            <span class="header-title">商品管理</span>
+            <span class="header-title">我的商品</span>
             <span v-if="vendorStore.productList.length > 0" class="count-badge">
               {{ vendorStore.productList.length }}
             </span>
@@ -147,11 +147,10 @@
       :title="isEdit ? '编辑商品' : '新增商品'"
       class="product-dialog"
       :width="dialogWidth"
-      :top="dialogTop"
       @close="resetForm"
     >
       <div class="dialog-scroll-wrapper">
-        <el-form ref="formRef" :model="form" :rules="rules" label-width="80px" class="dialog-form">
+        <el-form ref="formRef" :model="form" :rules="rules" label-width="80px" class="dialog-form" @submit.prevent>
           <UiFormItem label="商品名称" prop="name">
             <UiInput v-model="form.name" placeholder="请输入商品名称" class="dialog-input" />
           </UiFormItem>
@@ -195,7 +194,7 @@
                   <Close />
                 </el-icon>
               </div>
-              <button v-else class="btn-outline btn-sm" @click="triggerImageInput">
+              <button v-else type="button" class="btn-outline btn-sm" @click="triggerImageInput">
                 + 上传图片
               </button>
             </div>
@@ -203,8 +202,8 @@
         </el-form>
       </div>
       <template #footer>
-        <button class="btn-outline" @click="dialogVisible = false">取消</button>
-        <button class="btn-primary" :disabled="saving" @click="handleSubmit">
+        <button type="button" class="btn-outline" @click="dialogVisible = false">取消</button>
+        <button type="button" class="btn-primary" :disabled="saving" @click="handleSubmit">
           {{ saving ? '保存中...' : '确定' }}
         </button>
       </template>
@@ -218,8 +217,10 @@ import { useVendorStore } from '@/store/modules/vendor'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Close } from '@element-plus/icons-vue'
 import { getFullUrl } from '@/utils/urlHelper'
+import { useDevice } from '@/composables/useDevice'
 
 const vendorStore = useVendorStore()
+const { isMobile } = useDevice()
 
 const dialogVisible = ref(false)
 const isEdit = ref(false)
@@ -230,17 +231,10 @@ const editingId = ref(null)
 
 // 动态计算弹窗宽度和顶部位置
 const dialogWidth = computed(() => {
-  if (window.innerWidth < 768) {
+  if (isMobile.value) {
     return '92%'
   }
   return '500px'
-})
-
-const dialogTop = computed(() => {
-  if (window.innerWidth < 768) {
-    return '5vh'
-  }
-  return '15vh'
 })
 
 const form = reactive({
@@ -257,13 +251,6 @@ const rules = {
   price: [{ required: true, message: '请输入价格', trigger: 'blur' }],
   stock: [{ required: true, message: '请输入库存', trigger: 'blur' }]
 }
-
-// 窗口变化时重新计算弹窗尺寸
-const handleResize = () => {
-  // 计算属性会自动响应
-}
-
-window.addEventListener('resize', handleResize)
 
 const openAddDialog = () => {
   if (!vendorStore.myBooth) {
@@ -397,20 +384,20 @@ onMounted(() => {
 /* ============================================================
    2. 卡片样式
    ============================================================ */
-:deep(.el-card) {
+:deep(.ui-card) {
   border: none !important;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
 }
 
-:deep(.el-card__header) {
+:deep(.ui-card__header) {
   border-bottom: 1px solid var(--line);
   padding: 18px 24px;
   background: var(--surface-card);
 }
 
-:deep(.el-card__body) {
+:deep(.ui-card__body) {
   padding: 24px;
 }
 
@@ -703,7 +690,13 @@ onMounted(() => {
 /* ============================================================
    8. 弹窗样式 - 修复移动端宽度问题
    ============================================================ */
-.product-dialog :deep(.el-dialog) {
+:global(.ui-dialog.product-dialog) {
+  --text: var(--ink-strong);
+  --text-secondary: var(--ink);
+  --accent: var(--brand-primary);
+  --accent-light: var(--brand-primary-soft);
+  --radius: var(--radius-md);
+  --shadow: var(--shadow-sm);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   max-height: 90vh;
@@ -712,26 +705,26 @@ onMounted(() => {
   margin: 0 auto;
 }
 
-.product-dialog :deep(.el-dialog__header) {
+:global(.ui-dialog.product-dialog .ui-dialog__header) {
   border-bottom: 1px solid var(--line);
   padding: 18px 24px;
   background: var(--surface-card);
   flex-shrink: 0;
 }
 
-.product-dialog :deep(.el-dialog__title) {
+:global(.ui-dialog.product-dialog .ui-dialog__header h2) {
   color: var(--text);
   font-weight: 600;
   font-size: 1rem;
 }
 
-.product-dialog :deep(.el-dialog__body) {
+:global(.ui-dialog.product-dialog .ui-dialog__body) {
   padding: 24px;
   flex: 1;
   overflow-y: auto;
 }
 
-.product-dialog :deep(.el-dialog__footer) {
+:global(.ui-dialog.product-dialog .ui-dialog__footer) {
   border-top: 1px solid var(--line);
   padding: 16px 24px;
   background: var(--surface-card);
@@ -740,6 +733,40 @@ onMounted(() => {
   justify-content: flex-end;
   gap: 10px;
   flex-shrink: 0;
+}
+
+:global(.ui-dialog.product-dialog .image-upload .btn-outline),
+:global(.ui-dialog.product-dialog .ui-dialog__footer .btn-outline) {
+  color: var(--brand-primary);
+  background: #fff;
+  border: 1px solid var(--brand-primary);
+  font-weight: 600;
+}
+
+:global(.ui-dialog.product-dialog .image-upload .btn-outline:hover),
+:global(.ui-dialog.product-dialog .ui-dialog__footer .btn-outline:hover) {
+  color: var(--brand-primary-hover);
+  background: var(--brand-primary-soft);
+  border-color: var(--brand-primary-hover);
+}
+
+:global(.ui-dialog.product-dialog .ui-dialog__footer .btn-primary) {
+  color: #fff;
+  background: var(--brand-primary);
+  border: 1px solid var(--brand-primary);
+  font-weight: 600;
+}
+
+:global(.ui-dialog.product-dialog .ui-dialog__footer .btn-primary:hover:not(:disabled)) {
+  color: #fff;
+  background: var(--brand-primary-hover);
+  border-color: var(--brand-primary-hover);
+}
+
+:global(.ui-dialog.product-dialog .ui-dialog__footer .btn-primary:disabled) {
+  color: #fff;
+  background: var(--brand-primary);
+  opacity: .55;
 }
 
 /* 弹窗滚动包装器 */
@@ -875,11 +902,11 @@ onMounted(() => {
     padding: 8px;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 12px 14px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 12px 8px;
   }
 
@@ -1006,7 +1033,7 @@ onMounted(() => {
   /* ==========================================================
      弹窗移动端适配 - 核心修复
      ========================================================== */
-  .product-dialog :deep(.el-dialog) {
+  :global(.ui-dialog.product-dialog) {
     width: 92% !important;
     max-width: 92% !important;
     min-width: unset !important;
@@ -1018,23 +1045,23 @@ onMounted(() => {
     right: 0 !important;
   }
 
-  .product-dialog :deep(.el-dialog__header) {
+  :global(.ui-dialog.product-dialog .ui-dialog__header) {
     padding: 12px 16px;
   }
 
-  .product-dialog :deep(.el-dialog__body) {
+  :global(.ui-dialog.product-dialog .ui-dialog__body) {
     padding: 16px 16px 8px;
     overflow-y: auto;
     max-height: 60vh;
   }
 
-  .product-dialog :deep(.el-dialog__footer) {
+  :global(.ui-dialog.product-dialog .ui-dialog__footer) {
     padding: 12px 16px;
     flex-wrap: wrap;
     gap: 8px;
   }
 
-  .product-dialog :deep(.el-dialog__footer button) {
+  :global(.ui-dialog.product-dialog .ui-dialog__footer button) {
     flex: 1;
     min-width: 70px;
     justify-content: center;
@@ -1042,12 +1069,12 @@ onMounted(() => {
     font-size: 0.85rem;
   }
 
-  .product-dialog :deep(.el-dialog__footer .btn-primary) {
+  :global(.ui-dialog.product-dialog .ui-dialog__footer .btn-primary) {
     padding: 10px 16px;
     font-size: 0.85rem;
   }
 
-  .product-dialog :deep(.el-dialog__footer .btn-outline) {
+  :global(.ui-dialog.product-dialog .ui-dialog__footer .btn-outline) {
     padding: 10px 16px;
     font-size: 0.85rem;
   }
@@ -1119,11 +1146,11 @@ onMounted(() => {
     max-width: 100%;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 16px 20px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 20px;
   }
 
@@ -1148,7 +1175,7 @@ onMounted(() => {
     gap: 4px;
   }
 
-  .product-dialog :deep(.el-dialog) {
+  :global(.ui-dialog.product-dialog) {
     width: 90% !important;
     max-height: 90vh;
   }
@@ -1164,11 +1191,11 @@ onMounted(() => {
     padding: 28px 20px;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 20px 28px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 28px;
   }
 }

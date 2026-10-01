@@ -299,20 +299,20 @@ const toggleFollow = async () => {
 /* ============================================================
    2. 卡片样式
    ============================================================ */
-:deep(.el-card) {
+:deep(.ui-card) {
   border: none !important;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
 }
 
-:deep(.el-card__header) {
+:deep(.ui-card__header) {
   border-bottom: 1px solid var(--line);
   padding: 20px 24px;
   background: var(--surface-card);
 }
 
-:deep(.el-card__body) {
+:deep(.ui-card__body) {
   padding: 24px;
 }
 
@@ -350,12 +350,12 @@ const toggleFollow = async () => {
   font-size: 0.75rem;
 }
 
-:deep(.status-tag.el-tag--success) {
+:deep(.status-tag.ui-tag.is-success) {
   background-color: var(--green-bg);
   color: var(--green);
 }
 
-:deep(.status-tag.el-tag--warning) {
+:deep(.status-tag.ui-tag.is-warning) {
   background-color: #fdf6e8;
   color: #d4a24e;
 }
@@ -489,7 +489,7 @@ const toggleFollow = async () => {
   box-shadow: var(--shadow-hover);
 }
 
-:deep(.product-card .el-card__body) {
+:deep(.product-card .ui-card__body) {
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -656,17 +656,17 @@ const toggleFollow = async () => {
 /* ============================================================
    9. 预定弹窗
    ============================================================ */
-.reserve-dialog :deep(.el-dialog) {
+:global(.ui-dialog.reserve-dialog) {
   border-radius: var(--radius);
 }
 
-.reserve-dialog :deep(.el-dialog__header) {
+:global(.ui-dialog.reserve-dialog .ui-dialog__header) {
   border-bottom: 1px solid var(--line);
   padding: 18px 24px;
   background: var(--surface-card);
 }
 
-.reserve-dialog :deep(.el-dialog__body) {
+:global(.ui-dialog.reserve-dialog .ui-dialog__body) {
   padding: 24px;
 }
 
@@ -727,11 +727,11 @@ const toggleFollow = async () => {
     padding: 8px;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 14px 16px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 16px;
   }
 
@@ -820,16 +820,16 @@ const toggleFollow = async () => {
   }
 
   /* 弹窗适配 */
-  .reserve-dialog :deep(.el-dialog) {
+  :global(.ui-dialog.reserve-dialog) {
     width: 95% !important;
     margin: 10px auto !important;
   }
 
-  .reserve-dialog :deep(.el-dialog__header) {
+  :global(.ui-dialog.reserve-dialog .ui-dialog__header) {
     padding: 14px 16px;
   }
 
-  .reserve-dialog :deep(.el-dialog__body) {
+  :global(.ui-dialog.reserve-dialog .ui-dialog__body) {
     padding: 16px;
   }
 
@@ -846,11 +846,11 @@ const toggleFollow = async () => {
     max-width: 100%;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 18px 20px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 20px;
   }
 
@@ -863,7 +863,7 @@ const toggleFollow = async () => {
     font-size: 0.75rem;
   }
 
-  .reserve-dialog :deep(.el-dialog) {
+  :global(.ui-dialog.reserve-dialog) {
     width: 90% !important;
   }
 }
@@ -874,11 +874,11 @@ const toggleFollow = async () => {
     padding: 32px 20px;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 24px 28px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 28px;
   }
 }

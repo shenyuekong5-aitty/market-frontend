@@ -157,9 +157,16 @@ const initUnreadCount = async () => {
 };
 
 const handleLogout = () => {
-  userStore.logout();
-  ElMessage.success("已退出登录");
-  router.push("/login");
+  ElMessageBox.confirm("退出后将回到登录页面，未提交的内容请先保存。", "退出当前账号", {
+    confirmButtonText: "确认退出",
+    cancelButtonText: "继续使用",
+    type: "warning",
+    customClass: "market-confirm-dialog",
+  }).then(() => {
+    userStore.logout();
+    ElMessage.success("已退出登录");
+    router.push("/login");
+  }).catch(() => {});
 };
 
 const handleDeactivate = () => {
@@ -167,9 +174,10 @@ const handleDeactivate = () => {
     "确定要注销账号吗？注销后可通过忘记密码重新激活。",
     "确认注销",
     {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
+      confirmButtonText: "确认注销",
+      cancelButtonText: "保留账号",
       type: "warning",
+      customClass: "market-confirm-dialog is-danger",
     },
   )
     .then(async () => {
@@ -368,5 +376,11 @@ onUnmounted(() => {
   .app-breadcrumb .crumb-separator {
     font-size: 12px;
   }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .topbar { padding: 0 18px; }
+  .setting { display: none; }
+  .right { gap: 14px; }
+  .app-breadcrumb a { max-width: 28vw; font-size: 14px; }
 }
 </style>

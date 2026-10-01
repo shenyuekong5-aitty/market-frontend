@@ -140,5 +140,7 @@ onMounted(async () => {
 
 <style scoped>
 .admin-manage-page { padding: 20px; }
-.card-header { display: flex; justify-content: space-between; align-items: center; }
+.card-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+@media (min-width: 768px) and (max-width: 1024px) { .admin-manage-page { padding: 12px; } }
+@media (max-width: 767px) { .admin-manage-page { padding: 0; } .card-header { flex-wrap: wrap; } .card-header :deep(.ui-button) { width: 100%; } }
 </style>

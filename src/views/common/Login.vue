@@ -45,13 +45,17 @@
           <UiSelect
             v-model="form.role"
             placeholder="请选择登录角色"
-            class="login-select"
+            class="login-select desktop-role-select"
           >
             <UiOption label="超级管理员" value="super_admin" />
             <UiOption label="集市管理员" value="market_admin" />
             <UiOption label="小贩" value="vendor" />
             <UiOption label="普通用户" value="user" />
           </UiSelect>
+          <button type="button" class="mobile-role-trigger" aria-haspopup="dialog" @click="roleChooserVisible = true">
+            <span><small>登录身份</small><strong>{{ roleOptions.find(item => item.value === form.role)?.label || '请选择身份' }}</strong></span>
+            <span class="trigger-chevron" aria-hidden="true">⌄</span>
+          </button>
         </UiFormItem>
         <UiFormItem>
           <UiButton
@@ -74,6 +78,7 @@
         >
         <router-link to="/register" class="link-item">立即注册</router-link>
       </div>
+      <router-link class="back-welcome" to="/welcome">← 返回智慧集市首页</router-link>
     </div>
 
     <!-- 忘记密码弹窗 -->
@@ -146,6 +151,16 @@
         </UiButton>
       </template>
     </UiDialog>
+    <UiDialog v-model="roleChooserVisible" title="选择登录身份" width="400px" class="role-chooser-dialog">
+      <p class="role-chooser-intro">选择你在智慧集市中的身份，登录后进入对应空间。</p>
+      <div class="role-options">
+        <button v-for="item in roleOptions" :key="item.value" type="button" class="role-option" :class="{ 'is-selected': form.role === item.value }" @click="form.role = item.value; roleChooserVisible = false">
+          <span class="role-option-mark">{{ item.mark }}</span>
+          <span><strong>{{ item.label }}</strong><small>{{ item.description }}</small></span>
+          <span class="role-check" aria-hidden="true">{{ form.role === item.value ? '✓' : '' }}</span>
+        </button>
+      </div>
+    </UiDialog>
   </div>
 </template>
 
@@ -159,6 +174,13 @@ import { homePathForRole } from '@/utils/roles'
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
+const roleChooserVisible = ref(false);
+const roleOptions = [
+  { value: 'user', label: '普通用户', description: '逛集市，发现和购买好物', mark: '逛' },
+  { value: 'vendor', label: '小贩', description: '经营摊位，打理我的小店', mark: '店' },
+  { value: 'market_admin', label: '集市管理员', description: '管理所属集市与摊位', mark: '管' },
+  { value: 'super_admin', label: '超级管理员', description: '负责全平台管理', mark: '总' },
+];
 
 const formRef = ref(null);
 const loading = ref(false);
@@ -570,32 +592,44 @@ watch(showResetDialog, (val) => {
 .links .link-item:last-child:hover {
   color: var(--accent);
 }
+.back-welcome { display: block; margin-top: 24px; color: var(--ink-muted); text-align: center; font-size: 12px; }
+.back-welcome:hover { color: var(--brand-primary); }
+.mobile-role-trigger { display: none; }
+.role-chooser-intro { margin: 0 0 16px; color: var(--ink-muted); font-size: 13px; line-height: 1.6; }
+.role-options { display: grid; gap: 9px; }
+.role-option { display: flex; align-items: center; gap: 12px; width: 100%; padding: 13px; border: 1px solid var(--line); border-radius: 15px; color: var(--ink-strong); background: #fff; text-align: left; }
+.role-option.is-selected { border-color: var(--brand-primary); background: #eef8f4; }
+.role-option-mark { display: grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 12px; color: var(--brand-primary); background: var(--brand-primary-soft); font-weight: 800; }
+.role-option span:nth-child(2) { display: grid; gap: 3px; }
+.role-option strong { font-size: 14px; }
+.role-option small { color: var(--ink-muted); font-size: 11px; }
+.role-check { margin-left: auto; color: var(--brand-primary); font-size: 17px; font-weight: 800; }
 
 /* ============================================================
    7. 重置密码弹窗
    ============================================================ */
-.reset-dialog :deep(.el-dialog) {
+:global(.ui-dialog.reset-dialog) {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
 
-.reset-dialog :deep(.el-dialog__header) {
+:global(.ui-dialog.reset-dialog .ui-dialog__header) {
   border-bottom: 1px solid var(--line);
   padding: 20px 24px;
   background: var(--surface-card);
 }
 
-.reset-dialog :deep(.el-dialog__title) {
+:global(.ui-dialog.reset-dialog .ui-dialog__header h2) {
   color: var(--text);
   font-weight: 600;
   font-size: 1.1rem;
 }
 
-.reset-dialog :deep(.el-dialog__body) {
+:global(.ui-dialog.reset-dialog .ui-dialog__body) {
   padding: 24px;
 }
 
-.reset-dialog :deep(.el-dialog__footer) {
+:global(.ui-dialog.reset-dialog .ui-dialog__footer) {
   border-top: 1px solid var(--line);
   padding: 16px 24px;
   background: var(--surface-card);
@@ -692,6 +726,12 @@ watch(showResetDialog, (val) => {
 
 /* ---- 移动端（< 768px） ---- */
 @media (max-width: 767px) {
+  .desktop-role-select { display: none; }
+  .mobile-role-trigger { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 54px; padding: 8px 15px; border: 1px solid var(--line); border-radius: 15px; color: var(--ink-strong); background: #fff; text-align: left; }
+  .mobile-role-trigger span:first-child { display: grid; gap: 2px; }
+  .mobile-role-trigger small { color: var(--ink-muted); font-size: 10px; }
+  .mobile-role-trigger strong { font-size: 14px; }
+  .trigger-chevron { color: var(--brand-primary); font-size: 22px; }
   .login-container {
     padding: 16px;
     align-items: center;
@@ -743,20 +783,20 @@ watch(showResetDialog, (val) => {
     font-size: 0.8rem;
   }
 
-  .reset-dialog :deep(.el-dialog) {
+  :global(.ui-dialog.reset-dialog) {
     width: 95% !important;
     margin: 10px auto !important;
   }
 
-  .reset-dialog :deep(.el-dialog__header) {
+  :global(.ui-dialog.reset-dialog .ui-dialog__header) {
     padding: 14px 16px;
   }
 
-  .reset-dialog :deep(.el-dialog__body) {
+  :global(.ui-dialog.reset-dialog .ui-dialog__body) {
     padding: 16px;
   }
 
-  .reset-dialog :deep(.el-dialog__footer) {
+  :global(.ui-dialog.reset-dialog .ui-dialog__footer) {
     padding: 12px 16px;
   }
 

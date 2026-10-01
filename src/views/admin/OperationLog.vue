@@ -80,4 +80,6 @@ onMounted(() => {
 .filter-form {
   margin-bottom: 20px;
 }
+@media (min-width: 768px) and (max-width: 1024px) { .operation-log-page { padding: 12px; } }
+@media (max-width: 767px) { .operation-log-page { padding: 0; } .filter-form { margin-bottom: 14px; } }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="layout">
+  <div class="layout" :class="`device-${device}`">
     <Admin v-if="showAdmin"/>
     <Vendor v-else-if="showVendor">
       <router-view />
@@ -18,9 +18,11 @@ import Admin from "./admin/index.vue"
 import Vendor from "./vendor/index.vue"
 import User from "./user/index.vue"
 import AiCustomerService from '@/components/AiCustomerService.vue'
+import { useDevice } from '@/composables/useDevice'
 import { isAdminRole } from '@/utils/roles'
 
 const userStore = useUserStore()
+const { device } = useDevice()
 
 
 // 根据不同的角色显示不同的面板
@@ -41,7 +43,7 @@ const showUser = computed(() => {
   display: flex;
   width: 100%;
   min-width: 0;
-  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 

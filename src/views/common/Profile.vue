@@ -166,8 +166,8 @@ const securityItems = computed(() => [
   { label: '最近更新', value: formatDate(userStore.userInfo.updateTime || userStore.userInfo.createTime), tone: 'is-neutral', icon: CircleCheck },
 ])
 
-const handleLogout = () => { ElMessageBox.confirm('确定要退出登录吗？', '退出当前账号', { confirmButtonText: '确定退出', cancelButtonText: '暂不退出', type: 'warning' }).then(() => { userStore.logout(); ElMessage.success('已退出登录'); router.push('/login') }).catch(() => {}) }
-const handleDeactivate = () => { ElMessageBox.confirm('注销后可通过忘记密码重新激活，确定继续吗？', '注销账号', { confirmButtonText: '确认注销', cancelButtonText: '保留账号', type: 'warning' }).then(async () => { try { await userStore.deactivateAccount(); ElMessage.success('账号已注销'); userStore.logout() } catch (error) { ElMessage.error(error.message || '注销失败') } }).catch(() => {}) }
+const handleLogout = () => { ElMessageBox.confirm('退出后将回到登录页面，未提交的内容请先保存。', '退出当前账号', { confirmButtonText: '确认退出', cancelButtonText: '继续使用', type: 'warning', customClass: 'market-confirm-dialog' }).then(() => { userStore.logout(); ElMessage.success('已退出登录'); router.push('/login') }).catch(() => {}) }
+const handleDeactivate = () => { ElMessageBox.confirm('注销后可通过忘记密码重新激活，确定继续吗？', '注销账号', { confirmButtonText: '确认注销', cancelButtonText: '保留账号', type: 'warning', customClass: 'market-confirm-dialog is-danger' }).then(async () => { try { await userStore.deactivateAccount(); ElMessage.success('账号已注销'); userStore.logout() } catch (error) { ElMessage.error(error.message || '注销失败') } }).catch(() => {}) }
 const actions = computed(() => [
   { title: '编辑资料', description: '更新头像、昵称与性别', icon: Edit, tone: 'tone-primary', handler: () => editProfileRef.value?.open() },
   { title: '修改密码', description: '定期更换登录密码', icon: Lock, tone: 'tone-success', handler: () => updatePasswordRef.value?.open() },

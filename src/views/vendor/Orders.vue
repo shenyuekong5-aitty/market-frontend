@@ -119,29 +119,9 @@
       title="订单明细"
       width="600px"
       class="detail-dialog"
-      :class="{ 'is-mobile': windowWidth < 768 }"
+      :class="{ 'is-mobile': isMobile }"
     >
-      <UiTable :data="store.vendorOrderItems" border class="detail-table">
-        <UiTableColumn label="商品图片" width="80">
-          <template #default="{ row }">
-            <UiImage
-              v-if="row.productImageUrl"
-              :src="getFullUrl(row.productImageUrl)"
-              fit="cover"
-              style="width: 44px; height: 44px; border-radius: 8px;"
-            />
-            <span v-else class="muted-placeholder">暂无</span>
-          </template>
-        </UiTableColumn>
-        <UiTableColumn prop="productName" label="商品" min-width="120" />
-        <UiTableColumn prop="productPrice" label="单价" width="80" align="center" />
-        <UiTableColumn prop="quantity" label="数量" width="60" align="center" />
-        <UiTableColumn label="小计" width="90" align="right">
-          <template #default="{ row }">
-            ¥{{ (row.productPrice * row.quantity).toFixed(2) }}
-          </template>
-        </UiTableColumn>
-      </UiTable>
+      <OrderItemsDetail :items="store.vendorOrderItems" />
       </UiDialog>
   </div>
 </template>
@@ -151,12 +131,13 @@ import { onMounted, watch, ref } from 'vue'
 import { useVendorStore } from '@/store/modules/vendor'
 import { useNotificationStore } from "@/store/modules/notification";
 import { ElMessage } from 'element-plus'
-import { getFullUrl } from '@/utils/urlHelper'
+import OrderItemsDetail from '@/components/OrderItemsDetail.vue'
+import { useDevice } from '@/composables/useDevice'
 
 const store = useVendorStore()
 const notificationStore = useNotificationStore();
 
-const windowWidth = ref(window.innerWidth)
+const { isMobile } = useDevice()
 
 // 状态样式映射
 const statusClass = (status) => {
@@ -182,14 +163,8 @@ const refreshOrders = () => {
   store.fetchVendorOrders()
 }
 
-// 窗口尺寸变化
-const handleResize = () => {
-  windowWidth.value = window.innerWidth
-}
-
 onMounted(() => {
   store.fetchVendorOrders()
-  window.addEventListener('resize', handleResize)
 })
 
 // 监听未读数量变化，自动刷新订单列表
@@ -229,20 +204,20 @@ watch(
 /* ============================================================
    2. 卡片样式
    ============================================================ */
-:deep(.el-card) {
+:deep(.ui-card) {
   border: none !important;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
 }
 
-:deep(.el-card__header) {
+:deep(.ui-card__header) {
   border-bottom: 1px solid var(--line);
   padding: 18px 24px;
   background: var(--surface-card);
 }
 
-:deep(.el-card__body) {
+:deep(.ui-card__body) {
   padding: 24px;
 }
 
@@ -474,24 +449,24 @@ watch(
 /* ============================================================
    9. 明细弹窗
    ============================================================ */
-.detail-dialog :deep(.el-dialog) {
+:global(.ui-dialog.detail-dialog) {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
 
-.detail-dialog :deep(.el-dialog__header) {
+:global(.ui-dialog.detail-dialog .ui-dialog__header) {
   border-bottom: 1px solid var(--line);
   padding: 18px 24px;
   background: var(--surface-card);
 }
 
-.detail-dialog :deep(.el-dialog__title) {
+:global(.ui-dialog.detail-dialog .ui-dialog__header h2) {
   color: var(--text);
   font-weight: 600;
   font-size: 1rem;
 }
 
-.detail-dialog :deep(.el-dialog__body) {
+:global(.ui-dialog.detail-dialog .ui-dialog__body) {
   padding: 24px;
 }
 
@@ -538,11 +513,11 @@ watch(
     padding: 8px;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 12px 14px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 12px 8px;
   }
 
@@ -648,16 +623,16 @@ watch(
   }
 
   /* ---- 弹窗移动端 ---- */
-  .detail-dialog :deep(.el-dialog) {
+  :global(.ui-dialog.detail-dialog) {
     width: 95% !important;
     margin: 10px auto !important;
   }
 
-  .detail-dialog :deep(.el-dialog__header) {
+  :global(.ui-dialog.detail-dialog .ui-dialog__header) {
     padding: 14px 16px;
   }
 
-  .detail-dialog :deep(.el-dialog__body) {
+  :global(.ui-dialog.detail-dialog .ui-dialog__body) {
     padding: 12px 8px;
   }
 
@@ -691,11 +666,11 @@ watch(
     max-width: 100%;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 16px 20px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 20px;
   }
 
@@ -716,7 +691,7 @@ watch(
     font-size: 0.6rem;
   }
 
-  .detail-dialog :deep(.el-dialog) {
+  :global(.ui-dialog.detail-dialog) {
     width: 90% !important;
   }
 }
@@ -727,11 +702,11 @@ watch(
     padding: 28px 20px;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 20px 28px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 28px;
   }
 }

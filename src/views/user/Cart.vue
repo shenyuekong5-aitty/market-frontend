@@ -119,7 +119,7 @@
                 </div>
               </div>
               <!-- 删除按钮 -->
-              <div class="item-delete" @click="handleDelete(item.cartId)">
+              <button type="button" class="item-delete" :aria-label="`从购物车移除${item.productName}`" @click="handleDelete(item.cartId)">
                 <svg
                   width="20"
                   height="20"
@@ -133,13 +133,14 @@
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
-              </div>
+              </button>
             </div>
             <!-- 底部操作栏：数量 + 小计 -->
             <div class="item-actions">
               <div class="quantity-control">
                 <button
                   class="qty-btn"
+                  :aria-label="`减少${item.productName}的数量`"
                   @click="updateQuantity(item, -1)"
                   :disabled="item.quantity <= 1"
                 >
@@ -158,6 +159,7 @@
                 <span class="qty-num">{{ item.quantity }}</span>
                 <button
                   class="qty-btn"
+                  :aria-label="`增加${item.productName}的数量`"
                   @click="updateQuantity(item, 1)"
                   :disabled="item.quantity >= item.stock"
                 >
@@ -302,20 +304,20 @@ const handleClear = () => {
 /* ============================================================
    2. 卡片样式
    ============================================================ */
-:deep(.el-card) {
+:deep(.ui-card) {
   border: none !important;
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(44, 37, 32, 0.04);
   overflow: hidden;
 }
 
-:deep(.el-card__header) {
+:deep(.ui-card__header) {
   border-bottom: 1px solid var(--line);
   padding: 20px 24px;
   background: var(--surface-card);
 }
 
-:deep(.el-card__body) {
+:deep(.ui-card__body) {
   padding: 24px;
 }
 
@@ -499,10 +501,10 @@ const handleClear = () => {
     padding: 8px;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 12px 14px;
   }
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 8px 4px;
   }
 
@@ -694,10 +696,10 @@ const handleClear = () => {
     padding: 24px;
     max-width: 100%;
   }
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 18px 20px;
   }
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 20px;
   }
 }
@@ -707,10 +709,10 @@ const handleClear = () => {
   .cart-page {
     padding: 28px 20px;
   }
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 24px 28px;
   }
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 28px;
   }
 }

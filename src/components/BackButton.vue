@@ -1,5 +1,5 @@
 <template>
-  <div class="back-bar" @click="goBack" v-if="visible">
+  <div v-if="visible" class="back-bar" role="button" tabindex="0" @click="goBack" @keydown.enter="goBack" @keydown.space.prevent="goBack">
     <span class="back-arrow">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="15 18 9 12 15 6"></polyline>
@@ -10,8 +10,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useDevice } from '@/composables/useDevice'
 
 const router = useRouter()
 const route = useRoute()
@@ -24,18 +25,12 @@ const props = defineProps({
   },
 })
 
-const windowWidth = ref(1024)
-
-function onResize() {
-  windowWidth.value = window.innerWidth
-}
+const { isDesktop } = useDevice()
 
 // 逻辑：只要页面不是首页，并且在移动端/平板端指定的页面列表中，就显示返回按钮
 const visible = computed(() => {
   if (route.path === '/') return false
-  const width = windowWidth.value
-  // 桌面端 (>=1025px) 由 CSS 控制隐藏，这里主要用于控制平板和移动端
-  if (width >= 1025) return true
+  if (isDesktop.value) return false
   return props.mobileNames.includes(route.name)
 })
 
@@ -43,14 +38,6 @@ function goBack() {
   router.back()
 }
 
-onMounted(() => {
-  windowWidth.value = window.innerWidth
-  window.addEventListener('resize', onResize)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', onResize)
-})
 </script>
 
 <style scoped>

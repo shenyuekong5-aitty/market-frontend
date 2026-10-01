@@ -16,6 +16,14 @@
         <span>智慧集市</span>
       </div>
 
+      <nav class="desktop-links" aria-label="用户主导航">
+        <router-link to="/markets">逛集市</router-link>
+        <router-link to="/discover">发现好物</router-link>
+        <router-link to="/cart">购物车</router-link>
+        <router-link to="/orders">我的订单</router-link>
+        <router-link to="/reservations">我的预订</router-link>
+        <router-link to="/follows">我的关注</router-link>
+      </nav>
       <div class="greeting">
         {{ greeting }}
       </div>
@@ -63,7 +71,7 @@
       </div>
     </header>
 
-    <BackButton />
+    <BackButton :mobileNames="['Follows', 'SharedMessages', 'MarketDetail', 'BoothDetail']" />
 
     <!-- ========== 主体 ========== -->
     <div class="main-wrap">
@@ -198,13 +206,13 @@
     <!-- ========== 底部导航 ========== -->
     <nav
       class="bottom-nav"
-      v-if="['/', '/reservations', '/orders', '/profile'].includes($route.path)"
+      v-if="['/markets', '/cart', '/orders', '/profile'].includes($route.path)"
     >
       <div class="bottom-nav-inner">
         <router-link
-          to="/"
+          to="/markets"
           class="nav-item"
-          :class="{ active: $route.path === '/' }"
+          :class="{ active: $route.path === '/markets' }"
         >
           <span class="nav-icon">
             <svg
@@ -221,12 +229,12 @@
               <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
           </span>
-          首页
+          逛集市
         </router-link>
         <router-link
-          to="/reservations"
+          to="/cart"
           class="nav-item"
-          :class="{ active: $route.path.startsWith('/reservations') }"
+          :class="{ active: $route.path.startsWith('/cart') }"
         >
           <span class="nav-icon">
             <svg
@@ -239,14 +247,12 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
+              <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
               <rect x="6" y="14" width="4" height="4" rx="1" />
             </svg>
           </span>
-          预定
+          购物车
         </router-link>
         <router-link
           to="/orders"
@@ -319,7 +325,7 @@ const marketStore = useMarketStore();
 const notificationStore = useNotificationStore();
 const userMarketStore = useUserMarketStore();
 
-const nickname = computed(() => userStore.userInfo.nickname.charAt(0) || userStore.userInfo.username.charAt(0) || "我");
+const nickname = computed(() => userStore.userInfo.nickname?.charAt(0) || userStore.userInfo.username?.charAt(0) || "我");
 
 const greeting = computed(() => {
   const period = getGreetingPeriod()
@@ -397,7 +403,7 @@ onUnmounted(() => {
   --nav-height: 64px;
   --bottom-nav-height: 64px;
 
-  background: var(--bg);
+  background: radial-gradient(circle at 100% 0%, #e7f2ef 0, transparent 28%), var(--bg);
   font-family:
     "Inter",
     -apple-system,
@@ -409,7 +415,7 @@ onUnmounted(() => {
   color: var(--text);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  height: 100vh;
+  height: 100dvh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -463,6 +469,7 @@ onUnmounted(() => {
   font-size: 1.15rem;
   color: var(--accent);
 }
+.desktop-links { display: none; }
 
 .greeting {
   flex: 1;
@@ -646,7 +653,8 @@ onUnmounted(() => {
 }
 
 .hero-card.hero-primary {
-  background: var(--surface-card);
+  background: linear-gradient(118deg, #12484c 0%, var(--brand-primary) 68%, #29877f 100%);
+  box-shadow: var(--shadow-md);
 }
 
 .hero-content {
@@ -658,9 +666,9 @@ onUnmounted(() => {
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--accent);
-  background: var(--accent-light);
-  padding: 2px 14px;
+  color: #d1f3e2;
+  background: rgba(255,255,255,.15);
+  padding: 5px 14px;
   border-radius: 100px;
   display: inline-block;
   margin-bottom: 14px;
@@ -675,13 +683,14 @@ onUnmounted(() => {
 
 .hero-content h2 {
   font-size: 1.5rem;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.25;
-  color: var(--text);
+  color: #fff;
   margin: 0 0 8px 0;
 }
 .hero-content h2 strong {
-  font-weight: 600;
+  font-weight: 750;
+  color: #ddf7e6;
 }
 
 @media (min-width: 768px) {
@@ -697,7 +706,7 @@ onUnmounted(() => {
 
 .hero-sub {
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  color: #d2e9e6;
   margin: 0;
 }
 
@@ -725,7 +734,7 @@ onUnmounted(() => {
   width: 200px;
   height: 200px;
   border-radius: 50%;
-  background: rgba(201, 125, 74, 0.05);
+  background: rgba(255,255,255,.09);
 }
 
 .hero-ornament::after {
@@ -736,7 +745,7 @@ onUnmounted(() => {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: rgba(201, 125, 74, 0.08);
+  background: rgba(255,255,255,.1);
 }
 
 @media (min-width: 768px) {
@@ -862,7 +871,7 @@ onUnmounted(() => {
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
-  border: none;
+  border: 1px solid var(--line);
   display: flex;
   flex-direction: column;
   text-decoration: none;
@@ -881,7 +890,7 @@ onUnmounted(() => {
 
 .card-cover {
   height: 76px;
-  background: #f5f0ea !important;
+  background: linear-gradient(130deg, #e1f0e9, #f2f8f3) !important;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -905,7 +914,7 @@ onUnmounted(() => {
 .card-number {
   font-size: 1.1rem;
   font-weight: 300;
-  color: rgba(44, 37, 32, 0.1);
+  color: rgba(23,107,104,.27);
   letter-spacing: -0.02em;
   line-height: 1;
 }
@@ -1032,13 +1041,13 @@ onUnmounted(() => {
 }
 
 .quick-item {
-  background: transparent;
+  background: var(--surface-card);
   border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   padding: 14px 6px;
   text-align: center;
   cursor: pointer;
-  box-shadow: none;
+  box-shadow: var(--shadow-sm);
   transition:
     border-color 0.25s,
     background 0.25s,
@@ -1078,10 +1087,11 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: auto;
-  height: auto;
-  background: transparent !important;
-  color: var(--text);
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--brand-primary-soft) !important;
+  color: var(--brand-primary);
   font-size: 1.4rem;
   line-height: 1;
 }
@@ -1217,5 +1227,26 @@ onUnmounted(() => {
       -apple-system,
       sans-serif;
   }
+}
+@media (min-width: 1025px) {
+  .desktop-links { display: flex; align-items: center; gap: clamp(11px, 1.6vw, 25px); margin-left: clamp(16px, 3vw, 50px); white-space: nowrap; }
+  .desktop-links a { padding: 10px 2px; color: #5e7771; font-size: 13px; font-weight: 650; border-bottom: 2px solid transparent; }
+  .desktop-links a:hover, .desktop-links a.router-link-active { color: var(--brand-primary); border-bottom-color: var(--brand-primary); }
+  .top-nav .greeting { display: none; }
+  .top-nav .nav-actions { margin-left: auto; gap: 8px; }
+  .main-wrap { max-width: 1440px; padding: 0 48px 38px; }
+  .content-area { padding-top: 15px; }
+}
+@media (max-width: 767px) {
+  .user-layout-body { background: #f8f7f2; }
+  .top-nav { background: #f8f7f2; box-shadow: none; }
+  .top-nav .greeting { display: none; }
+  .top-nav .nav-actions { margin-left: auto; }
+  .brand { font-size: 16px; font-weight: 800; }
+  .main-wrap { padding-left: 8px; padding-right: 8px; }
+  .bottom-nav { height: calc(68px + env(safe-area-inset-bottom, 0px)); background: #fffdf9; }
+  .bottom-nav-inner { align-items: stretch; }
+  .bottom-nav .nav-item { flex: 1; justify-content: center; gap: 3px; font-size: 11px; font-weight: 650; }
+  .bottom-nav .nav-item.active { color: #176b68; }
 }
 </style>

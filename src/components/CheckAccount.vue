@@ -65,7 +65,7 @@
 
       <!-- 底部文本 -->
       <div class="footer">
-        <UiButton type="primary" plain :loading="scanning" @click="startCheck">
+        <UiButton type="primary" class="rescan-button" :loading="scanning" @click="startCheck">
           {{ scanning ? "正在扫描" : "重新扫描" }}
         </UiButton>
       </div>
@@ -275,11 +275,18 @@ defineExpose({ open });
 
 .warning-note { color: var(--warning); margin-left: 6px; }
 
-.footer .el-button {
+.footer :deep(.rescan-button.ui-button) {
   min-width: 140px;
-  border-radius: 20px;
-  font-weight: 500;
+  min-height: 42px;
+  border-radius: 999px;
+  background: #e5f2ed;
+  border-color: #176b68;
+  color: #176b68;
+  font-weight: 700;
+  box-shadow: none;
 }
+.footer :deep(.rescan-button.ui-button .ui-button__label) { color: #176b68; }
+.footer :deep(.rescan-button.ui-button:hover:not(:disabled)) { background: #d5eae2; border-color: #115653; color: #115653; }
 
 @keyframes breath {
   0% {

@@ -1,4 +1,22 @@
 const constantRoutes = [
+  {
+    path: "/welcome",
+    name: "Welcome",
+    component: () => import("@/views/common/Welcome.vue"),
+    meta: { title: "智慧集市" },
+  },
+  {
+    path: "/about",
+    name: "About",
+    component: () => import("@/views/common/About.vue"),
+    meta: { title: "了解智慧集市" },
+  },
+  {
+    path: "/discover",
+    name: "Discover",
+    component: () => import("@/views/common/Discover.vue"),
+    meta: { title: "发现好物" },
+  },
   // 静态 Layout 父路由，子路由将在登录后动态添加
   {
     path: "/",

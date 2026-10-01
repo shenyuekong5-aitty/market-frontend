@@ -1,0 +1,195 @@
+/* 用户与小贩的内容页：三端共用卡片，而不是大屏切回后台表格。 */
+.user-layout-body :is(.orders-page, .cart-page, .reservations-page, .market-detail-page) .table-wrapper,
+.vendor-layout-body :is(.orders-page, .goods-page, .reservations-page, .market-select-page) .table-wrapper {
+  display: none;
+}
+
+.user-layout-body :is(.orders-page, .cart-page, .reservations-page) > .ui-card,
+.vendor-layout-body :is(.orders-page, .goods-page, .reservations-page) > .ui-card {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.user-layout-body :is(.orders-page, .cart-page, .reservations-page) > .ui-card:hover,
+.vendor-layout-body :is(.orders-page, .goods-page, .reservations-page) > .ui-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+.user-layout-body :is(.orders-page, .cart-page, .reservations-page) > .ui-card::before,
+.vendor-layout-body :is(.orders-page, .goods-page, .reservations-page) > .ui-card::before { display: none; }
+.user-layout-body :is(.orders-page, .cart-page, .reservations-page) > .ui-card > .ui-card__header,
+.vendor-layout-body :is(.orders-page, .goods-page, .reservations-page) > .ui-card > .ui-card__header {
+  padding: 12px 2px 20px;
+  border: 0;
+  background: transparent;
+  font-size: 24px;
+}
+.user-layout-body :is(.orders-page, .cart-page, .reservations-page) > .ui-card > .ui-card__body,
+.vendor-layout-body :is(.orders-page, .goods-page, .reservations-page) > .ui-card > .ui-card__body { padding: 0; }
+.user-layout-body .orders-page .orders-header > span:first-child,
+.user-layout-body .cart-page .cart-header > span:first-child,
+.user-layout-body .reservations-page .reservations-header > span:first-child,
+.vendor-layout-body :is(.orders-page, .goods-page, .reservations-page) .header-title { color: #173d3a; font-size: 24px; font-weight: 800; letter-spacing: -.03em; }
+
+.user-layout-body :is(.orders-page, .cart-page, .reservations-page) :is(.order-card-list, .cart-card-list, .reservation-card-list),
+.vendor-layout-body :is(.orders-page, .goods-page, .reservations-page) :is(.order-card-list, .product-card-list, .reservation-card-list),
+.user-layout-body .market-detail-page .booth-card-list,
+.vendor-layout-body .market-select-page .booth-card-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 16px;
+  padding: 4px 0;
+}
+.vendor-layout-body .goods-page .product-card-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.user-layout-body :is(.orders-page, .cart-page, .reservations-page, .market-detail-page) :is(.order-card, .cart-item-card, .reservation-card, .booth-card),
+.vendor-layout-body :is(.orders-page, .goods-page, .reservations-page, .market-select-page) :is(.order-card, .product-card, .reservation-card, .booth-card) {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid #dce9e5;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 9px 26px rgba(23, 61, 58, .06);
+}
+.user-layout-body :is(.orders-page, .cart-page, .reservations-page, .market-detail-page) :is(.order-card-row, .reservation-card-row, .booth-card-row, .item-row),
+.vendor-layout-body :is(.orders-page, .goods-page, .reservations-page, .market-select-page) :is(.order-card-row, .product-card-row, .reservation-card-row, .booth-card-header) {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.user-layout-body :is(.orders-page, .reservations-page) :is(.order-card-info, .reservation-card-info),
+.vendor-layout-body :is(.orders-page, .goods-page, .reservations-page) :is(.order-card-info, .product-card-info, .reservation-card-info) { min-width: 0; }
+.user-layout-body .orders-page .order-card-info,
+.vendor-layout-body .orders-page .order-card-info {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px 18px;
+  padding: 15px 0;
+}
+.user-layout-body .orders-page .info-item,
+.vendor-layout-body .orders-page .info-item { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.user-layout-body .orders-page .info-item:last-child,
+.vendor-layout-body .orders-page .info-item:last-child { grid-column: 1 / -1; }
+.user-layout-body .orders-page .info-label,
+.vendor-layout-body .orders-page .info-label { color: #789087; font-size: 11px; }
+.user-layout-body .orders-page .info-value,
+.vendor-layout-body .orders-page .info-value { overflow-wrap: anywhere; color: #173d3a; font-size: 14px; }
+.user-layout-body .orders-page .info-value.price,
+.vendor-layout-body .orders-page .info-value.price { color: #c96d51; font-size: 19px; font-weight: 800; }
+.user-layout-body .orders-page .order-card-no,
+.vendor-layout-body .orders-page .order-card-no { min-width: 0; overflow-wrap: anywhere; color: #254b47; font-size: 13px; font-weight: 700; }
+.user-layout-body .orders-page .order-card-actions,
+.vendor-layout-body .orders-page .order-card-actions { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 13px; border-top: 1px solid #e8efea; }
+.user-layout-body .orders-page .order-card-actions button,
+.vendor-layout-body .orders-page .order-card-actions button { min-height: 38px; padding: 7px 15px; border-radius: 999px; }
+
+.vendor-layout-body .goods-page .product-card-row { justify-content: flex-start; }
+.vendor-layout-body .goods-page .product-card-image,
+.user-layout-body .cart-page .item-image,
+.user-layout-body .reservations-page .reservation-card-image,
+.vendor-layout-body .reservations-page .reservation-card-image {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #e8f1eb;
+  color: #8dab9d;
+  font-size: 12px;
+}
+.vendor-layout-body .goods-page .product-card-image .ui-image,
+.user-layout-body .cart-page .item-image .ui-image,
+.user-layout-body .reservations-page .reservation-card-image .ui-image,
+.vendor-layout-body .reservations-page .reservation-card-image .ui-image { width: 76px !important; height: 76px !important; object-fit: cover; }
+.vendor-layout-body .goods-page .product-card-info { flex: 1; }
+.vendor-layout-body .goods-page .product-card-name,
+.user-layout-body .cart-page .item-name,
+.user-layout-body .reservations-page .reservation-card-name,
+.vendor-layout-body .reservations-page .reservation-card-name { overflow-wrap: anywhere; color: #173d3a; font-size: 16px; font-weight: 800; line-height: 1.4; }
+.vendor-layout-body .goods-page .product-card-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-top: 9px; }
+.vendor-layout-body .goods-page .product-card-price,
+.user-layout-body .cart-page .item-price { color: #c96d51; font-size: 19px; font-weight: 800; }
+.vendor-layout-body .goods-page .product-card-stock { color: #7b9086; font-size: 12px; }
+.vendor-layout-body .goods-page .product-card-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.vendor-layout-body .goods-page .tag-reserve { padding: 4px 9px; border-radius: 999px; background: #e5f2ed; color: #176b68; font-size: 11px; }
+.user-layout-body .cart-page .item-info { flex: 1; min-width: 0; }
+.user-layout-body .cart-page .item-actions { justify-content: space-between; }
+.user-layout-body .cart-page .quantity-control { display: inline-flex; align-items: center; gap: 10px; }
+.user-layout-body .cart-page .qty-btn { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid #dce9e5; border-radius: 50%; background: #fff; color: #176b68; }
+.user-layout-body .cart-page .item-subtotal { color: #70877d; font-size: 12px; }
+.user-layout-body .cart-page .subtotal-price { margin-left: 6px; color: #c96d51; font-size: 17px; font-weight: 800; }
+.user-layout-body .cart-page .item-delete { flex: none; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: #f3f6f3; color: #869b92; cursor: pointer; }
+.user-layout-body .cart-page .item-delete:hover { color: #c45d4d; }
+.user-layout-body .reservations-page .reservation-card-info,
+.vendor-layout-body .reservations-page .reservation-card-info { flex: 1; }
+.user-layout-body .reservations-page .reservation-card-time,
+.vendor-layout-body .reservations-page :is(.reservation-card-time, .reservation-card-user) { margin-top: 7px; color: #71877e; font-size: 12px; line-height: 1.5; }
+.vendor-layout-body .goods-page .product-card-image,
+.user-layout-body .cart-page .item-image,
+.user-layout-body .reservations-page .reservation-card-image,
+.vendor-layout-body .reservations-page .reservation-card-image { flex: none; }
+.vendor-layout-body .goods-page .product-card-actions,
+.user-layout-body .cart-page .item-actions,
+.user-layout-body .reservations-page .reservation-card-actions,
+.vendor-layout-body .reservations-page .reservation-card-actions,
+.user-layout-body .market-detail-page .booth-card-actions,
+.vendor-layout-body .market-select-page .booth-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 17px;
+  padding-top: 14px;
+  border-top: 1px solid #e8efea;
+}
+.vendor-layout-body .goods-page .product-card-actions button,
+.user-layout-body .reservations-page .reservation-card-actions button,
+.vendor-layout-body .reservations-page .reservation-card-actions button,
+.user-layout-body .market-detail-page .booth-card-actions button,
+.vendor-layout-body .market-select-page .booth-card-actions button { min-height: 36px; padding: 7px 14px; border-radius: 999px; }
+
+.user-layout-body :is(.orders-page, .cart-page, .reservations-page) :is(.empty-state, .empty-cart),
+.vendor-layout-body :is(.orders-page, .goods-page, .reservations-page) .empty-state {
+  min-height: 235px;
+  padding: 25px 16px;
+  border: 1px dashed #c9ddd3;
+  border-radius: 22px;
+  background: #fff;
+}
+.user-layout-body :is(.orders-page, .cart-page, .reservations-page) .ui-empty { min-height: 180px; padding: 16px; }
+.user-layout-body :is(.orders-page, .cart-page, .reservations-page) .ui-empty__mark { transform: none; }
+.ui-dialog.detail-dialog { border-radius: 22px; }
+.ui-dialog.detail-dialog .ui-dialog__body { padding: 16px 22px 24px; }
+
+@media (max-width: 1024px) {
+  .vendor-layout-body .goods-page .product-card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .user-layout-body :is(.orders-page, .cart-page, .reservations-page) :is(.order-card-list, .cart-card-list, .reservation-card-list),
+  .vendor-layout-body :is(.orders-page, .goods-page, .reservations-page) :is(.order-card-list, .product-card-list, .reservation-card-list),
+  .user-layout-body .market-detail-page .booth-card-list,
+  .vendor-layout-body .market-select-page .booth-card-list { grid-template-columns: 1fr; gap: 11px; }
+  .user-layout-body :is(.orders-page, .cart-page, .reservations-page) > .ui-card > .ui-card__header,
+  .vendor-layout-body :is(.orders-page, .goods-page, .reservations-page) > .ui-card > .ui-card__header { padding: 8px 2px 16px; font-size: 20px; }
+  .user-layout-body .orders-page .orders-header > span:first-child,
+  .user-layout-body .cart-page .cart-header > span:first-child,
+  .user-layout-body .reservations-page .reservations-header > span:first-child,
+  .vendor-layout-body :is(.orders-page, .goods-page, .reservations-page) .header-title { font-size: 20px; }
+  .user-layout-body :is(.orders-page, .cart-page, .reservations-page, .market-detail-page) :is(.order-card, .cart-item-card, .reservation-card, .booth-card),
+  .vendor-layout-body :is(.orders-page, .goods-page, .reservations-page, .market-select-page) :is(.order-card, .product-card, .reservation-card, .booth-card) { padding: 16px; border-radius: 17px; }
+  .user-layout-body :is(.orders-page, .cart-page, .reservations-page) :is(.empty-state, .empty-cart),
+  .vendor-layout-body :is(.orders-page, .goods-page, .reservations-page) .empty-state { min-height: 210px; }
+  .vendor-layout-body .goods-page .product-card-image,
+  .user-layout-body .cart-page .item-image,
+  .user-layout-body .reservations-page .reservation-card-image,
+  .vendor-layout-body .reservations-page .reservation-card-image { width: 64px; height: 64px; }
+  .vendor-layout-body .goods-page .product-card-image .ui-image,
+  .user-layout-body .cart-page .item-image .ui-image,
+  .user-layout-body .reservations-page .reservation-card-image .ui-image,
+  .vendor-layout-body .reservations-page .reservation-card-image .ui-image { width: 64px !important; height: 64px !important; }
+}

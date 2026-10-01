@@ -2,8 +2,12 @@
   <div class="market-list-page">
     <!-- 页面标题 -->
     <div class="page-header">
-      <h2>探索集市</h2>
-      <p class="subtitle">选择一个集市，查看空闲摊位并申请入驻</p>
+      <div>
+        <span class="page-eyebrow">AROUND YOU / 逛逛身边</span>
+        <h2>今天，去逛集市。</h2>
+        <p class="subtitle">走进正在营业的集市，发现摊主们认真准备的好物。</p>
+      </div>
+      <router-link class="discover-link" to="/discover">先看看在售商品 <ArrowRight aria-hidden="true" /></router-link>
     </div>
 
     <!-- 加载状态 -->
@@ -21,7 +25,11 @@
         <UiCard
           shadow="hover"
           class="market-card"
+          role="link"
+          tabindex="0"
           @click="goToDetail(market.id)"
+          @keydown.enter="goToDetail(market.id)"
+          @keydown.space.prevent="goToDetail(market.id)"
         >
           <!-- 集市名称和状态 -->
           <div class="card-header">
@@ -53,7 +61,7 @@
 
           <!-- 底部操作提示 -->
           <div class="card-footer">
-            <span>点击查看空闲摊位</span>
+            <span>进入集市，看看摊位</span>
             <el-icon><ArrowRight /></el-icon>
           </div>
         </UiCard>
@@ -119,6 +127,7 @@ onMounted(async () => {
   background: var(--bg);
   /* 关键修复：改用 min-height: 100% 或直接移除固定高度 */
   min-height: 100%;
+  width: 100%;
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
@@ -168,18 +177,20 @@ onMounted(async () => {
 .market-grid {
   display: grid;
   gap: 20px;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
 }
 
 .market-grid-item {
   display: flex;
   min-width: 0;
+  width: 100%;
 }
 
 /* ---- 平板端（≥ 768px）：两列 ---- */
 @media (min-width: 768px) {
   .market-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
   }
 }
@@ -187,7 +198,7 @@ onMounted(async () => {
 /* ---- 桌面端（≥ 1024px）：三列 ---- */
 @media (min-width: 1024px) {
   .market-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 24px;
   }
 }
@@ -195,7 +206,7 @@ onMounted(async () => {
 /* ---- 大桌面端（≥ 1400px）：四列 ---- */
 @media (min-width: 1400px) {
   .market-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 28px;
   }
 }
@@ -203,28 +214,22 @@ onMounted(async () => {
 /* ============================================================
    5. 卡片样式
    ============================================================ */
-:deep(.el-card) {
-  border: none !important;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-  background: #ffffff;
+.market-card {
   width: 100%;
+  min-width: 0;
+  height: 100%;
+  border-radius: var(--radius);
+  cursor: pointer;
   display: flex;
   flex-direction: column;
 }
 
-:deep(.el-card:hover) {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-hover);
-}
-
-:deep(.el-card__body) {
+.market-card :deep(.ui-card__body) {
   padding: 24px;
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .card-header {
@@ -254,12 +259,12 @@ onMounted(async () => {
   font-size: 0.7rem;
 }
 
-:deep(.el-tag--success.status-tag) {
+.status-tag.is-success {
   background-color: var(--green-bg);
   color: var(--green);
 }
 
-:deep(.el-tag--danger.status-tag) {
+.status-tag.is-danger {
   background-color: var(--line);
   color: var(--text-muted);
 }
@@ -324,7 +329,7 @@ onMounted(async () => {
   transition: transform 0.2s ease;
 }
 
-:deep(.el-card:hover) .card-footer .el-icon {
+.market-card:hover .card-footer .el-icon {
   transform: translateX(4px);
 }
 
@@ -376,7 +381,7 @@ onMounted(async () => {
     gap: 12px;
   }
 
-  :deep(.el-card__body) {
+  .market-card :deep(.ui-card__body) {
     padding: 16px;
   }
 
@@ -420,7 +425,7 @@ onMounted(async () => {
     gap: 16px;
   }
 
-  :deep(.el-card__body) {
+  .market-card :deep(.ui-card__body) {
     padding: 20px;
   }
 
@@ -439,8 +444,20 @@ onMounted(async () => {
     padding: 32px 24px;
   }
 
-  :deep(.el-card__body) {
+  .market-card :deep(.ui-card__body) {
     padding: 28px;
   }
 }
+.page-header { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 28px; padding: 28px 32px; border-radius: 27px; background: linear-gradient(110deg, #173d3a, #176b68); color: #fff; }
+.page-eyebrow { display: inline-block; margin-bottom: 13px; color: #b9e6d8; font-size: 10px; font-weight: 800; letter-spacing: .16em; }
+.page-header h2 { margin: 0 0 9px; color: #fff; font-family: 'Noto Serif SC','Songti SC',serif; font-size: clamp(28px, 3vw, 40px); font-weight: 750; }
+.page-header .subtitle { color: #d6ebe5; font-size: 13px; line-height: 1.65; }
+.discover-link { display: inline-flex; align-items: center; gap: 10px; padding: 11px 13px; flex: none; border: 1px solid #ffffff63; border-radius: 999px; color: #fff; font-size: 12px; font-weight: 750; }
+.discover-link svg { width: 16px; height: 16px; }
+.market-card { overflow: hidden; border: 1px solid #dce8e1; border-radius: 22px; box-shadow: 0 12px 26px rgba(23,61,58,.06); }
+.market-card :deep(.ui-card__body) { padding: 25px; }
+.market-name { font-size: 19px; font-weight: 800; }
+.card-footer { font-weight: 750; }
+@media (min-width: 1025px) { .market-list-page { max-width: 1370px; padding: 20px 0 40px; } .page-header { min-height: 230px; padding: 38px 44px; } .market-grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; } .market-card :deep(.ui-card__body) { padding: 29px; } }
+@media (max-width: 767px) { .market-list-page { padding: 4px 8px 34px; background: transparent; } .page-header { align-items: flex-start; flex-direction: column; gap: 15px; padding: 24px 21px; border-radius: 22px; } .page-header h2 { font-size: 29px; } .discover-link { background: #ffffff18; } .market-grid { gap: 13px; } .market-card :deep(.ui-card__body) { padding: 21px; } .market-name { font-size: 18px; } }
 </style>

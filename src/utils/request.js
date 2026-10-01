@@ -14,6 +14,7 @@ const request = axios.create({
 // 请求拦截器：每次请求前自动添加 token
 request.interceptors.request.use(
   (config) => {
+    if (config.skipAuth) return config;
     const token = localStorage.getItem('token');
     if (token) {
       if (typeof token !== 'string' || token === '[object Object]' || token.length < 10) {
@@ -59,6 +60,7 @@ request.interceptors.response.use(
     if (error.response) {
       switch (error.response.status) {
         case 401:
+          if (error.config?.skipAuth) break;
           message = "登录已过期，请重新登录";
           const userStore = useUserStore();
           userStore.logout();

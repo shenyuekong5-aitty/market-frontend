@@ -259,4 +259,14 @@ const formatTime = (time) => {
   color: var(--ink-muted);
   white-space: nowrap;
 }
+@media (min-width: 768px) and (max-width: 1024px) { .messages-page { padding: 12px; } }
+@media (max-width: 767px) {
+  .messages-page { padding: 0; }
+  .msg-header { align-items: flex-start; flex-wrap: wrap; gap: 10px; }
+  .msg-item { align-items: flex-start; flex-direction: column; gap: 8px; padding: 14px 2px; }
+  .msg-left { width: 100%; min-width: 0; gap: 10px; }
+  .msg-right { margin-left: 50px; }
+  .msg-icon { width: 38px; height: 38px; }
+  .empty-state { padding: 24px 0; }
+}
 </style>

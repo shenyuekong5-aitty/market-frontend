@@ -166,30 +166,7 @@
 
     <!-- 订单明细弹窗 -->
     <UiDialog v-model="detailVisible" title="订单明细" width="650px" class="detail-dialog">
-      <UiTable :data="store.currentOrderItems" border class="detail-table">
-        <UiTableColumn label="商品图片" width="80">
-          <template #default="{ row }">
-            <UiImage
-              v-if="row.productImageUrl"
-              :src="getFullUrl(row.productImageUrl)"
-              fit="cover"
-              style="width: 50px; height: 50px; border-radius: 8px"
-            />
-            <span v-else class="muted-placeholder">暂无</span>
-          </template>
-        </UiTableColumn>
-        <UiTableColumn prop="productName" label="商品名称" min-width="120" />
-        <UiTableColumn prop="productPrice" label="单价" width="80" align="center" />
-        <UiTableColumn prop="quantity" label="数量" width="60" align="center" />
-        <UiTableColumn label="小计" width="80" align="right">
-          <template #default="{ row }">
-            ¥{{ (row.productPrice * row.quantity).toFixed(2) }}
-          </template>
-        </UiTableColumn>
-      </UiTable>
-      <div class="detail-total" v-if="store.currentOrderItems.length > 0">
-        订单总金额：<span>¥{{ detailTotal }}</span>
-      </div>
+      <OrderItemsDetail :items="store.currentOrderItems" :total="detailTotal" />
     </UiDialog>
   </div>
 </template>
@@ -199,7 +176,7 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useUserMarketStore } from "@/store/modules/userMarket";
 import { useNotificationStore } from "@/store/modules/notification";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { getFullUrl } from "@/utils/urlHelper";
+import OrderItemsDetail from '@/components/OrderItemsDetail.vue'
 import { QuestionFilled } from "@element-plus/icons-vue";
 
 const store = useUserMarketStore();
@@ -317,20 +294,20 @@ const handleConfirmReceive = (orderId) => {
 /* ============================================================
    2. 卡片样式
    ============================================================ */
-:deep(.el-card) {
+:deep(.ui-card) {
   border: none !important;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
 }
 
-:deep(.el-card__header) {
+:deep(.ui-card__header) {
   border-bottom: 1px solid var(--line);
   padding: 20px 24px;
   background: var(--surface-card);
 }
 
-:deep(.el-card__body) {
+:deep(.ui-card__body) {
   padding: 24px;
 }
 
@@ -578,17 +555,17 @@ const handleConfirmReceive = (orderId) => {
 /* ============================================================
    10. 明细弹窗
    ============================================================ */
-.detail-dialog :deep(.el-dialog) {
+:global(.ui-dialog.detail-dialog) {
   border-radius: var(--radius);
 }
 
-.detail-dialog :deep(.el-dialog__header) {
+:global(.ui-dialog.detail-dialog .ui-dialog__header) {
   border-bottom: 1px solid var(--line);
   padding: 18px 24px;
   background: var(--surface-card);
 }
 
-.detail-dialog :deep(.el-dialog__body) {
+:global(.ui-dialog.detail-dialog .ui-dialog__body) {
   padding: 24px;
 }
 
@@ -651,11 +628,11 @@ const handleConfirmReceive = (orderId) => {
     padding: 8px;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 14px 16px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 12px 8px;
   }
 
@@ -775,16 +752,16 @@ const handleConfirmReceive = (orderId) => {
   }
 
   /* 明细弹窗移动端适配 */
-  .detail-dialog :deep(.el-dialog) {
+  :global(.ui-dialog.detail-dialog) {
     width: 95% !important;
     margin: 10px auto !important;
   }
 
-  .detail-dialog :deep(.el-dialog__header) {
+  :global(.ui-dialog.detail-dialog .ui-dialog__header) {
     padding: 14px 16px;
   }
 
-  .detail-dialog :deep(.el-dialog__body) {
+  :global(.ui-dialog.detail-dialog .ui-dialog__body) {
     padding: 12px 8px;
   }
 
@@ -817,11 +794,11 @@ const handleConfirmReceive = (orderId) => {
     max-width: 100%;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 18px 20px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 20px;
   }
 
@@ -846,7 +823,7 @@ const handleConfirmReceive = (orderId) => {
     gap: 4px;
   }
 
-  .detail-dialog :deep(.el-dialog) {
+  :global(.ui-dialog.detail-dialog) {
     width: 90% !important;
   }
 }
@@ -857,11 +834,11 @@ const handleConfirmReceive = (orderId) => {
     padding: 32px 20px;
   }
 
-  :deep(.el-card__header) {
+  :deep(.ui-card__header) {
     padding: 24px 28px;
   }
 
-  :deep(.el-card__body) {
+  :deep(.ui-card__body) {
     padding: 28px;
   }
 }

@@ -14,9 +14,17 @@
           </svg>
         </span>
         <span>智慧集市</span>
-        <span class="brand-badge">小贩</span>
+        <span class="brand-badge">我的小店</span>
       </div>
 
+      <nav class="desktop-links" aria-label="小贩主导航">
+        <router-link to="/vendor/home">首页</router-link>
+        <router-link to="/vendor/my-booth">我的摊位</router-link>
+        <router-link to="/vendor/goods">商品</router-link>
+        <router-link to="/vendor/orders">订单</router-link>
+        <router-link to="/vendor/reservations">预订</router-link>
+        <router-link to="/vendor/income-stats">收入</router-link>
+      </nav>
       <div class="nav-spacer"></div>
 
       <div class="nav-actions">
@@ -43,24 +51,14 @@
         <div v-if="route.name === 'VendorHome'" class="welcome-banner">
           <div class="welcome-content">
             <div class="welcome-text">
+              <span class="welcome-kicker">YOUR LITTLE SHOP / 今天也在认真经营</span>
               <h2>{{ greeting }}</h2>
-              <p>管理你的摊位和商品，经营好你的小生意</p>
+              <p>看看今天的小店动态，再去整理商品、订单和预订。</p>
             </div>
-            <div class="welcome-stats">
-              <div class="stat-item">
-                <span class="stat-number">{{ storeStats.products }}</span>
-                <span class="stat-label">在售商品</span>
-              </div>
-              <div class="stat-divider"></div>
-              <div class="stat-item">
-                <span class="stat-number">{{ storeStats.orders }}</span>
-                <span class="stat-label">待处理订单</span>
-              </div>
-              <div class="stat-divider"></div>
-              <div class="stat-item">
-                <span class="stat-number">{{ storeStats.reservations }}</span>
-                <span class="stat-label">待确认预定</span>
-              </div>
+            <div class="welcome-links" aria-label="经营快捷入口">
+              <router-link to="/vendor/goods">管理商品 <span aria-hidden="true">↗</span></router-link>
+              <router-link to="/vendor/orders">处理订单 <span aria-hidden="true">↗</span></router-link>
+              <router-link to="/vendor/reservations">查看预订 <span aria-hidden="true">↗</span></router-link>
             </div>
           </div>
         </div>
@@ -114,7 +112,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import { useUserStore } from "@/store/modules/user";
 import { useNotificationStore } from "@/store/modules/notification";
@@ -140,13 +138,6 @@ const greeting = computed(() => {
   return `${period}好${name ? `，${name}` : ''}`;
 });
 
-// 统计数据（示例，实际应从 store 获取）
-const storeStats = ref({
-  products: 0,
-  orders: 0,
-  reservations: 0
-});
-
 let unreadTimer = null;
 
 function initUnreadCount() {
@@ -165,13 +156,6 @@ onMounted(() => {
     });
   }
 
-  // TODO: 从 API 获取实际统计数据
-  // 这里仅做演示
-  storeStats.value = {
-    products: 12,
-    orders: 3,
-    reservations: 2
-  };
 });
 
 onUnmounted(() => {
@@ -198,12 +182,12 @@ onUnmounted(() => {
   --nav-height: 60px;
   --bottom-nav-height: 64px;
 
-  background: var(--bg);
+  background: radial-gradient(circle at 100% 0%, #e7f2ef 0, transparent 28%), var(--bg);
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   color: var(--text);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -274,6 +258,30 @@ onUnmounted(() => {
   border-radius: 100px;
   letter-spacing: 0.04em;
   margin-left: 2px;
+}
+.desktop-links { display: none; }
+@media (min-width: 1025px) {
+  .desktop-links { display: flex; align-items: center; gap: clamp(10px, 1.8vw, 26px); margin-left: clamp(20px, 3vw, 50px); white-space: nowrap; }
+  .desktop-links a { padding: 10px 2px; color: #5e7771; font-size: 13px; font-weight: 650; border-bottom: 2px solid transparent; }
+  .desktop-links a:hover, .desktop-links a.router-link-active { color: var(--brand-primary); border-bottom-color: var(--brand-primary); }
+  .main-wrap { max-width: 1440px; }
+  .content-area { padding-top: 28px; }
+  .welcome-banner { padding: 40px 46px; border-radius: 28px; background: linear-gradient(115deg, #173d3a 0%, #176b68 65%, #508c7b 100%); }
+  .welcome-text h2 { font-size: clamp(30px, 2.8vw, 42px); }
+  .welcome-text p { font-size: 15px; }
+}
+@media (max-width: 767px) {
+  .vendor-layout-body { background: #f8f7f2; }
+  .top-nav { box-shadow: none; background: #f8f7f2; }
+  .brand { font-weight: 800; }
+  .brand-badge { color: #176b68; background: #e4f2ea; font-size: 10px; }
+  .welcome-banner { display: none; }
+  .main-wrap { padding-left: 16px; padding-right: 16px; }
+  .content-area { padding-top: 16px; }
+  .bottom-nav { height: calc(68px + env(safe-area-inset-bottom, 0px)); background: #fffdf9; }
+  .bottom-nav-inner { align-items: stretch; }
+  .bottom-nav .nav-item { flex: 1; justify-content: center; gap: 3px; font-size: 11px; font-weight: 650; }
+  .bottom-nav .nav-item.active { color: #176b68; }
 }
 
 .nav-spacer {
@@ -401,15 +409,16 @@ onUnmounted(() => {
    ============================================================ */
 .welcome-banner {
   margin-bottom: 24px;
-  padding: 20px 24px;
-  background: linear-gradient(135deg, var(--surface-card) 0%, var(--surface-subtle) 100%);
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
+  padding: 26px 28px;
+  background: linear-gradient(115deg, #12454a 0%, var(--brand-primary) 74%, #298780 100%);
+  border-radius: var(--radius-lg);
+  color: #fff;
+  box-shadow: var(--shadow-md);
 }
 
 @media (min-width: 768px) {
   .welcome-banner {
-    padding: 28px 32px;
+    padding: 34px 38px;
     margin-bottom: 28px;
   }
 }
@@ -422,16 +431,12 @@ onUnmounted(() => {
   gap: 16px;
 }
 
-.welcome-text h2 {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--text);
-  margin: 0 0 4px 0;
-}
+.welcome-kicker { display: block; margin-bottom: 8px; color: #b5e9da; font-size: 11px; font-weight: 750; letter-spacing: .12em; }
+.welcome-text h2 { font-size: clamp(1.4rem, 2.6vw, 2rem); font-weight: 700; color: #fff; margin: 0 0 8px; }
 
 .welcome-text p {
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: #d4eae6;
   margin: 0;
 }
 
@@ -440,50 +445,11 @@ onUnmounted(() => {
   .welcome-text p { font-size: 0.9rem; }
 }
 
-.welcome-stats {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-  background: #fff;
-  padding: 10px 18px;
-  border-radius: 14px;
-  box-shadow: 0 2px 12px rgba(44, 37, 32, 0.04);
-}
-
-@media (max-width: 550px) {
-  .welcome-stats {
-    width: 100%;
-    justify-content: space-around;
-    padding: 12px 12px;
-  }
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-}
-
-.stat-number {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.stat-label {
-  font-size: 0.6rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.stat-divider {
-  width: 1px;
-  height: 28px;
-  background: var(--line);
-}
+.welcome-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.welcome-links a { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-width: 112px; padding: 11px 13px; border: 1px solid rgba(255,255,255,.22); border-radius: 11px; background: rgba(255,255,255,.1); color: #fff; font-size: 12px; font-weight: 650; text-decoration: none; transition: background .18s ease, transform .18s ease; }
+.welcome-links a:hover { background: rgba(255,255,255,.2); transform: translateY(-2px); }
+.welcome-links a span { font-size: 15px; }
+@media (max-width: 550px) { .welcome-links { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); } .welcome-links a { min-width: 0; padding: 10px; font-size: 11px; } }
 
 /* ============================================================
    6. 底部导航
@@ -606,5 +572,25 @@ onUnmounted(() => {
   .vendor-layout-body {
     font-family: "Inter var", system-ui, -apple-system, sans-serif;
   }
+}
+@media (min-width: 1025px) {
+  .main-wrap { max-width: 1440px; }
+  .content-area { padding-top: 28px; }
+  .welcome-banner { padding: 40px 46px; border-radius: 28px; background: linear-gradient(115deg, #173d3a 0%, #176b68 65%, #508c7b 100%); }
+  .welcome-text h2 { font-size: clamp(30px, 2.8vw, 42px); }
+  .welcome-text p { font-size: 15px; }
+}
+@media (max-width: 767px) {
+  .vendor-layout-body { background: #f8f7f2; }
+  .top-nav { background: #f8f7f2; box-shadow: none; }
+  .brand { font-weight: 800; }
+  .brand-badge { color: #176b68; background: #e4f2ea; font-size: 10px; }
+  .welcome-banner { display: none; }
+  .main-wrap { padding-left: 16px; padding-right: 16px; }
+  .content-area { padding-top: 16px; }
+  .bottom-nav { height: calc(68px + env(safe-area-inset-bottom, 0px)); background: #fffdf9; }
+  .bottom-nav-inner { align-items: stretch; }
+  .bottom-nav .nav-item { flex: 1; justify-content: center; gap: 3px; font-size: 11px; font-weight: 650; }
+  .bottom-nav .nav-item.active { color: #176b68; }
 }
 </style>

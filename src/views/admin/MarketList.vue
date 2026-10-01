@@ -167,5 +167,6 @@ onMounted(async () => {
   color: #909399;
   padding: 40px;
 }
-@media (max-width: 640px) { .market-list-page { padding: 0; }.market-details-grid { grid-template-columns: 1fr; }.market-detail-item:nth-child(odd) { border-right: 0; }.market-detail-item:nth-last-child(-n + 2) { border-bottom: 1px solid var(--line); }.market-detail-item:last-child { border-bottom: 0; } }
+@media (min-width: 768px) and (max-width: 1024px) { .market-list-page { padding: 12px; } }
+@media (max-width: 767px) { .market-list-page { padding: 0; }.card-header { flex-wrap: wrap; }.action-buttons { flex-wrap: wrap; }.market-details-grid { grid-template-columns: 1fr; }.market-detail-item:nth-child(odd) { border-right: 0; }.market-detail-item:nth-last-child(-n + 2) { border-bottom: 1px solid var(--line); }.market-detail-item:last-child { border-bottom: 0; } }
 </style>
