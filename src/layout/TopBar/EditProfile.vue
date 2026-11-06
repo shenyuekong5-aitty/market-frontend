@@ -2,7 +2,7 @@
   <UiDialog v-model="visible" title="修改资料" width="440px" center @close="handleClose">
     <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
       <!-- 头像：预览使用本地 blob 或现有 URL -->
-      <UiFormItem label="头像">
+      <UiFormItem label="头像" class="avatar-form-item">
         <div class="avatar-upload" @click="triggerFileInput">
           <input type="file" ref="fileInputRef" accept="image/*" style="display: none" @change="handleAvatarChange" />
           <img v-if="form.avatarPreview" :src="form.avatarPreview" class="avatar-preview" />
@@ -260,5 +260,10 @@ defineExpose({ open: () => { visible.value = true } })
   font-size: 12px;
   color: var(--ink-muted);
   text-align: center;
+}
+:deep(.avatar-form-item .el-form-item__content) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
