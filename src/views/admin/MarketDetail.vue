@@ -1,5 +1,8 @@
 <template>
   <div class="market-detail-page">
+    <PageHeading title="摊位管理" description="维护摊位资料、分配与使用状态。" eyebrow="BOOTHS / 摊位" />
+    <CollectionToolbar v-model="searchQuery" :count="filteredRows.length" placeholder="搜索摊位名称、位置或状态…" />
+    <UiEmpty v-if="searchQuery && !filteredRows.length" description="没有找到匹配的内容，试试其他关键词。" class="search-empty" />
     <!-- 集市信息头部 -->
     <UiCard v-if="adminStore.market" class="market-info-card">
       <div class="market-header">
@@ -17,7 +20,7 @@
       <template #header>
         <div class="booth-list-heading"><span>摊位列表（共 {{ adminStore.boothList.length }} 个）</span><small>空闲摊位先停用，才能删除；已占用摊位需先结束占用。</small></div>
       </template>
-      <UiTable :data="adminStore.boothList" border style="width: 100%" v-loading="boothLoading">
+      <UiTable :data="filteredRows" border style="width: 100%" v-loading="boothLoading">
         <UiTableColumn prop="id" label="ID" width="60" />
         <UiTableColumn prop="title" label="摊位名称" />
         <UiTableColumn prop="position" label="位置" />
@@ -74,6 +77,9 @@
 </template>
 
 <script setup>
+import CollectionToolbar from '@/components/CollectionToolbar.vue'
+import { useCollectionSearch } from '@/composables/useCollectionSearch'
+import PageHeading from '@/components/PageHeading.vue'
 import { ref, reactive, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAdminStore } from "@/store/modules/admin";
@@ -227,28 +233,6 @@ onMounted(() => {
   marketId.value = id;
   loadData();
 });
-</script>
 
-<style scoped>
-.market-detail-page {
-  padding: 20px;
-}
-.booth-list-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
-.booth-list-heading small { color: var(--ink-muted); font-size: 12px; font-weight: 400; }
-.market-info-card {
-  margin-bottom: 20px;
-}
-.market-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.market-header h3 {
-  margin: 0;
-}
-.booth-list-card .el-table {
-  margin-top: 10px;
-}
-@media (min-width: 768px) and (max-width: 1024px) { .market-detail-page { padding: 12px; } }
-@media (max-width: 767px) { .market-detail-page { padding: 0; } .market-header { flex-wrap: wrap; } .market-info-card { margin-bottom: 12px; } }
-</style>
+const { searchQuery, filteredRows } = useCollectionSearch(() => adminStore.boothList, ['title', 'position', 'status'])
+</script>

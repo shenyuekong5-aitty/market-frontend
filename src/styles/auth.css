@@ -1,0 +1,42 @@
+/* Shared by login and registration as scoped styles. */
+.bg-decoration { display: none; }
+.login-card, .register-card { width: 100%; color: var(--ink-strong); }
+.login-brand, .register-brand { margin-bottom: 32px; text-align: left; }
+.login-brand > .brand-logo, .register-brand > .brand-logo { margin-bottom: 30px; }
+.login-brand h1, .register-brand h1 { margin: 0 0 12px; font-size: 29px; font-weight: 600; letter-spacing: -.03em; line-height: 1.4; }
+.brand-sub { font-size: 12px; line-height: 1.8; color: var(--ink-muted); margin: 0; }
+.login-input, .login-select, .register-input { width: 100%; min-height: 46px; }
+.login-btn, .register-btn { width: 100%; min-height: 46px; margin-top: 4px; border-radius: 7px; box-shadow: none; }
+.links { display: flex; justify-content: space-between; gap: 16px; font-size: 13px; margin-top: 24px; }
+.link-item, .login-link a { color: var(--brand-primary); }
+.login-link { text-align: center; margin-top: 24px; color: var(--ink-muted); font-size: 13px; }
+.register-role-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
+.register-role-grid button { display: grid; gap: 4px; min-height: 65px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink-strong); text-align: left; cursor: pointer; }
+.register-role-grid button.active { border-color: var(--brand-primary); background: var(--brand-primary-soft); box-shadow: inset 0 0 0 1px var(--brand-primary); }
+.register-role-grid span { font-size: 13px; font-weight: 600; }
+.register-role-grid small { color: var(--ink-muted); font-size: 10px; line-height: 1.45; }
+.code-row { display: flex; gap: 10px; width: 100%; min-width: 0; }
+.code-input { flex: 1; min-width: 0; }
+.code-btn { flex: none; padding: 0 12px; font-size: 12px; }
+.gender-group { display: flex; flex-wrap: wrap; gap: 24px; }
+.mobile-role-trigger { display: none; }
+.role-chooser-intro { color: var(--ink-muted); font-size: 13px; line-height: 1.7; margin: 0 0 20px; }
+.role-options { display: grid; gap: 10px; }
+.role-option { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink-strong); text-align: left; }
+.role-option.is-selected { border-color: var(--brand-primary); background: var(--brand-primary-soft); }
+.role-option-mark { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 6px; color: var(--brand-primary); background: var(--surface-subtle); }
+.role-option span:nth-child(2) { display: grid; gap: 5px; }
+.role-option strong { font-size: 14px; font-weight: 600; }
+.role-option small { font-size: 11px; color: var(--ink-muted); }
+.role-check { margin-left: auto; color: var(--brand-primary); }
+.reset-input { width: 100%; }
+@media (max-width: 767px) {
+  .login-card, .register-card { padding: 0; border: 0; box-shadow: none; }
+  .login-brand, .register-brand { margin-bottom: 32px; text-align: left; }
+  .desktop-role-select { display: none; }
+  .mobile-role-trigger { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 13px; min-height: 52px; border: 1px solid var(--line); border-radius: 7px; color: var(--ink-strong); background: #fff; text-align: left; }
+  .mobile-role-trigger > span:first-child { display: flex; gap: 16px; align-items: center; }
+  .mobile-role-trigger small { color: var(--ink-muted); font-size: 12px; }
+  .mobile-role-trigger strong { font-size: 14px; font-weight: 500; }
+  .register-role-grid { grid-template-columns: 1fr; }
+}

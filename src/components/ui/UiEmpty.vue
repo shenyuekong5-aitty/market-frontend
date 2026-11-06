@@ -1,5 +1,5 @@
-<template><div class="ui-empty"><div class="ui-empty__mark">⌁</div><p>{{ description }}</p><slot /></div></template>
-<script setup>defineProps({ description: { type: String, default: '暂无内容' } })</script>
+<template><div class="ui-empty"><div class="ui-empty__mark"><slot name="image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="m4 8 3-4h10l3 4v12H4V8ZM4 8h16M9 12h6"/></svg></slot></div><p>{{ description }}</p><slot /></div></template>
+<script setup>defineProps({ description: { type: String, default: '这里还没有内容' } })</script>
 <style scoped>
-.ui-empty { min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 28px 16px; color: var(--ink-muted); text-align: center; }.ui-empty__mark { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 16px; background: var(--brand-primary-soft); color: var(--brand-primary); font-size: 27px; transform: rotate(-15deg); }.ui-empty p { margin: 0; font-size: 13px; }
+.ui-empty { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 18px; min-height: 200px; padding: 36px 18px; text-align: center; color: var(--ink-muted); }.ui-empty__mark { width: 54px; height: 54px; display: grid; place-items: center; color: #95a98a; background: #f0f4e9; border-radius: 16px; }.ui-empty__mark :deep(svg) { width: 27px; height: 27px; }.ui-empty p { font-size: 12px; line-height: 1.9; margin: 0; }
 </style>

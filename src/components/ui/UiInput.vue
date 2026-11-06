@@ -1,7 +1,7 @@
 <template>
   <div class="ui-field" :class="{ 'is-disabled': disabled, 'is-textarea': type === 'textarea' }" v-bind="attrs">
-    <textarea v-if="type === 'textarea'" :value="modelValue" :placeholder="placeholder" :disabled="disabled" :readonly="readonly" :maxlength="maxlength" :rows="rows" @input="update" @blur="emit('blur', $event)" />
-    <input v-else :value="modelValue" :type="currentType" :placeholder="placeholder" :disabled="disabled" :readonly="readonly" :maxlength="maxlength" :autocomplete="autocomplete" @input="update" @change="emit('change', $event)" @blur="emit('blur', $event)" @focus="emit('focus', $event)" />
+    <textarea :aria-label="attrs['aria-label'] || placeholder" v-if="type === 'textarea'" :value="modelValue" :placeholder="placeholder" :disabled="disabled" :readonly="readonly" :maxlength="maxlength" :rows="rows" @input="update" @blur="emit('blur', $event)" />
+    <input :aria-label="attrs['aria-label'] || placeholder" v-else :value="modelValue" :type="currentType" :placeholder="placeholder" :disabled="disabled" :readonly="readonly" :maxlength="maxlength" :autocomplete="autocomplete" @input="update" @change="emit('change', $event)" @blur="emit('blur', $event)" @focus="emit('focus', $event)" />
     <button v-if="showPassword && type !== 'textarea'" class="ui-field__action" type="button" @click="passwordVisible = !passwordVisible">{{ passwordVisible ? '隐藏' : '显示' }}</button>
     <button v-if="clearable && modelValue && !disabled" class="ui-field__clear" type="button" @click="clear">×</button>
   </div>

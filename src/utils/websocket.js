@@ -1,4 +1,5 @@
 import { getWebSocketOrigin } from '@/utils/runtimeConfig'
+import { connectNotificationSse, disconnectNotificationSse } from '@/utils/notificationSse'
 
 let ws = null
 let notificationCallback = null
@@ -22,7 +23,8 @@ export function connectWebSocket(userId, onMessage) {
   ws = socket
 
   socket.onopen = () => {
-    console.log('WebSocket 连接成功')
+    // WebSocket 恢复后关闭降级通道，避免收到重复事件。
+    disconnectNotificationSse()
   }
 
   socket.onmessage = (event) => {
@@ -39,7 +41,8 @@ export function connectWebSocket(userId, onMessage) {
     if (ws !== socket) return
     ws = null
     if (!currentUserId || event.code === 1008) return
-    console.info('WebSocket 连接关闭，5秒后重连...')
+    console.info('WebSocket 连接关闭，已切换 SSE 并将在5秒后重连...')
+    connectNotificationSse(notificationCallback)
     reconnectTimer = setTimeout(() => {
       reconnectTimer = null
       if (currentUserId && localStorage.getItem('token')) {
@@ -52,6 +55,7 @@ export function connectWebSocket(userId, onMessage) {
 export function disconnectWebSocket() {
   currentUserId = null
   notificationCallback = null
+  disconnectNotificationSse()
   if (reconnectTimer) {
     clearTimeout(reconnectTimer)
     reconnectTimer = null

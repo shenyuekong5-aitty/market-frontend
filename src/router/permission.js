@@ -1,11 +1,13 @@
 import router from "./index";
+import pinia from "@/store";
 import { useUserStore } from "@/store/modules/user";
 import { homePathForRole, isAdminRole } from "@/utils/roles";
 
 const whiteList = ["Welcome", "About", "Discover", "Login", "Register", "Forbidden"];
 
 router.beforeEach(async (to, from, next) => {
-  const userStore = useUserStore();
+  // 路由守卫在应用挂载前注册，因此显式传入 Pinia，避免首次导航时没有 active Pinia。
+  const userStore = useUserStore(pinia);
 
   if (userStore.isLoggedIn) {
     // ========== 1. 确保动态路由已添加 ==========

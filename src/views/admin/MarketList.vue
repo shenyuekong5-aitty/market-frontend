@@ -1,9 +1,10 @@
 <template>
   <div class="market-list-page">
+    <PageHeading title="集市管理" description="维护集市资料与营业状态，打理集市的日常运营。" eyebrow="MARKETS / 集市" />
     <UiCard>
       <template #header>
         <div class="card-header">
-          <span>集市管理</span>
+          <span>集市资料</span>
           <UiButton v-if="!adminStore.market" type="primary" size="small" @click="openCreateDialog">创建集市</UiButton>
         </div>
       </template>
@@ -58,6 +59,7 @@
 </template>
 
 <script setup>
+import PageHeading from '@/components/PageHeading.vue'
 import { ref, reactive, onMounted } from 'vue'
 import { useAdminStore } from '@/store/modules/admin'
 import { ElMessage } from 'element-plus'
@@ -142,31 +144,3 @@ onMounted(async () => {
   await adminStore.fetchMarket()
 })
 </script>
-
-<style scoped>
-.market-list-page {
-  padding: 20px;
-}
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.action-buttons {
-  margin-top: 20px;
-  display: flex;
-  gap: 10px;
-}
-.market-details-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-sm); }
-.market-detail-item { min-height: 58px; display: flex; align-items: center; gap: 16px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
-.market-detail-item:nth-child(odd) { border-right: 1px solid var(--line); }
-.market-detail-item:nth-last-child(-n + 2) { border-bottom: 0; }
-.market-detail-item span { min-width: 56px; color: var(--ink-muted); font-size: 13px; }.market-detail-item strong { color: var(--ink-strong); font-size: 14px; }
-.empty-state {
-  text-align: center;
-  color: #909399;
-  padding: 40px;
-}
-@media (min-width: 768px) and (max-width: 1024px) { .market-list-page { padding: 12px; } }
-@media (max-width: 767px) { .market-list-page { padding: 0; }.card-header { flex-wrap: wrap; }.action-buttons { flex-wrap: wrap; }.market-details-grid { grid-template-columns: 1fr; }.market-detail-item:nth-child(odd) { border-right: 0; }.market-detail-item:nth-last-child(-n + 2) { border-bottom: 1px solid var(--line); }.market-detail-item:last-child { border-bottom: 0; } }
-</style>

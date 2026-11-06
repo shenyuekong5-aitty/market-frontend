@@ -14,12 +14,6 @@ import {
   deactivateAccount as deactivateApi, 
 } from "@/api/user";
 
-import {
-  createMarket,
-  updateMarket,
-  toggleMarketStatus
-} from "@/api/admin";
-
 import { getRoleChildrenRoutes, sharedRoutes } from "@/router/asyncRoutes";
 
 export const useUserStore = defineStore("user", () => {
@@ -237,22 +231,6 @@ export const useUserStore = defineStore("user", () => {
     await deactivateApi();
   }
 
-  //市场模块
-  async function handleCreateMarket(data) {
-    const res = await createMarket(data);
-    market.value = res.data;
-  }
-
-  async function handleUpdateMarket(id, data) {
-    const res = await updateMarket(id, data);
-    market.value = res.data;
-  }
-
-  async function handleToggleStatus(id) {
-    await toggleMarketStatus(id);
-    // 刷新集市信息
-    await fetchMarket();
-  }
   return {
     token,
     userInfo,
@@ -270,8 +248,5 @@ export const useUserStore = defineStore("user", () => {
     isPhoneRegistered,
     addDynamicRoutes,
     deactivateAccount,
-    handleCreateMarket,
-    handleUpdateMarket,
-    handleToggleStatus,
   };
 });

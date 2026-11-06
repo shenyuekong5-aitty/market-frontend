@@ -1,15 +1,18 @@
 <template>
   <div class="admin-manage-page">
+    <PageHeading title="管理员管理" description="维护平台管理团队，查看账号身份与启用状态。" eyebrow="TEAM / 管理团队" />
+    <CollectionToolbar v-model="searchQuery" :count="filteredRows.length" placeholder="搜索账号或昵称…" />
+    <UiEmpty v-if="searchQuery && !filteredRows.length" description="没有找到匹配的内容，试试其他关键词。" class="search-empty" />
     <UiCard>
       <template #header>
         <div class="card-header">
-          <span>管理员管理</span>
+          <span>团队成员</span>
           <UiButton type="primary" size="small" @click="openCreateDialog">创建集市管理员</UiButton>
         </div>
       </template>
 
       <!-- 管理员列表 -->
-      <UiTable :data="adminStore.adminList" border style="width: 100%" v-loading="adminStore.adminListLoading">
+      <UiTable :data="filteredRows" border style="width: 100%" v-loading="adminStore.adminListLoading" class="admin-table">
         <UiTableColumn prop="username" label="账号" width="120" />
         <UiTableColumn prop="nickname" label="昵称" width="120" />
         <UiTableColumn label="身份" width="130">
@@ -41,6 +44,28 @@
           </template>
         </UiTableColumn>
       </UiTable>
+      <div v-loading="adminStore.adminListLoading" class="admin-card-list">
+        <div v-for="admin in filteredRows" :key="admin.id" class="admin-card">
+          <div class="admin-card-head">
+            <div class="admin-card-name">
+              <strong>{{ admin.nickname || admin.username }}</strong>
+              <span>{{ admin.username }}</span>
+            </div>
+            <UiTag :type="admin.status === 1 ? 'success' : 'danger'">
+              {{ admin.status === 1 ? '正常' : '已停用' }}
+            </UiTag>
+          </div>
+          <div class="admin-card-meta">
+            <span>{{ admin.role === 'super_admin' ? '超级管理员' : '集市管理员' }}</span>
+            <span>{{ admin.createTime?.slice(0, 10) || '暂无创建时间' }}</span>
+          </div>
+          <span v-if="admin.id === userStore.userInfo.id" class="admin-self">当前账号</span>
+          <UiButton v-else size="small" :type="admin.status === 1 ? 'danger' : 'success'" @click="handleToggleStatus(admin.id)">
+            {{ admin.status === 1 ? '停用账号' : '启用账号' }}
+          </UiButton>
+        </div>
+        <p v-if="!adminStore.adminListLoading && adminStore.adminList.length === 0" class="admin-empty">暂无管理员</p>
+      </div>
     </UiCard>
 
     <!-- 创建管理员弹窗 -->
@@ -68,6 +93,9 @@
 </template>
 
 <script setup>
+import CollectionToolbar from '@/components/CollectionToolbar.vue'
+import { useCollectionSearch } from '@/composables/useCollectionSearch'
+import PageHeading from '@/components/PageHeading.vue'
 import { ref, reactive, onMounted } from 'vue'
 import { useAdminStore } from '@/store/modules/admin'
 import { useUserStore } from '@/store/modules/user'
@@ -136,11 +164,6 @@ const handleToggleStatus = (adminId) => {
 onMounted(async () => {
   await adminStore.fetchAdminList()
 })
-</script>
 
-<style scoped>
-.admin-manage-page { padding: 20px; }
-.card-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-@media (min-width: 768px) and (max-width: 1024px) { .admin-manage-page { padding: 12px; } }
-@media (max-width: 767px) { .admin-manage-page { padding: 0; } .card-header { flex-wrap: wrap; } .card-header :deep(.ui-button) { width: 100%; } }
-</style>
+const { searchQuery, filteredRows } = useCollectionSearch(() => adminStore.adminList, ['username', 'nickname', 'role'])
+</script>

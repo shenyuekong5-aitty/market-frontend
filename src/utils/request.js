@@ -38,7 +38,7 @@ request.interceptors.response.use(
     if (res.code === 200) {
       return res;
     } else {
-      ElMessage.error(res.message || "请求失败");
+      if (!response.config?.silentError) ElMessage.error(res.message || "请求失败");
       return Promise.reject(new Error(res.message || "请求失败"));
     }
   },
@@ -73,7 +73,7 @@ request.interceptors.response.use(
       }
     }
 
-    ElMessage.error(message);
+    if (!error.config?.silentError) ElMessage.error(message);
     return Promise.reject(new Error(message)); // 关键：把具体消息传出去
   },
 );

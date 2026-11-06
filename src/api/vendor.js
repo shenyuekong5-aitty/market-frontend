@@ -85,8 +85,12 @@ export function getOrderItems(orderId) {
 }
 
 export function getVendorOrders() {
-    return request.get("/vendor/orders");
-  }
+  return request.get('/vendor/orders')
+}
+
+export function markOrderReady(orderId) {
+  return request.put(`/vendor/orders/${orderId}/ready`)
+}
 
 // 提交更换摊位申请（需要先选择目标摊位，这里先跳转到选择页，由选择页调用申请入住接口的变种）
 export function applyChangeBooth(targetBoothId) {

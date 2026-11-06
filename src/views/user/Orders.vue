@@ -1,9 +1,12 @@
 <template>
   <div class="orders-page">
+    <PageHeading title="我的订单" description="从下单到收货，每一笔交易都在这里。" eyebrow="ORDERS / 订单" />
+    <CollectionToolbar v-model="searchQuery" :count="filteredRows.length" placeholder="搜索订单编号或状态…" />
+    <UiEmpty v-if="searchQuery && !filteredRows.length" description="没有找到匹配的内容，试试其他关键词。" class="search-empty" />
     <UiCard>
       <template #header>
         <div class="orders-header">
-          <span>我的订单</span>
+          <span>订单记录</span>
           <span class="order-count" v-if="store.orderList.length > 0">
             共 {{ store.orderList.length }} 笔订单
           </span>
@@ -12,7 +15,7 @@
 
       <!-- 超时提示横幅 -->
       <UiAlert
-        title="订单提交后请在30分钟内完成付款，超时系统将自动取消订单。"
+        title="演示环境使用模拟付款；订单提交后请在30分钟内完成，超时系统将自动取消订单。"
         type="info"
         :closable="false"
         show-icon
@@ -36,7 +39,7 @@
         <!-- ===== 桌面/平板：订单列表表格 ===== -->
         <div class="table-wrapper">
           <UiTable
-            :data="store.orderList"
+            :data="filteredRows"
             border
             style="width: 100%"
             v-loading="store.orderLoading"
@@ -76,14 +79,14 @@
                     class="btn-primary btn-sm"
                     @click="handlePay(row.id)"
                   >
-                    付款
+                    模拟付款
                   </button>
                   <button
-                    v-if="row.status === '已付款'"
+                    v-if="row.status === '待取货'"
                     class="btn-success btn-sm"
                     @click="handleConfirmReceive(row.id)"
                   >
-                    确认收货
+                    确认取货
                   </button>
                   <button
                     v-if="row.status === '待付款'"
@@ -101,7 +104,7 @@
         <!-- ===== 移动端：订单卡片列表 ===== -->
         <div class="order-card-list">
           <div
-            v-for="order in store.orderList"
+            v-for="order in filteredRows"
             :key="order.id"
             class="order-card"
           >
@@ -142,14 +145,14 @@
                 class="btn-primary btn-sm"
                 @click="handlePay(order.id)"
               >
-                付款
+                模拟付款
               </button>
               <button
-                v-if="order.status === '已付款'"
+                v-if="order.status === '待取货'"
                 class="btn-success btn-sm"
                 @click="handleConfirmReceive(order.id)"
               >
-                确认收货
+                确认取货
               </button>
               <button
                 v-if="order.status === '待付款'"
@@ -172,6 +175,9 @@
 </template>
 
 <script setup>
+import CollectionToolbar from '@/components/CollectionToolbar.vue'
+import { useCollectionSearch } from '@/composables/useCollectionSearch'
+import PageHeading from '@/components/PageHeading.vue'
 import { ref, computed, onMounted, watch } from "vue";
 import { useUserMarketStore } from "@/store/modules/userMarket";
 import { useNotificationStore } from "@/store/modules/notification";
@@ -188,6 +194,7 @@ const statusClass = (status) => {
   const map = {
     待付款: "status-pending",
     已付款: "status-paid",
+    待取货: "status-ready",
     已完成: "status-done",
     已取消: "status-cancelled",
   };
@@ -227,13 +234,13 @@ const showDetail = async (orderId) => {
 };
 
 const handlePay = (orderId) => {
-  ElMessageBox.confirm("确认支付该订单吗？", "付款", { type: "info" }).then(
+  ElMessageBox.confirm("该操作仅模拟付款状态，不会发生真实扣款。确认继续吗？", "模拟付款", { type: "info" }).then(
     async () => {
       try {
         await store.handlePayOrder(orderId);
-        ElMessage.success("支付成功");
+        ElMessage.success("模拟付款成功");
       } catch (e) {
-        ElMessage.error(e.message || "支付失败");
+        ElMessage.error(e.message || "模拟付款失败");
       }
     },
   );
@@ -253,593 +260,17 @@ const handleCancel = (orderId) => {
 };
 
 const handleConfirmReceive = (orderId) => {
-  ElMessageBox.confirm("确认已收到商品吗？", "确认收货", { type: "info" }).then(
+  ElMessageBox.confirm("确认已在摊位取到商品吗？", "确认取货", { type: "info" }).then(
     async () => {
       try {
         await store.handleConfirmReceive(orderId);
-        ElMessage.success("已确认收货，订单完成");
+        ElMessage.success("已确认取货，订单完成");
       } catch (e) {
         ElMessage.error(e.message || "操作失败");
       }
     },
   );
 };
+
+const { searchQuery, filteredRows } = useCollectionSearch(() => store.orderList, ['orderNo', 'productNames', 'status'])
 </script>
-
-<style scoped>
-/* ============================================================
-   1. 设计 Token
-   ============================================================ */
-.orders-page {
-  --bg: var(--surface-page);
-  --text: var(--ink-strong);
-  --text-secondary: var(--ink);
-  --text-muted: var(--ink-muted);
-  --accent: var(--brand-primary);
-  --accent-light: var(--brand-primary-soft);
-  --green: var(--success);
-  --green-bg: #e8f5ef;
-  --red: var(--danger);
-  --red-bg: #fdebea;
-  --shadow: var(--shadow-sm);
-  --radius: var(--radius-md);
-
-  padding: 20px;
-  max-width: 1100px;
-  margin: 0 auto;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  color: var(--text);
-}
-
-/* ============================================================
-   2. 卡片样式
-   ============================================================ */
-:deep(.ui-card) {
-  border: none !important;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-
-:deep(.ui-card__header) {
-  border-bottom: 1px solid var(--line);
-  padding: 20px 24px;
-  background: var(--surface-card);
-}
-
-:deep(.ui-card__body) {
-  padding: 24px;
-}
-
-/* ============================================================
-   3. 头部
-   ============================================================ */
-.orders-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 500;
-  color: var(--text);
-}
-
-.order-count {
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: var(--text-secondary);
-}
-
-/* ============================================================
-   4. 提示横幅
-   ============================================================ */
-.alert-banner {
-  margin-bottom: 16px;
-  border-radius: 12px;
-  background: var(--surface-subtle) !important;
-  border: 1px solid var(--line) !important;
-}
-
-:deep(.alert-banner .el-alert__title) {
-  color: var(--text-secondary);
-  font-size: 0.8rem;
-}
-
-:deep(.alert-banner .el-alert__icon) {
-  color: var(--accent);
-}
-
-/* ============================================================
-   5. 表格样式
-   ============================================================ */
-.table-wrapper {
-  overflow-x: auto;
-  margin: 0 -4px;
-}
-
-.order-table {
-  border: none !important;
-  font-size: 14px;
-}
-
-:deep(.order-table.el-table) {
-  border: none !important;
-}
-
-:deep(.order-table th.el-table__cell) {
-  background: var(--surface-subtle) !important;
-  color: var(--text-secondary);
-  font-weight: 500;
-  border-bottom: none;
-  padding: 12px 0;
-}
-
-:deep(.order-table td.el-table__cell) {
-  border-bottom: 1px solid var(--line);
-  padding: 14px 0;
-}
-
-:deep(.order-table--border) {
-  border: none;
-}
-
-:deep(.order-table--border .el-table__cell) {
-  border-right: none;
-}
-
-:deep(.order-table--border .el-table__cell:last-child) {
-  border-right: none;
-}
-
-:deep(.order-table .cell) {
-  padding: 0 8px;
-}
-
-:deep(.order-table .el-table__body-wrapper) {
-  color: var(--text);
-}
-
-/* ============================================================
-   6. 状态标签
-   ============================================================ */
-.status-badge {
-  display: inline-block;
-  padding: 2px 14px;
-  border-radius: 100px;
-  font-size: 0.7rem;
-  font-weight: 500;
-}
-
-.status-pending {
-  background-color: #fdf6e8;
-  color: #d4a24e;
-}
-
-.status-paid {
-  background-color: var(--green-bg);
-  color: var(--green);
-}
-
-.status-done {
-  background-color: var(--line);
-  color: var(--text-muted);
-}
-
-.status-cancelled {
-  background-color: var(--red-bg);
-  color: var(--red);
-}
-
-.status-cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-}
-
-.cancel-icon {
-  font-size: 14px;
-  color: var(--text-muted);
-  cursor: help;
-}
-
-/* ============================================================
-   7. 按钮
-   ============================================================ */
-.btn-primary {
-  background: var(--text);
-  border: none;
-  border-radius: 100px;
-  color: #fff;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.25s, transform 0.2s;
-  padding: 6px 18px;
-  font-size: 0.75rem;
-}
-.btn-primary:hover {
-  background: var(--accent);
-}
-.btn-primary:active {
-  transform: scale(0.96);
-}
-
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 100px;
-  color: var(--text-secondary);
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 0.25s, color 0.25s, background 0.25s;
-  padding: 5px 18px;
-  font-size: 0.75rem;
-}
-.btn-outline:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-light);
-}
-
-.btn-danger {
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 100px;
-  color: var(--text-secondary);
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 0.25s, color 0.25s, background 0.25s;
-  padding: 5px 18px;
-  font-size: 0.75rem;
-}
-.btn-danger:hover {
-  border-color: var(--red);
-  color: var(--red);
-  background: var(--red-bg);
-}
-
-.btn-success {
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 100px;
-  color: var(--text-secondary);
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 0.25s, color 0.25s, background 0.25s;
-  padding: 5px 18px;
-  font-size: 0.75rem;
-}
-.btn-success:hover {
-  border-color: var(--green);
-  color: var(--green);
-  background: var(--green-bg);
-}
-
-.btn-sm {
-  padding: 4px 14px;
-  font-size: 0.7rem;
-}
-
-.table-actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-/* ============================================================
-   8. 移动端卡片列表（默认隐藏）
-   ============================================================ */
-.order-card-list {
-  display: none;
-}
-
-/* ============================================================
-   9. 空状态
-   ============================================================ */
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-}
-
-.empty-state .el-button--primary {
-  background: var(--text);
-  border: none;
-  border-radius: 100px;
-  padding: 10px 28px;
-  font-weight: 500;
-}
-.empty-state .el-button--primary:hover {
-  background: var(--accent);
-}
-
-/* ============================================================
-   10. 明细弹窗
-   ============================================================ */
-:global(.ui-dialog.detail-dialog) {
-  border-radius: var(--radius);
-}
-
-:global(.ui-dialog.detail-dialog .ui-dialog__header) {
-  border-bottom: 1px solid var(--line);
-  padding: 18px 24px;
-  background: var(--surface-card);
-}
-
-:global(.ui-dialog.detail-dialog .ui-dialog__body) {
-  padding: 24px;
-}
-
-.detail-table {
-  border: none !important;
-}
-
-:deep(.detail-table.el-table) {
-  border: none !important;
-}
-
-:deep(.detail-table th.el-table__cell) {
-  background: var(--surface-subtle) !important;
-  color: var(--text-secondary);
-  font-weight: 500;
-  border-bottom: none;
-  padding: 10px 0;
-}
-
-:deep(.detail-table td.el-table__cell) {
-  border-bottom: 1px solid var(--line);
-  padding: 12px 0;
-}
-
-:deep(.detail-table--border) {
-  border: none;
-}
-
-:deep(.detail-table--border .el-table__cell) {
-  border-right: none;
-}
-
-:deep(.detail-table--border .el-table__cell:last-child) {
-  border-right: none;
-}
-
-.detail-total {
-  text-align: right;
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
-  font-size: 16px;
-  color: var(--text-secondary);
-}
-
-.detail-total span {
-  font-weight: 600;
-  color: var(--text);
-  font-size: 18px;
-  margin-left: 8px;
-}
-
-/* ============================================================
-   11. 响应式适配
-   ============================================================ */
-
-/* ---- 移动端（< 768px） ---- */
-@media (max-width: 767px) {
-  .orders-page {
-    padding: 8px;
-  }
-
-  :deep(.ui-card__header) {
-    padding: 14px 16px;
-  }
-
-  :deep(.ui-card__body) {
-    padding: 12px 8px;
-  }
-
-  .orders-header {
-    font-size: 14px;
-  }
-
-  .order-count {
-    font-size: 12px;
-  }
-
-  .alert-banner {
-    margin-bottom: 12px;
-  }
-
-  :deep(.alert-banner .el-alert__title) {
-    font-size: 12px;
-  }
-
-  /* ---- 隐藏表格 ---- */
-  .table-wrapper {
-    display: none;
-  }
-
-  /* ---- 显示卡片列表 ---- */
-  .order-card-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 4px 0;
-  }
-
-  .order-card {
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 14px 16px;
-    box-shadow: 0 2px 12px rgba(44, 37, 32, 0.04);
-    border: 1px solid var(--line);
-  }
-
-  .order-card-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .order-card-no {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-    font-family: 'SF Mono', 'Menlo', monospace;
-    letter-spacing: 0.02em;
-    word-break: break-all;
-  }
-
-  .order-card .status-badge {
-    font-size: 0.6rem;
-    padding: 2px 12px;
-    flex-shrink: 0;
-  }
-
-  .order-card-info {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px 16px;
-    padding: 10px 0;
-  }
-
-  .info-item {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-  }
-
-  .info-item:nth-child(3) {
-    grid-column: 1 / -1;
-  }
-
-  .info-label {
-    font-size: 11px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .info-value {
-    font-size: 13px;
-    color: var(--text);
-  }
-
-  .info-value.price {
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .order-card-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding-top: 10px;
-    border-top: 1px solid var(--line);
-  }
-
-  .order-card-actions .btn-sm {
-    flex: 1;
-    min-width: 60px;
-    padding: 8px 12px;
-    font-size: 12px;
-    text-align: center;
-  }
-
-  .order-card-actions .btn-sm:only-child {
-    flex: 1;
-  }
-
-  /* 明细弹窗移动端适配 */
-  :global(.ui-dialog.detail-dialog) {
-    width: 95% !important;
-    margin: 10px auto !important;
-  }
-
-  :global(.ui-dialog.detail-dialog .ui-dialog__header) {
-    padding: 14px 16px;
-  }
-
-  :global(.ui-dialog.detail-dialog .ui-dialog__body) {
-    padding: 12px 8px;
-  }
-
-  .detail-table {
-    font-size: 12px;
-  }
-
-  :deep(.detail-table th.el-table__cell) {
-    padding: 6px 0;
-    font-size: 11px;
-  }
-
-  :deep(.detail-table td.el-table__cell) {
-    padding: 8px 0;
-  }
-
-  .detail-total {
-    font-size: 14px;
-  }
-
-  .detail-total span {
-    font-size: 16px;
-  }
-}
-
-/* ---- 平板端（768px ~ 1024px） ---- */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .orders-page {
-    padding: 24px;
-    max-width: 100%;
-  }
-
-  :deep(.ui-card__header) {
-    padding: 18px 20px;
-  }
-
-  :deep(.ui-card__body) {
-    padding: 20px;
-  }
-
-  .order-table {
-    font-size: 13px;
-  }
-
-  :deep(.order-table th.el-table__cell) {
-    padding: 10px 0;
-  }
-
-  :deep(.order-table td.el-table__cell) {
-    padding: 12px 0;
-  }
-
-  .btn-sm {
-    padding: 4px 12px;
-    font-size: 0.65rem;
-  }
-
-  .table-actions {
-    gap: 4px;
-  }
-
-  :global(.ui-dialog.detail-dialog) {
-    width: 90% !important;
-  }
-}
-
-/* ---- 桌面端（≥ 1024px） ---- */
-@media (min-width: 1025px) {
-  .orders-page {
-    padding: 32px 20px;
-  }
-
-  :deep(.ui-card__header) {
-    padding: 24px 28px;
-  }
-
-  :deep(.ui-card__body) {
-    padding: 28px;
-  }
-}
-</style>

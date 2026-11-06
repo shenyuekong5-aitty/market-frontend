@@ -1,17 +1,11 @@
 <template>
   <div class="dashboard">
-    <section class="dashboard-intro">
-      <div>
-        <span class="intro-kicker">集市运营工作台</span>
-        <h1>掌握集市动态，<br /><em>从容处理每一项事务。</em></h1>
-        <p>在这里查看负责的集市、处理待审批申请，并快速进入常用管理页面。</p>
-      </div>
-      <div class="intro-summary">
-        <span>当前待办</span>
-        <strong>{{ adminStore.applyList.length }}</strong>
-        <small>项申请等待处理</small>
-      </div>
-    </section>
+    <PageHeading title="集市运营概览" description="集市动态与待办事项，在一个工作台有序处理。" eyebrow="OVERVIEW / 工作台" />
+    <div class="overview-cards dashboard-metrics">
+      <section class="stat-card"><span class="stat-label">负责的集市</span><strong class="stat-value stat-value-name">{{ adminStore.market?.name || '尚未创建' }}</strong><span class="stat-caption">当前管理空间</span></section>
+      <section class="stat-card"><span class="stat-label">待审批申请</span><strong class="stat-value">{{ adminStore.applyList.length }}<small>项</small></strong><span class="stat-caption">入驻与摊位变更</span></section>
+      <section class="stat-card"><span class="stat-label">集市状态</span><strong class="stat-value stat-value-name">{{ adminStore.market ? (adminStore.market.status === 1 ? '正在运营' : '已停用') : '待配置' }}</strong><span class="stat-caption">{{ adminStore.market?.location || '创建集市后开始运营' }}</span></section>
+    </div>
     <div class="dashboard-grid">
       <div class="dashboard-col">
         <section class="market-card dashboard-card">
@@ -20,7 +14,7 @@
               <span class="eyebrow">01 / 集市概览</span>
               <h2>我的集市</h2>
             </div>
-            <UiTag v-if="adminStore.market" type="success">运营中</UiTag>
+            <UiTag v-if="adminStore.market" :type="adminStore.market.status === 1 ? 'success' : 'info'">{{ adminStore.market.status === 1 ? '运营中' : '已停用' }}</UiTag>
           </div>
           <div class="card-body">
             <div v-if="adminStore.market" class="market-info">
@@ -85,6 +79,7 @@
 </template>
 
 <script setup>
+import PageHeading from '@/components/PageHeading.vue'
 import { onMounted, watch } from "vue";
 import { useAdminStore } from "@/store/modules/admin";
 import { useNotificationStore } from "@/store/modules/notification";
@@ -99,43 +94,3 @@ const handleReject = (id) => adminStore.handleReject(id);
 onMounted(async () => { await adminStore.refreshAll(); });
 watch(() => notificationStore.unreadCount, () => { adminStore.refreshAll(); });
 </script>
-
-<style scoped>
-.dashboard { padding: 4px; }
-.dashboard-intro { position: relative; display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; min-height: 240px; margin-bottom: 22px; padding: 34px clamp(24px, 4vw, 48px); overflow: hidden; border-radius: var(--radius-lg); background: linear-gradient(112deg, #123f44, #176b68 68%, #2b8982); color: #fff; box-shadow: var(--shadow-md); }
-.dashboard-intro::after { content: ''; position: absolute; width: 350px; height: 350px; right: 11%; top: -230px; border: 1px solid rgba(255,255,255,.13); border-radius: 50%; pointer-events: none; }
-.intro-kicker { color: #b8e7da; font-size: 11px; font-weight: 750; letter-spacing: .18em; }
-.dashboard-intro h1 { margin: 12px 0 10px; font-size: clamp(25px, 3vw, 36px); line-height: 1.25; letter-spacing: -.03em; }
-.dashboard-intro h1 em { color: #d2f1df; font-style: normal; }
-.dashboard-intro p { max-width: 520px; margin: 0; color: #d2e6e4; font-size: 13px; line-height: 1.7; }
-.intro-summary { z-index: 1; display: flex; flex-direction: column; align-items: flex-start; flex: 0 0 155px; padding: 18px 20px; border: 1px solid rgba(255,255,255,.2); border-radius: 18px; background: rgba(255,255,255,.11); backdrop-filter: blur(10px); }
-.intro-summary span, .intro-summary small { color: #d2e6e4; font-size: 12px; }
-.intro-summary strong { margin: 3px 0; font-size: 45px; line-height: 1.1; font-weight: 750; }
-.dashboard-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-.dashboard-col:last-child { grid-column: 1 / -1; }
-.dashboard-col { display: flex; }
-.dashboard-card { flex: 1; min-height: 260px; display: flex; flex-direction: column; }
-.dashboard-col:last-child .dashboard-card { min-height: 0; }
-.card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 22px 24px 14px; }
-.card-header h2 { margin: 3px 0 0; color: var(--ink-strong); font-size: 18px; letter-spacing: -.02em; }
-.eyebrow { color: var(--brand-primary); font-size: 11px; font-weight: 700; letter-spacing: .08em; }
-.card-body { flex: 1; padding: 6px 24px 24px; display: flex; flex-direction: column; }
-.market-card { position: relative; overflow: hidden; background: var(--surface-card); border: 1px solid var(--line); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); transition: transform .2s ease, box-shadow .2s ease; }
-.market-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 3px; background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary)); }
-.market-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.market-info p, .apply-item p { margin: 8px 0; color: var(--ink); font-size: 14px; }
-.market-info strong, .apply-item strong { color: var(--ink-strong); }
-.apply-item { padding: 12px 0; border-bottom: 1px solid var(--line); }
-.apply-item:last-child { border-bottom: none; }
-.apply-actions { margin-top: 10px; display: flex; gap: 8px; }
-.empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--ink-muted); padding: 20px; }
-.quick-actions { flex: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-.action-btn { width: 100%; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-subtle); color: var(--ink-strong); text-align: left; cursor: pointer; transition: .2s ease; }
-.action-arrow { width: 18px; height: 18px; color: var(--brand-primary); flex: none; }
-.action-btn:hover { color: #fff; border-color: var(--brand-primary); background: var(--brand-primary); transform: translateX(3px); }
-.action-btn:hover .action-arrow { color: #fff; }
-.apply-list-wrapper { max-height: 400px; overflow-y: auto; padding-right: 4px; }
-
-@media (max-width: 900px) { .dashboard-intro { min-height: 210px; } .quick-actions { grid-template-columns: 1fr; } }
-@media (max-width: 640px) { .dashboard { padding: 0; } .dashboard-intro { align-items: flex-start; flex-direction: column; gap: 20px; min-height: 0; padding: 26px 22px; margin-bottom: 16px; } .dashboard-intro h1 { font-size: 25px; } .intro-summary { flex: none; width: 100%; padding: 12px 16px; } .intro-summary strong { font-size: 34px; } .dashboard-grid { grid-template-columns: 1fr; gap: 14px; } .dashboard-col:last-child { grid-column: auto; } .dashboard-card { min-height: 0; } .apply-list-wrapper { max-height: none; } .card-header { padding: 18px 18px 12px; } .card-body { padding: 4px 18px 18px; } }
-</style>

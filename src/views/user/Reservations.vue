@@ -1,9 +1,12 @@
 <template>
   <div class="reservations-page">
+    <PageHeading title="我的预订" description="提前留住心仪的好物，查看预约时间与处理进度。" eyebrow="RESERVATIONS / 预订" />
+    <CollectionToolbar v-model="searchQuery" :count="filteredRows.length" placeholder="搜索商品名称或预订状态…" />
+    <UiEmpty v-if="searchQuery && !filteredRows.length" description="没有找到匹配的内容，试试其他关键词。" class="search-empty" />
     <UiCard>
       <template #header>
         <div class="reservations-header">
-          <span>我的预定</span>
+          <span>预订记录</span>
           <span class="reservation-count" v-if="store.reservationList.length > 0">
             共 {{ store.reservationList.length }} 条预定
           </span>
@@ -27,7 +30,7 @@
         <!-- ===== 桌面/平板：表格 ===== -->
         <div class="table-wrapper">
           <UiTable
-            :data="store.reservationList"
+            :data="filteredRows"
             border
             style="width: 100%"
             v-loading="store.reservationLoading"
@@ -75,7 +78,7 @@
         <!-- ===== 移动端：卡片列表 ===== -->
         <div class="reservation-card-list">
           <div
-            v-for="reservation in store.reservationList"
+            v-for="reservation in filteredRows"
             :key="reservation.id"
             class="reservation-card"
           >
@@ -125,6 +128,9 @@
 </template>
 
 <script setup>
+import CollectionToolbar from '@/components/CollectionToolbar.vue'
+import { useCollectionSearch } from '@/composables/useCollectionSearch'
+import PageHeading from '@/components/PageHeading.vue'
 import { onMounted, watch } from 'vue'
 import { useUserMarketStore } from '@/store/modules/userMarket'
 import { useNotificationStore } from '@/store/modules/notification'
@@ -170,387 +176,6 @@ watch(
     store.fetchUserReservations()
   }
 )
+
+const { searchQuery, filteredRows } = useCollectionSearch(() => store.reservationList, ['productName', 'status'])
 </script>
-
-<style scoped>
-/* ============================================================
-   1. 设计 Token
-   ============================================================ */
-.reservations-page {
-  --bg: var(--surface-page);
-  --text: var(--ink-strong);
-  --text-secondary: var(--ink);
-  --text-muted: var(--ink-muted);
-  --accent: var(--brand-primary);
-  --accent-light: var(--brand-primary-soft);
-  --green: var(--success);
-  --green-bg: #e8f5ef;
-  --red: var(--danger);
-  --red-bg: #fdebea;
-  --shadow: var(--shadow-sm);
-  --radius: var(--radius-md);
-
-  padding: 20px;
-  max-width: 1100px;
-  margin: 0 auto;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  color: var(--text);
-}
-
-/* ============================================================
-   2. 卡片样式
-   ============================================================ */
-:deep(.ui-card) {
-  border: none !important;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-
-:deep(.ui-card__header) {
-  border-bottom: 1px solid var(--line);
-  padding: 20px 24px;
-  background: var(--surface-card);
-}
-
-:deep(.ui-card__body) {
-  padding: 24px;
-}
-
-/* ============================================================
-   3. 头部
-   ============================================================ */
-.reservations-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 500;
-  color: var(--text);
-}
-
-.reservation-count {
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: var(--text-secondary);
-}
-
-/* ============================================================
-   4. 空状态
-   ============================================================ */
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-}
-
-.empty-state .el-button--primary {
-  background: var(--text);
-  border: none;
-  border-radius: 100px;
-  padding: 10px 28px;
-  font-weight: 500;
-}
-.empty-state .el-button--primary:hover {
-  background: var(--accent);
-}
-
-/* ============================================================
-   5. 表格样式
-   ============================================================ */
-.table-wrapper {
-  overflow-x: auto;
-  margin: 0 -4px;
-}
-
-.reservation-table {
-  border: none !important;
-  font-size: 14px;
-}
-
-:deep(.reservation-table.el-table) {
-  border: none !important;
-}
-
-:deep(.reservation-table th.el-table__cell) {
-  background: var(--surface-subtle) !important;
-  color: var(--text-secondary);
-  font-weight: 500;
-  border-bottom: none;
-  padding: 12px 0;
-}
-
-:deep(.reservation-table td.el-table__cell) {
-  border-bottom: 1px solid var(--line);
-  padding: 14px 0;
-}
-
-:deep(.reservation-table--border) {
-  border: none;
-}
-
-:deep(.reservation-table--border .el-table__cell) {
-  border-right: none;
-}
-
-:deep(.reservation-table--border .el-table__cell:last-child) {
-  border-right: none;
-}
-
-:deep(.reservation-table .cell) {
-  padding: 0 8px;
-}
-
-:deep(.reservation-table .el-table__body-wrapper) {
-  color: var(--text);
-}
-
-/* ============================================================
-   6. 状态标签
-   ============================================================ */
-.status-badge {
-  display: inline-block;
-  padding: 2px 14px;
-  border-radius: 100px;
-  font-size: 0.7rem;
-  font-weight: 500;
-}
-
-.status-pending {
-  background-color: #fdf6e8;
-  color: #d4a24e;
-}
-
-.status-confirmed {
-  background-color: var(--green-bg);
-  color: var(--green);
-}
-
-.status-rejected {
-  background-color: var(--red-bg);
-  color: var(--red);
-}
-
-.status-cancelled {
-  background-color: var(--line);
-  color: var(--text-muted);
-}
-
-/* ============================================================
-   7. 按钮
-   ============================================================ */
-.btn-danger {
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 100px;
-  color: var(--text-secondary);
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 0.25s, color 0.25s, background 0.25s;
-  padding: 5px 18px;
-  font-size: 0.75rem;
-}
-.btn-danger:hover {
-  border-color: var(--red);
-  color: var(--red);
-  background: var(--red-bg);
-}
-.btn-danger:active {
-  transform: scale(0.96);
-}
-
-.btn-sm {
-  padding: 4px 14px;
-  font-size: 0.7rem;
-}
-
-.text-muted {
-  color: var(--text-muted);
-}
-
-/* ============================================================
-   8. 移动端卡片列表（默认隐藏）
-   ============================================================ */
-.reservation-card-list {
-  display: none;
-}
-
-/* ============================================================
-   9. 响应式适配
-   ============================================================ */
-
-/* ---- 移动端（< 768px） ---- */
-@media (max-width: 767px) {
-  .reservations-page {
-    padding: 8px;
-  }
-
-  :deep(.ui-card__header) {
-    padding: 14px 16px;
-  }
-
-  :deep(.ui-card__body) {
-    padding: 12px 8px;
-  }
-
-  .reservations-header {
-    font-size: 14px;
-  }
-
-  .reservation-count {
-    font-size: 12px;
-  }
-
-  /* ---- 隐藏表格 ---- */
-  .table-wrapper {
-    display: none;
-  }
-
-  /* ---- 显示卡片列表 ---- */
-  .reservation-card-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 4px 0;
-  }
-
-  .reservation-card {
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 14px 16px;
-    box-shadow: 0 2px 12px rgba(44, 37, 32, 0.04);
-    border: 1px solid var(--line);
-  }
-
-  .reservation-card-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .reservation-card-image {
-    flex-shrink: 0;
-  }
-  .reservation-card-image .el-image {
-    width: 60px !important;
-    height: 60px !important;
-    border-radius: 10px;
-    object-fit: cover;
-  }
-  .image-placeholder {
-    width: 60px;
-    height: 60px;
-    border-radius: 10px;
-    background: var(--line);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-
-  .reservation-card-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .reservation-card-name {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text);
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .reservation-card-time {
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-top: 4px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .time-divider {
-    color: var(--text-muted);
-    margin: 0 2px;
-  }
-
-  .reservation-card .status-badge {
-    flex-shrink: 0;
-    font-size: 0.6rem;
-    padding: 2px 12px;
-    margin-top: 2px;
-  }
-
-  .reservation-card-actions {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--line);
-  }
-
-  .reservation-card-actions .btn-danger {
-    width: 100%;
-    padding: 10px 16px;
-    font-size: 14px;
-    text-align: center;
-  }
-
-  .reservation-card-actions .text-muted {
-    display: block;
-    text-align: center;
-    font-size: 13px;
-    padding: 4px 0;
-  }
-}
-
-/* ---- 平板端（768px ~ 1024px） ---- */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .reservations-page {
-    padding: 24px;
-    max-width: 100%;
-  }
-
-  :deep(.ui-card__header) {
-    padding: 18px 20px;
-  }
-
-  :deep(.ui-card__body) {
-    padding: 20px;
-  }
-
-  .reservation-table {
-    font-size: 13px;
-  }
-
-  :deep(.reservation-table th.el-table__cell) {
-    padding: 10px 0;
-  }
-
-  :deep(.reservation-table td.el-table__cell) {
-    padding: 12px 0;
-  }
-
-  .btn-sm {
-    padding: 4px 12px;
-    font-size: 0.65rem;
-  }
-}
-
-/* ---- 桌面端（≥ 1024px） ---- */
-@media (min-width: 1025px) {
-  .reservations-page {
-    padding: 32px 20px;
-  }
-
-  :deep(.ui-card__header) {
-    padding: 24px 28px;
-  }
-
-  :deep(.ui-card__body) {
-    padding: 28px;
-  }
-}
-</style>

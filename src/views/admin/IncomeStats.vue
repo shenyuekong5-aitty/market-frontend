@@ -1,5 +1,6 @@
 <template>
   <div class="income-stats-page">
+    <PageHeading title="收入分析" description="查看集市收入趋势与摊位贡献，了解经营表现。" eyebrow="ANALYTICS / 收入" />
     <!-- 概览卡片 -->
     <div class="overview-cards">
         <UiCard class="stat-card">
@@ -35,58 +36,59 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import PageHeading from '@/components/PageHeading.vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useAdminStore } from '@/store/modules/admin'
-import * as echarts from 'echarts'
+import echarts from '@/utils/charts'
 
 const adminStore = useAdminStore()
 const trendChartRef = ref(null)
 const pieChartRef = ref(null)
 
+const chartInstances = []
+let chartObserver
+
 const loadData = async () => {
   await adminStore.fetchIncomeStats()
-  nextTick(() => {
-    renderTrendChart()
-    renderPieChart()
-  })
+  await nextTick()
+  renderTrendChart()
+  renderPieChart()
 }
 
 const renderTrendChart = () => {
   if (!trendChartRef.value) return
   const chart = echarts.init(trendChartRef.value)
+  chartInstances.push(chart)
   chart.setOption({
     tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: adminStore.incomeStats.trend.map(i => i.date), axisLine: { lineStyle: { color: '#dce8ea' } }, axisLabel: { color: '#78909a' } },
-    yAxis: { type: 'value', axisLine: { lineStyle: { color: '#dce8ea' } }, axisLabel: { color: '#78909a' }, splitLine: { lineStyle: { color: '#edf3f4' } } },
-    series: [{ data: adminStore.incomeStats.trend.map(i => i.amount), type: 'line', smooth: true, symbol: 'circle', symbolSize: 7, itemStyle: { color: '#176b68' }, lineStyle: { color: '#176b68', width: 3 }, areaStyle: { color: 'rgba(23,107,104,.16)' } }]
+    grid: { top: 25, left: 45, right: 20, bottom: 35 },
+    xAxis: { type: 'category', data: adminStore.incomeStats.trend.map(i => i.date), axisLine: { lineStyle: { color: '#e5e9e2' } }, axisLabel: { color: '#879088' } },
+    yAxis: { type: 'value', axisLine: { lineStyle: { color: '#e5e9e2' } }, axisLabel: { color: '#879088' }, splitLine: { lineStyle: { color: '#f0f2eb' } } },
+    series: [{ data: adminStore.incomeStats.trend.map(i => i.amount), type: 'line', smooth: true, symbol: 'circle', symbolSize: 7, itemStyle: { color: '#2a6654' }, lineStyle: { color: '#2a6654', width: 3 }, areaStyle: { color: 'rgba(105,145,94,.12)' } }]
   })
 }
 
 const renderPieChart = () => {
   if (!pieChartRef.value) return
   const chart = echarts.init(pieChartRef.value)
+  chartInstances.push(chart)
   chart.setOption({
     tooltip: { trigger: 'item' },
-    legend: { orient: 'vertical', left: 'left' },
+    legend: { bottom: 0, type: 'scroll', textStyle: { color: '#879088', fontSize: 11 } },
     series: [{
-      type: 'pie', radius: ['42%', '66%'],
-      color: ['#176b68', '#ef8b68', '#2f8f70', '#d79a3b', '#78909a'],
+      type: 'pie', label: { show: false }, radius: ['42%', '66%'],
+      color: ['#2a6654', '#a8be8d', '#d2b78a', '#7e9991', '#c3cbb5'],
       data: adminStore.incomeStats.boothIncome.map(i => ({ name: i.name, value: i.value })),
       emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0,0,0,0.5)' } }
     }]
   })
 }
 
-onMounted(() => loadData())
+onMounted(async () => {
+  await loadData()
+  chartObserver = new ResizeObserver(() => chartInstances.forEach(chart => chart.resize()))
+  if (trendChartRef.value) chartObserver.observe(trendChartRef.value)
+  if (pieChartRef.value) chartObserver.observe(pieChartRef.value)
+})
+onUnmounted(() => { chartObserver?.disconnect(); chartInstances.forEach(chart => chart.dispose()) })
 </script>
-
-<style scoped>
-.income-stats-page { padding: 4px; }
-.overview-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin-bottom: 20px; }
-.stat-card { text-align: center; }
-.stat-label { font-size: 14px; color: var(--ink-muted); margin-bottom: 10px; }
-.stat-value { font-size: 24px; font-weight: bold; color: var(--ink-strong); }
-.chart-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 20px; }
-@media (max-width: 900px) { .overview-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }.chart-row { grid-template-columns: 1fr; } }
-@media (max-width: 560px) { .income-stats-page { padding: 0; }.overview-cards { grid-template-columns: 1fr; gap: 14px; }.chart-row { gap: 14px; }.stat-value { font-size: 21px; } }
-</style>

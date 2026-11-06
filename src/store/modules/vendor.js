@@ -16,6 +16,7 @@ import {
   confirmReservation,
   rejectReservation,
   getVendorOrders,
+  markOrderReady,
   getOrderItems,
   getVendorIncomeStats,
 } from "@/api/vendor";
@@ -170,6 +171,11 @@ export const useVendorStore = defineStore("vendor", () => {
     }
   }
 
+  async function handleMarkOrderReady(orderId) {
+    await markOrderReady(orderId);
+    await fetchVendorOrders();
+  }
+
   //收入
   async function fetchIncomeStats() {
     incomeLoading.value = true;
@@ -216,6 +222,7 @@ export const useVendorStore = defineStore("vendor", () => {
     vendorOrderDetailVisible,
     fetchVendorOrders,
     fetchVendorOrderItems,
+    handleMarkOrderReady,
     closeOrderDetail,
     submitChangeBooth,
     submitReturnBooth,

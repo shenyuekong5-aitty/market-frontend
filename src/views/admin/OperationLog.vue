@@ -1,9 +1,10 @@
 <template>
   <div class="operation-log-page">
+    <PageHeading title="操作日志" description="按时间回顾管理操作，清楚了解每一次变更。" eyebrow="ACTIVITY / 日志" />
     <UiCard>
       <template #header>
         <div class="header">
-          <span>操作日志</span>
+          <span>操作记录</span>
         </div>
       </template>
 
@@ -47,6 +48,7 @@
 </template>
 
 <script setup>
+import PageHeading from '@/components/PageHeading.vue'
 import { reactive, onMounted } from 'vue'
 import { useAdminStore } from '@/store/modules/admin'
 import { ElMessage } from 'element-plus'
@@ -72,14 +74,3 @@ onMounted(() => {
   adminStore.fetchOperationLogs()
 })
 </script>
-
-<style scoped>
-.operation-log-page {
-  padding: 20px;
-}
-.filter-form {
-  margin-bottom: 20px;
-}
-@media (min-width: 768px) and (max-width: 1024px) { .operation-log-page { padding: 12px; } }
-@media (max-width: 767px) { .operation-log-page { padding: 0; } .filter-form { margin-bottom: 14px; } }
-</style>

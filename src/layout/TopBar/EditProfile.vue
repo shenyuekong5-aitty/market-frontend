@@ -241,7 +241,7 @@ defineExpose({ open: () => { visible.value = true } })
   margin: 0 auto;
   overflow: hidden;
   cursor: pointer;
-  border: 2px dashed #dcdfe6;
+  border: 1px dashed var(--line);
   border-radius: 50%;
 }
 .avatar-preview {
@@ -251,14 +251,14 @@ defineExpose({ open: () => { visible.value = true } })
   border-radius: 50%;
 }
 .avatar-placeholder-icon {
-  font-size: 30px;
-  color: #c0c4cc;
+  font-size: 24px;
+  color: var(--ink-faint);
 }
 .upload-tip {
   display: block;
   margin-top: 6px;
   font-size: 12px;
-  color: #999;
+  color: var(--ink-muted);
   text-align: center;
 }
 </style>

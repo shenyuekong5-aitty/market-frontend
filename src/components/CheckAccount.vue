@@ -165,8 +165,8 @@ defineExpose({ open });
 }
 
 .score-circle {
-  width: 140px;
-  height: 140px;
+  width: 116px;
+  height: 116px;
   border: 6px solid var(--line);
   border-radius: 50%;
   background: var(--surface-card);
@@ -175,7 +175,7 @@ defineExpose({ open });
   justify-content: center;
   align-items: center;
   margin-bottom: 22px;
-  box-shadow: var(--shadow-md);
+  box-shadow: none;
   transition:
     border-color 0.4s,
     box-shadow 0.4s;
@@ -186,9 +186,9 @@ defineExpose({ open });
 }
 
 .num {
-  font-size: 52px;
-  font-weight: 800;
-  font-family: "Courier New", Courier, monospace;
+  font-size: 42px;
+  font-weight: 500;
+  font-family: var(--font-sans);
   line-height: 1;
   margin-bottom: 2px;
   /* 颜色已改为内联绑定，这里无需定义 */
@@ -221,7 +221,7 @@ defineExpose({ open });
   justify-content: space-between;
   align-items: center;
   padding: 14px 0;
-  border-bottom: 1px dashed var(--line);
+  border-bottom: 1px solid var(--line);
   transition: background-color 0.25s;
 }
 
@@ -254,7 +254,7 @@ defineExpose({ open });
 }
 
 .label {
-  font-size: 15px;
+  font-size: 13px;
   color: var(--ink-strong);
 }
 
@@ -276,9 +276,9 @@ defineExpose({ open });
 .warning-note { color: var(--warning); margin-left: 6px; }
 
 .footer :deep(.rescan-button.ui-button) {
-  min-width: 140px;
+  min-width: 116px;
   min-height: 42px;
-  border-radius: 999px;
+  border-radius: 8px;
   background: #e5f2ed;
   border-color: #176b68;
   color: #176b68;

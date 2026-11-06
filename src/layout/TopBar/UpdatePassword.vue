@@ -111,7 +111,6 @@ const submit = async () => {
     await formRef.value.validate();
   } catch (e) {
     ElMessage.warning("请检查输入项");
-    console.log("校验失败详情：", e);
     return;
   }
 

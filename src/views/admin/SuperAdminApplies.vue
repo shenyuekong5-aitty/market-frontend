@@ -1,16 +1,19 @@
 <template>
   <div class="super-applies">
+    <PageHeading title="入驻申请审批" description="集中处理集市的摊位申请，跟进每一次入驻与变更。" eyebrow="REVIEW / 审批" />
+    <CollectionToolbar v-model="searchQuery" :count="filteredRows.length" placeholder="搜索申请人、摊位或申请类型…" />
+    <UiEmpty v-if="searchQuery && !filteredRows.length" description="没有找到匹配的内容，试试其他关键词。" class="search-empty" />
     <UiCard>
       <template #header>
         <div class="heading">
-          <div><span class="eyebrow">PLATFORM REVIEW</span><h2>全平台待审批申请</h2></div>
+          <div><span class="eyebrow">PLATFORM REVIEW</span><h2>待办申请</h2></div>
           <UiButton size="small" :loading="loading" @click="load">刷新</UiButton>
         </div>
       </template>
       <p class="intro">超级管理员可处理所有集市的摊位申请；集市管理员只能处理自己负责的集市。</p>
       <UiEmpty v-if="!adminStore.applyList.length" description="暂无待审批申请" />
       <div v-else class="apply-list">
-        <article v-for="item in adminStore.applyList" :key="item.id" class="apply-item">
+        <article v-for="item in filteredRows" :key="item.id" class="apply-item">
           <div class="apply-copy">
             <strong>{{ item.vendorName || `申请人 #${item.vendorId}` }}</strong>
             <span>{{ item.type }} · {{ item.targetBoothTitle || `目标摊位 #${item.targetBoothId}` }}</span>
@@ -27,6 +30,9 @@
 </template>
 
 <script setup>
+import CollectionToolbar from '@/components/CollectionToolbar.vue'
+import { useCollectionSearch } from '@/composables/useCollectionSearch'
+import PageHeading from '@/components/PageHeading.vue'
 import { onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useAdminStore } from '@/store/modules/admin'
@@ -56,20 +62,6 @@ async function handle(id, approve) {
 }
 
 onMounted(load)
-</script>
 
-<style scoped>
-.super-applies { padding: 4px; }
-.heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.heading h2 { margin: 4px 0 0; font-size: 20px; color: var(--ink-strong); }
-.eyebrow { color: var(--brand-primary); font-size: 11px; font-weight: 700; letter-spacing: .1em; }
-.intro { margin: 0 0 16px; color: var(--ink-muted); font-size: 13px; }
-.apply-list { display: grid; gap: 12px; }
-.apply-item { display: flex; justify-content: space-between; gap: 18px; align-items: center; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-subtle); }
-.apply-copy { display: grid; gap: 5px; min-width: 0; }
-.apply-copy strong { color: var(--ink-strong); }
-.apply-copy span, .apply-copy small { color: var(--ink-muted); }
-.actions { display: flex; gap: 8px; flex-shrink: 0; }
-@media (min-width: 768px) and (max-width: 1024px) { .super-applies { padding: 0; } }
-@media (max-width: 767px) { .super-applies { padding: 0; }.heading { align-items: flex-start; flex-wrap: wrap; }.apply-item { align-items: stretch; flex-direction: column; }.actions { flex-wrap: wrap; }.actions > * { flex: 1; } }
-</style>
+const { searchQuery, filteredRows } = useCollectionSearch(() => adminStore.applyList, ['vendorName', 'targetBoothTitle', 'type', 'marketName'])
+</script>

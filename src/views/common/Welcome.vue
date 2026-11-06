@@ -1,223 +1,38 @@
 <script setup>
 import { computed } from 'vue'
+import PublicFooter from '@/components/PublicFooter.vue'
+import flowers from '@/assets/landing/market-flowers.jpg'
+import bread from '@/assets/landing/artisan-bread.jpg'
+import cups from '@/assets/landing/handmade-cups.jpg'
+import PublicHeader from '@/components/PublicHeader.vue'
 import { useUserStore } from '@/store/modules/user'
 import { homePathForRole } from '@/utils/roles'
 import vegetables from '@/assets/landing/market-vegetables.jpg'
-import cups from '@/assets/landing/handmade-cups.jpg'
-import flowers from '@/assets/landing/market-flowers.jpg'
-import bread from '@/assets/landing/artisan-bread.jpg'
-import fruit from '@/assets/landing/market-fruit.jpg'
 
 const userStore = useUserStore()
 const entryPath = computed(() => userStore.isLoggedIn
   ? homePathForRole(userStore.userInfo.role)
   : '/login')
-const entryText = computed(() => userStore.isLoggedIn ? '进入集市' : '登录探索')
 
-const scenes = [
-  { image: flowers, name: '花艺绿植', className: 'scene-flower', alt: '集市中的鲜花花束' },
-  { image: vegetables, name: '新鲜蔬果', className: 'scene-vegetable', alt: '摊位上的新鲜蔬菜' },
-  { image: bread, name: '手作烘焙', className: 'scene-bread', alt: '手工烘焙面包' },
-  { image: fruit, name: '时令水果', className: 'scene-fruit', alt: '集市中的各色水果' },
-  { image: cups, name: '手作好物', className: 'scene-cup', alt: '集市摊位上的手作杯具' },
-]
 </script>
-
 <template>
   <div class="welcome-page">
-    <header class="welcome-header">
-      <router-link class="welcome-brand" to="/welcome" aria-label="智慧集市首页">
-        <span class="brand-symbol" aria-hidden="true">
-          <svg viewBox="0 0 48 48" fill="none">
-            <path d="M7 23.5 24 9l17 14.5v16H7v-16Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-            <path d="M7 24h34M16 24v15M32 24v15M20 39V29h8v10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-            <path d="m15 9 4 3m14-3-4 3" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
-        </span>
-        <span class="brand-wordmark">智慧集市<span>MARKET</span></span>
-      </router-link>
-
-      <nav class="welcome-nav" aria-label="首页导航">
-        <router-link to="/discover">发现好物</router-link>
-        <router-link to="/about">平台介绍</router-link>
-      </nav>
-
-      <div class="welcome-account">
-        <router-link v-if="!userStore.isLoggedIn" class="account-login" to="/login">登录</router-link>
-        <router-link class="account-entry" :to="entryPath">
-          {{ userStore.isLoggedIn ? '进入集市' : '立即开始' }}
-          <span aria-hidden="true">↗</span>
-        </router-link>
-      </div>
-    </header>
-
+    <PublicHeader />
     <main>
-      <section id="discover" class="welcome-hero" aria-labelledby="welcome-title">
-        <div class="hero-copy">
-          <div class="hero-eyebrow"><span></span> A MARKET CLOSE TO YOU <span class="eyebrow-cn">/ 发现身边</span></div>
-          <h1 id="welcome-title">把好物，<br /><em>逛</em>进日常。</h1>
-          <p class="hero-description">从正在营业的集市，到用心经营的摊位。<br class="desktop-break" />在这里发现喜欢的商品，也让你的好物被看见。</p>
-
-          <div class="hero-actions">
-            <router-link class="hero-primary" :to="entryPath">
-              {{ entryText }}
-              <span class="button-arrow" aria-hidden="true">↗</span>
-            </router-link>
-            <router-link v-if="!userStore.isLoggedIn" class="hero-secondary" to="/register">还没有账号？注册 <span aria-hidden="true">→</span></router-link>
-          </div>
-
-          <div class="hero-note"><span class="note-spark" aria-hidden="true">✳</span> 逛集市 · 找摊位 · 发现好物</div>
-        </div>
-
-        <div class="hero-art" aria-label="集市好物图片展示">
-          <div class="art-orbit art-orbit-one" aria-hidden="true"></div>
-          <div class="art-orbit art-orbit-two" aria-hidden="true"></div>
-          <figure v-for="scene in scenes" :key="scene.name" class="scene-card" :class="scene.className">
-            <img :src="scene.image" :alt="scene.alt" loading="eager" decoding="async" />
-            <figcaption>{{ scene.name }}</figcaption>
-          </figure>
-          <div class="art-sticker" aria-hidden="true">好物<br />就在身边<span>↗</span></div>
-          <span class="art-star art-star-one" aria-hidden="true">✳</span>
-          <span class="art-star art-star-two" aria-hidden="true">✳</span>
-        </div>
-
-        <div class="hero-scroll" aria-hidden="true"><span></span> SCROLL TO EXPLORE</div>
+      <section class="welcome-hero">
+        <div class="hero-copy"><span class="hero-eyebrow"><i/> 小集市，大有发现</span><h1>离生活近一点，<br/>与<em>好物</em>相遇。</h1><p class="hero-description">时令蔬果、用心手作、日常里的小惊喜。<br/>从身边的集市出发，发现值得带回家的美好。</p><div class="hero-actions"><router-link class="hero-primary" to="/discover">开始逛逛 <span>↗</span></router-link><router-link class="hero-secondary" :to="entryPath">{{ userStore.isLoggedIn ? '回到我的集市' : '登录我的集市' }} →</router-link></div><div class="hero-note"><span>本地集市</span><i/><span>真实摊位</span><i/><span>日常好物</span></div></div>
+        <div class="hero-art"><img :src="vegetables" alt="新鲜蔬果摆满集市的摊位" fetchpriority="high"/><div class="hero-art-label"><span class="hero-art-number">01</span><div><strong>新鲜，从身边开始。</strong><span>LOCAL MARKET / 发现日常</span></div><span class="hero-art-arrow">↗</span></div></div>
       </section>
-
-      <section id="how-it-works" class="welcome-steps" aria-labelledby="steps-title">
-        <div class="steps-heading">
-          <p>MADE FOR YOUR EVERYDAY</p>
-          <h2 id="steps-title">从发现，到相遇。</h2>
-        </div>
-        <div class="steps-list">
-          <div class="step"><span>01</span><h3>探索集市</h3><p>查看开放中的集市，找到想去的地方。</p></div>
-          <div class="step"><span>02</span><h3>发现商品</h3><p>浏览摊位和上架好物，找到心仪之选。</p></div>
-          <div class="step"><span>03</span><h3>参与经营</h3><p>申请摊位，让更多人认识你的好物。</p></div>
-        </div>
-        <router-link class="steps-more" to="/about">认识智慧集市 <span aria-hidden="true">↗</span></router-link>
-      </section>
+      <section class="welcome-editorial"><span>GOOD THINGS, CLOSE TO HOME.</span><p>有温度的经营，有心意的选择。<br class="editorial-break"/>把集市里的新鲜与热闹，带进每一天。</p></section>
+      <section class="welcome-categories"><div class="section-intro"><div><span class="section-eyebrow">EVERYDAY FINDS / 日常灵感</span><h2>每一次逛，都有新发现。</h2></div><router-link to="/discover">浏览在售好物 ↗</router-link></div><div class="category-grid"><router-link to="/discover" class="category-card"><img :src="flowers" alt="集市里的花束" loading="lazy"/><div><span>01 / 给生活一点色彩</span><h3>花与日常 <b>↗</b></h3></div></router-link><router-link to="/discover" class="category-card"><img :src="bread" alt="摊主准备的烘焙面包" loading="lazy"/><div><span>02 / 认真对待每一餐</span><h3>新鲜滋味 <b>↗</b></h3></div></router-link><router-link to="/discover" class="category-card"><img :src="cups" alt="手作陶瓷杯具" loading="lazy"/><div><span>03 / 慢慢挑选的心意</span><h3>手作温度 <b>↗</b></h3></div></router-link></div></section>
+      <section class="welcome-join"><div><span class="section-eyebrow">YOUR PLACE IN THE MARKET</span><h2>一起，把集市变得更好。</h2><p>逛集市的人，用心经营的人，让集市有序运转的人。<br/>每一种参与，都让这里更丰富。</p><router-link to="/about">认识智慧集市 ↗</router-link></div><div class="join-paths"><router-link :to="entryPath"><span>01</span><div><h3>逛逛身边的集市</h3><p>发现商品，关注小店，留住心仪的好物。</p></div><b>↗</b></router-link><router-link :to="{path:'/login',query:{role:'vendor'}}"><span>02</span><div><h3>经营自己的小店</h3><p>申请摊位，整理商品，认真照顾每一笔生意。</p></div><b>↗</b></router-link><router-link :to="{path:'/login',query:{role:'market_admin'}}"><span>03</span><div><h3>让集市运转有序</h3><p>管理摊位、处理入驻申请、掌握运营动态。</p></div><b>↗</b></router-link></div></section>
     </main>
-
-    <footer class="welcome-footer"><span>智慧集市 / SMART MARKET</span><span>让每一次相遇，都有新发现。</span></footer>
+    <PublicFooter/>
   </div>
 </template>
-
 <style scoped>
-.welcome-page { --welcome-ink: #173d3a; --welcome-green: #176b68; --welcome-coral: #e99173; color: var(--welcome-ink); background: #f6f4ed; min-height: 100vh; overflow: hidden; }
-.welcome-header { width: min(100% - 96px, 1440px); min-height: 88px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 32px; border-bottom: 1px solid rgba(23, 61, 58, .13); }
-.welcome-brand { display: inline-flex; align-items: center; gap: 11px; flex: none; }
-.brand-symbol { width: 39px; height: 39px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--welcome-green); }
-.brand-symbol svg { width: 27px; height: 27px; }
-.brand-wordmark { font-size: 20px; line-height: 1.08; letter-spacing: .02em; font-weight: 850; }
-.brand-wordmark span { display: block; margin-top: 5px; font-size: 8px; letter-spacing: .32em; font-weight: 700; color: #76918a; }
-.welcome-nav, .welcome-account { display: flex; align-items: center; }
-.welcome-nav { gap: 38px; margin-left: auto; margin-right: 36px; }
-.welcome-nav a, .account-login { font-size: 13px; font-weight: 650; transition: color .2s; }
-.welcome-nav a:hover, .account-login:hover { color: var(--welcome-green); }
-.welcome-account { gap: 26px; flex: none; }
-.account-entry { display: inline-flex; align-items: center; justify-content: center; gap: 20px; padding: 12px 17px 12px 21px; min-height: 42px; background: var(--welcome-ink); border-radius: 999px; color: #fff; font-size: 13px; font-weight: 700; transition: transform .2s, background .2s; }
-.account-entry:hover, .hero-primary:hover { transform: translateY(-2px); background: #105450; }
-.account-entry span { font-size: 17px; line-height: 1; }
-.welcome-hero { position: relative; width: min(100% - 96px, 1440px); min-height: min(710px, calc(100svh - 88px)); margin: 0 auto; display: grid; grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr); align-items: center; gap: 14px; padding: 32px 0 54px; }
-.hero-copy { z-index: 2; padding-bottom: 30px; }
-.hero-eyebrow { display: flex; align-items: center; gap: 11px; color: var(--welcome-green); font-size: 11px; letter-spacing: .13em; font-weight: 850; white-space: nowrap; }
-.hero-eyebrow > span:first-child { width: 30px; height: 1px; background: var(--welcome-green); }
-.eyebrow-cn { color: #7b8e88; letter-spacing: .05em; font-weight: 600; }
-.hero-copy h1 { margin: 29px 0 23px; color: var(--welcome-ink); font-family: 'Noto Serif SC', 'Songti SC', 'STSong', Georgia, serif; font-size: clamp(64px, 6.3vw, 104px); line-height: 1.14; letter-spacing: -.075em; font-weight: 700; white-space: nowrap; }
-.hero-copy h1 em { position: relative; color: var(--welcome-coral); font-style: normal; }
-.hero-copy h1 em::after { position: absolute; content: ''; left: 8%; right: -4%; bottom: -9px; height: 13px; border-bottom: 3px solid var(--welcome-coral); border-radius: 50%; transform: rotate(-8deg); }
-.hero-description { max-width: 465px; color: #607771; font-size: clamp(15px, 1.15vw, 17px); line-height: 1.95; letter-spacing: .025em; }
-.hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 28px; margin-top: 36px; }
-.hero-primary { display: inline-flex; align-items: center; justify-content: space-between; gap: 45px; padding: 11px 11px 11px 29px; min-width: 183px; min-height: 55px; color: #fff; background: var(--welcome-green); border-radius: 999px; font-size: 15px; font-weight: 750; box-shadow: 0 16px 28px rgba(23,107,104,.19); transition: transform .2s, background .2s; }
-.button-arrow { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 50%; color: var(--welcome-green); background: #fff; font-size: 19px; line-height: 1; }
-.hero-secondary { color: var(--welcome-ink); border-bottom: 1px solid currentColor; padding-bottom: 3px; font-size: 13px; font-weight: 650; }
-.hero-secondary span { margin-left: 7px; }
-.hero-secondary:hover { color: var(--welcome-green); }
-.hero-note { display: flex; align-items: center; gap: 11px; margin-top: 62px; color: #8ba09a; font-size: 12px; letter-spacing: .08em; }
-.note-spark { color: var(--welcome-coral); font-size: 22px; line-height: 1; }
-.hero-art { position: relative; height: min(610px, 64vw); min-height: 530px; isolation: isolate; }
-.art-orbit { position: absolute; z-index: -1; border: 1px solid rgba(30, 104, 99, .1); border-radius: 50%; pointer-events: none; }
-.art-orbit-one { width: 570px; height: 570px; top: 0; left: 5%; }
-.art-orbit-two { width: 400px; height: 400px; top: 15%; left: 19%; }
-.scene-card { position: absolute; overflow: hidden; margin: 0; border: 5px solid #fff; background: #e2e7df; box-shadow: 0 16px 45px rgba(23, 61, 58, .14); transition: transform .35s ease, box-shadow .35s ease; }
-.scene-card:hover { z-index: 5; transform: translateY(-8px) rotate(0); box-shadow: 0 24px 55px rgba(23, 61, 58, .2); }
-.scene-card img { width: 100%; height: 100%; object-fit: cover; }
-.scene-card figcaption { position: absolute; left: 13px; bottom: 12px; padding: 7px 12px; border-radius: 999px; color: var(--welcome-ink); background: rgba(255,255,255,.94); font-size: 11px; font-weight: 800; box-shadow: 0 4px 12px rgba(0,0,0,.07); }
-.scene-flower { width: 27%; height: 33%; left: 5%; top: 7%; border-radius: 105px 105px 24px 24px; transform: rotate(-7deg); }
-.scene-vegetable { width: 43%; height: 58%; left: 31%; top: 10%; border-radius: 180px 180px 28px 28px; transform: rotate(3deg); }
-.scene-bread { width: 25%; height: 29%; right: 0; top: 6%; border-radius: 24px 90px 24px 24px; transform: rotate(9deg); }
-.scene-fruit { width: 31%; height: 33%; left: 3%; bottom: 4%; border-radius: 25px 25px 25px 100px; transform: rotate(5deg); }
-.scene-cup { width: 34%; height: 34%; right: 3%; bottom: 2%; border-radius: 25px 25px 100px 25px; transform: rotate(-6deg); }
-.art-sticker { position: absolute; z-index: 4; right: 19%; bottom: 20%; display: flex; align-items: center; justify-content: center; flex-direction: column; width: 106px; height: 106px; border-radius: 50%; transform: rotate(13deg); color: #fff; background: var(--welcome-coral); text-align: center; font-size: 14px; line-height: 1.35; font-weight: 850; letter-spacing: .03em; box-shadow: 0 11px 22px rgba(156,84,62,.2); }
-.art-sticker span { position: absolute; right: 17px; top: 20px; font-size: 15px; }
-.art-star { position: absolute; z-index: 4; color: var(--welcome-coral); line-height: 1; }
-.art-star-one { left: 24%; top: 3%; font-size: 28px; }
-.art-star-two { right: 7%; bottom: 34%; font-size: 38px; }
-.hero-scroll { position: absolute; bottom: 28px; left: 0; display: flex; align-items: center; gap: 13px; color: #91a39d; font-size: 10px; font-weight: 750; letter-spacing: .2em; }
-.hero-scroll span { height: 1px; width: 35px; background: #91a39d; }
-.welcome-steps { padding: 70px max(48px, calc((100vw - 1440px) / 2)); background: #eaf1ec; display: grid; grid-template-columns: .9fr 2.1fr; gap: 56px; }
-.steps-heading p { color: var(--welcome-green); font-size: 10px; letter-spacing: .2em; font-weight: 800; }
-.steps-heading h2 { margin-top: 15px; font-family: 'Noto Serif SC', 'Songti SC', 'STSong', Georgia, serif; font-size: clamp(28px, 2.6vw, 40px); letter-spacing: -.04em; }
-.steps-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; }
-.step { border-left: 1px solid #bdd1c6; padding-left: 20px; }
-.step > span { color: var(--welcome-coral); font-size: 12px; font-weight: 850; }
-.step h3 { margin: 14px 0 7px; font-size: 17px; }
-.step p { color: #6a8178; font-size: 13px; line-height: 1.8; }
-.steps-more { grid-column: 2; justify-self: start; color: var(--welcome-green); border-bottom: 1px solid currentColor; padding-bottom: 4px; font-size: 12px; font-weight: 750; }
-.welcome-footer { max-width: 1440px; min-height: 82px; margin: 0 auto; padding: 0 48px; display: flex; align-items: center; justify-content: space-between; gap: 20px; color: #82968d; font-size: 11px; letter-spacing: .06em; }
-@media (max-width: 1024px) {
-  .welcome-header, .welcome-hero { width: min(100% - 64px, 900px); }
-  .welcome-nav { gap: 22px; margin-right: 12px; }
-  .welcome-hero { min-height: auto; grid-template-columns: 1fr; gap: 2px; padding: 66px 0 60px; }
-  .hero-copy { padding-bottom: 0; }
-  .hero-copy h1 { font-size: clamp(64px, 9vw, 92px); }
-  .hero-note { margin-top: 36px; }
-  .hero-art { width: min(100%, 740px); height: 560px; min-height: 0; margin: -5px auto 0; }
-  .hero-scroll { bottom: 12px; }
-  .welcome-steps { grid-template-columns: 1fr; gap: 30px; padding: 56px 32px; }
-  .steps-more { grid-column: 1; }
-}
-@media (max-width: 767px) {
-  .welcome-header, .welcome-hero { width: calc(100% - 36px); }
-  .welcome-header { min-height: 72px; gap: 10px; }
-  .brand-symbol { width: 34px; height: 34px; }
-  .brand-symbol svg { width: 24px; height: 24px; }
-  .brand-wordmark { font-size: 17px; }
-  .brand-wordmark span { font-size: 7px; }
-  .welcome-nav, .account-login { display: none; }
-  .welcome-account { margin-left: auto; }
-  .account-entry { min-height: 38px; padding: 8px 11px 8px 14px; gap: 7px; font-size: 12px; }
-  .welcome-hero { padding: 48px 0 58px; }
-  .hero-eyebrow { font-size: 9px; gap: 7px; letter-spacing: .08em; }
-  .hero-eyebrow > span:first-child { width: 19px; }
-  .eyebrow-cn { display: none; }
-  .hero-copy h1 { margin: 24px 0 22px; font-size: clamp(52px, 13vw, 74px); line-height: 1.17; }
-  .hero-description { font-size: 14px; line-height: 1.85; }
-  .desktop-break { display: none; }
-  .hero-actions { gap: 22px; margin-top: 28px; }
-  .hero-primary { min-height: 51px; min-width: 163px; padding-left: 22px; gap: 22px; font-size: 14px; }
-  .hero-secondary { font-size: 12px; }
-  .hero-note { margin-top: 30px; font-size: 11px; }
-  .hero-art { width: 100%; height: clamp(340px, 91vw, 500px); margin-top: 14px; }
-  .art-orbit-one { width: 88%; height: auto; aspect-ratio: 1; }
-  .art-orbit-two { width: 62%; height: auto; aspect-ratio: 1; }
-  .scene-card { border-width: 3px; }
-  .scene-card figcaption { bottom: 7px; left: 7px; padding: 5px 7px; font-size: 9px; }
-  .scene-flower { width: 30%; left: 3%; }
-  .scene-vegetable { width: 45%; left: 29%; }
-  .scene-bread { width: 27%; right: 0; }
-  .scene-fruit { width: 33%; left: 2%; }
-  .scene-cup { width: 35%; right: 3%; }
-  .art-sticker { width: 73px; height: 73px; font-size: 10px; right: 17%; bottom: 20%; }
-  .art-sticker span { right: 12px; top: 11px; font-size: 11px; }
-  .hero-scroll { bottom: 18px; left: 0; font-size: 9px; }
-  .welcome-steps { padding: 46px 18px; gap: 25px; }
-  .steps-list { grid-template-columns: 1fr; gap: 22px; }
-  .step { padding-left: 16px; }
-  .step h3 { margin: 5px 0 3px; font-size: 16px; }
-  .welcome-footer { min-height: 72px; padding: 0 18px; flex-wrap: wrap; gap: 4px; align-content: center; font-size: 10px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .scene-card, .hero-primary, .account-entry { transition: none; }
-}
+.welcome-page { background: #fcfdf9; color: var(--ink-strong); }.welcome-hero { width: min(100% - 96px,1200px); margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 70px; padding: 64px 0 72px; align-items: center; }.hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; color: var(--brand-primary); }.hero-eyebrow i { width: 5px; height: 5px; border-radius: 50%; background: #91ad77; }.hero-copy h1 { font-size: clamp(38px,4.3vw,62px); line-height: 1.45; letter-spacing: -.045em; margin: 25px 0; font-weight: 600; }.hero-copy em { font-style: normal; color: var(--brand-primary); }.hero-description { font-size: 14px; line-height: 2.1; color: var(--ink-muted); }.hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 26px; margin-top: 34px; }.hero-primary { display: inline-flex; align-items: center; gap: 50px; color: #fff; background: var(--brand-primary); padding: 15px 23px; border-radius: 8px; font-size: 13px; }.hero-primary:hover { background: var(--brand-primary-hover); }.hero-secondary { color: var(--ink); font-size: 12px; }.hero-note { display: flex; gap: 14px; align-items: center; margin-top: 40px; color: #99a38f; font-size: 10px; }.hero-note i { height: 3px; width: 3px; background: #bec7b5; border-radius: 50%; }.hero-art { position: relative; padding-bottom: 26px; }.hero-art > img { width: 100%; aspect-ratio: 1.06; border-radius: 16px; object-fit: cover; }.hero-art-label { position: absolute; bottom: 0; left: -28px; right: 28px; display: flex; gap: 16px; align-items: center; padding: 22px; border: 1px solid var(--line); border-radius: 10px; background: #fff; box-shadow: var(--shadow-md); }.hero-art-number { font-size: 23px; color: #b6c7a8; font-weight: 500; }.hero-art-label strong { display: block; font-size: 13px; font-weight: 600; }.hero-art-label div > span { display: block; margin-top: 7px; font-size: 8px; color: #a1ac95; letter-spacing: .1em; }.hero-art-arrow { margin-left: auto; color: var(--brand-primary); font-size: 20px; }.welcome-editorial { background: #edf2e7; display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 28px max(48px,calc((100vw - 1200px)/2)); }.welcome-editorial > span { font-size: 10px; color: #879776; letter-spacing: .14em; white-space: nowrap; }.welcome-editorial p { font-size: 15px; color: #65755b; line-height: 1.9; margin: 0; }.editorial-break { display: none; }
+.welcome-categories { width: min(100% - 96px,1200px); margin: auto; padding: 72px 0; }.section-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 32px; }.section-eyebrow { font-size: 9px; color: #94a086; letter-spacing: .12em; }.section-intro h2, .welcome-join h2 { margin: 16px 0 0; font-size: 28px; font-weight: 600; letter-spacing: -.03em; }.section-intro > a { color: var(--brand-primary); font-size: 12px; white-space: nowrap; }.category-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; }.category-card { border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: #fff; }.category-card img { width: 100%; height: 260px; object-fit: cover; transition: transform .3s; }.category-card:hover img { transform: scale(1.025); }.category-card > div { padding: 22px; }.category-card div > span { font-size: 9px; color: var(--ink-muted); }.category-card h3 { margin: 14px 0 0; font-size: 19px; font-weight: 500; display: flex; justify-content: space-between; }.category-card b { font-weight: 400; color: #a9ba98; }.welcome-join { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; width: min(100% - 96px,1200px); margin: auto; padding: 20px 0 80px; }.welcome-join > div > p { margin: 22px 0 30px; font-size: 13px; color: var(--ink-muted); line-height: 2; }.welcome-join > div > a { font-size: 12px; color: var(--brand-primary); }.join-paths { display: grid; }.join-paths a { display: flex; align-items: center; gap: 20px; padding: 23px 0; border-bottom: 1px solid var(--line); }.join-paths a > span { color: #a2b18e; font-size: 11px; }.join-paths h3 { margin: 0 0 9px; font-size: 15px; font-weight: 500; }.join-paths p { margin: 0; font-size: 11px; line-height: 1.8; color: var(--ink-muted); }.join-paths b { margin-left: auto; font-size: 17px; font-weight: 400; color: var(--brand-primary); }
+@media(max-width:1024px) { .welcome-hero { gap: 40px; }.hero-copy h1 { font-size: 40px; }.hero-art-label { left: -16px; right: 16px; padding: 18px; }.welcome-join { gap: 40px; }.category-card img { height: 210px; }.welcome-editorial p { font-size: 13px; }.editorial-break { display: block; } }
+@media(max-width:767px) { .welcome-hero, .welcome-categories, .welcome-join { width: calc(100% - 40px); }.welcome-hero { grid-template-columns: 1fr; gap: 36px; padding: 38px 0 44px; }.hero-copy h1 { font-size: clamp(34px,8.5vw,46px); margin: 22px 0; }.hero-description { font-size: 13px; }.hero-note { margin-top: 28px; }.hero-art > img { aspect-ratio: 1.5; }.hero-art-label { left: 12px; right: 12px; padding: 17px; }.welcome-editorial { padding: 26px 20px; display: grid; gap: 16px; }.editorial-break { display: none; }.welcome-categories { padding-block: 44px; }.section-intro { align-items: flex-start; flex-direction: column; gap: 20px; }.section-intro h2, .welcome-join h2 { font-size: 23px; }.category-grid { grid-template-columns: 1fr; gap: 20px; }.category-card img { height: 210px; }.category-card > div { padding: 20px; }.welcome-join { grid-template-columns: 1fr; gap: 14px; padding-bottom: 45px; }.join-paths a { gap: 16px; }.join-paths p { font-size: 10px; } }
 </style>
