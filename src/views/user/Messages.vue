@@ -9,11 +9,9 @@
           <div class="header-left">
             <el-icon size="20"><Bell /></el-icon>
             <span class="header-title">通知收件箱</span>
-            <UiBadge
-              v-if="notificationStore.unreadCount > 0"
-              :value="notificationStore.unreadCount"
-              class="unread-badge"
-            />
+            <span v-if="notificationStore.unreadCount > 0" class="inbox-unread-count">
+              {{ notificationStore.unreadCount > 99 ? '99+' : notificationStore.unreadCount }}
+            </span>
           </div>
           <UiButton
             type="primary"
